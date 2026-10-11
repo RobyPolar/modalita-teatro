@@ -423,6 +423,10 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 .lt-wait{margin-top:8px;font-weight:900;color:#b3121f;animation:flick .8s steps(2) infinite}
 
 .anteprima #riserva{display:none!important}
+
+.entra-info{margin-top:14px;font-weight:900;font-size:16px;color:var(--oro)}
+#btnEntra{margin-top:10px;padding:16px}
+#btnEntra:disabled{opacity:.45}
 </style>
 </head>
 <body>
@@ -529,6 +533,8 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
   </div>
   <input class="nomeIn" id="nomeIn" maxlength="18" placeholder="Il tuo nome da agente (facoltativo)" autocomplete="off">
   <div class="nomeErr" id="nomeErr"></div>
+  <div class="entra-info" id="entraInfo" hidden>🎭 Lo spettacolo è già iniziato! Scegli la squadra e entra:</div>
+  <button class="bigbtn" id="btnEntra" hidden>ENTRA ▶</button>
   <div class="badge" id="badge"><b id="badgeT">AGENTE TEAM ROBY</b><span>Tieni la pagina aperta: lo spettacolo sta per iniziare…</span></div>
 </section>
 
@@ -1005,7 +1011,9 @@ function lobby(){
   $('nomeIn').value=nome;
   if(team){$('badge').classList.add('on');$('badgeT').textContent='AGENTE TEAM '+({roby:'ROBY',jenny:'JENNY',lore:'LORENZIST'})[team];}
 }
-document.querySelectorAll('.team-b').forEach(b=>b.addEventListener('click',()=>{team=b.dataset.team;store.set('mt_team',team);sfx('voto');vibra(40);lobby();ping();}));
+document.querySelectorAll('.team-b').forEach(b=>b.addEventListener('click',()=>{team=b.dataset.team;store.set('mt_team',team);sfx('voto');vibra(40);lobby();ping();
+  if(lobbyPrima&&!inCorso)lobbyPrima=false; aggiornaEntra();}));
+$('btnEntra').addEventListener('click',()=>{if(!team)return;lobbyPrima=false;const m=inCorso;inCorso=null;aggiornaEntra();if(m)applica(m);});
 $('nomeIn').addEventListener('input',e=>{const v=e.target.value.trim().slice(0,18);
   if(FILTRO.brutto(v)){nome='';store.set('mt_nome','');$('nomeErr').textContent='😅 Questo nome non si può usare: scegline un altro!';e.target.classList.add('nome-bad');}
   else{nome=v;store.set('mt_nome',nome);$('nomeErr').textContent='';e.target.classList.remove('nome-bad');}});
@@ -1082,8 +1090,12 @@ const enc=new TextEncoder(),dec=new TextDecoder();
 function b64d(s){return Uint8Array.from(atob(s),c=>c.charCodeAt(0));}
 function pubblica(sub,payload){const i=conn.findIndex(Boolean);if(i<0)return false;clients[i].publish(CFG.topic+sub,payload,{qos:sub==='/hb'?0:1});return true;}
 function ping(){pubblica('/hb',myId+'|'+team);}
+let lobbyPrima=false,inCorso=null; // primo ingresso: prima nome e squadra, poi lo spettacolo
+function aggiornaEntra(){const b=$('btnEntra');if(!b)return;b.hidden=!(lobbyPrima&&inCorso);b.disabled=!team;
+  $('entraInfo').hidden=!(lobbyPrima&&inCorso);$('badge').style.display=(lobbyPrima&&inCorso)?'none':'';}
 function applica(m){
-  if(m.c==='attesa'){clearTimers();clearCrack();$('fx').innerHTML='';$('riserva').style.visibility='';cueIndex=-1;lobby();aggiornaRiserva();return;}
+  if(lobbyPrima&&!['attesa','risposta','resetlettera','sussurro'].includes(m.c)){inCorso=m;aggiornaEntra();return;}
+  if(m.c==='attesa'){inCorso=null;clearTimers();clearCrack();$('fx').innerHTML='';$('riserva').style.visibility='';cueIndex=-1;lobby();aggiornaRiserva();return;}
   if(m.c==='risposta'){let r;try{r=JSON.parse(m.d)}catch(e){r={t:String(m.d||'')}}if(typeof r!=='object'||!r)r={t:String(r)};
     const out={t:String(r.t||'').slice(0,300),v:r.v,img:typeof r.img==='string'?r.img:null,vid:r.vid&&typeof r.vid==='object'?r.vid:null};
     if(out.vid){attesaVideo=out;setTimeout(provaVideo,50);}
@@ -1139,8 +1151,9 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
 
 $('btnStart').addEventListener('click',()=>{
   started=true;keepAwake();audio();sfx('voto');vibra(30);
-  $('riserva').classList.add('on');lobby();aggiornaRiserva();ping();
+  $('riserva').classList.add('on');lobbyPrima=true;lobby();aggiornaRiserva();ping();
   if(pending){applica(pending);pending=null;}
+  aggiornaEntra();
 });
 /* ===== ANTEPRIMA PER LA REGIA (index.html?anteprima): niente collegamento, la regia le manda i momenti ===== */
 const ANTEPRIMA=/anteprima/.test(location.search);

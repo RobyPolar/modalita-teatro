@@ -736,24 +736,52 @@ const FILTRO=(()=>{
     'terron','polenton','zingar','nazist','hitler','fottut','fotter','fottiti','troiet','zoccolon','puttanier','bagascia','baldracc',
     'battona','mignotta','sgualdrin','vacca','scrofa','maial','porcon','pezzodimerd','testadicazz','faccia di culo','facciadicul','buco di cul','bucodicul',
     'figlio di','figliodi','figliadi','tua madre','tuamadre','tuasorell','sucamelo','sucami','succhiamel','chiavare','chiavat','sverginat','orgasm',
-    'porno','porn','sesso','sex','fuck','shit','bitch','dick','pussy','nigg','fagg','whore','slut','cunt','asshole','motherf','bastard','penis','vagin',
-    'tette','tetta','zinne','culon','chiappe','pisell','pirlon','cacca','scoreggi','rutto','vomit','suicid','ammazz','uccid','morte a','droga',
-    'cocain','eroin','canna','spinell','ubriac'];
+    'porno','porn','sesso','sex','fuck','shit','bitch','dick','pussy','nigg','fagg','boobs','whore','slut','cunt','asshole','motherf','bastard','penis','vagin',
+    'tette','tetta','zinne','culon','chiappe','pisell','pirlon','cacca','scoreggi','vomit','suicid','ammazz','uccid','morte a','droga',
+    'cocain','eroin','spinell','ubriac',
+    // --- aggiunte: volgarità, dialetti, insulti ---
+    'suca','sucam','sucal','sucat','sucabast','succhiacazz','succhiaminch','succhion','ciucciamel','leccami','leccafig','leccapall','leccacaz',
+    'rompipall','rompiball','rompicoglion','rompicaz','scassacaz','scassaminch','cagacaz','cacacaz','spaccacaz','stocaz','sticaz',
+    'vaacagar','cagar','cagat','cagon','cagasott','pisciar','pisciat','sborat','pugnett','segaiol','arrapat','allupat',
+    'ammucchiat','assatanat','scopat','trombar','chiavat','ciular','ciulat','pomiciar','slinguat','sbrodolat','smandrappat',
+    'sveltin','sverginar','sverginat','ditalin','pinnolon','nerchi','fregn','sticchi','pucchiac','patonz','ingoio','guardon','puppam',
+    'meretric','prostitut','escort','bagass','bagascia','sgualdrin','zoccl','buttan','sfaccim','ntrocchi','uallera','scurnacchiat','chitemmuort','chitestramuort',
+    'strunz','cojon','fracicon','frosci','bucaiol','culattin','garrus','pederast','travon','budiul','caciocappel',
+    'imbecill','idiot','cretin','stupid','spastic','cerebroles','schifos','merdos','merdacc','lurid','puzzon','puzzolent',
+    'stupr','pedofil','terrorist','nazist','fascist','razzist','chetivenga','tivengaun','tivengaunc','ammazzat','scannat','impiccat','muorimal',
+    'marijuan','hashish','sballat','cocaina','mbriac',
+    'socmel','socmel','soccmel','soccmel','maremmamai',
+    'diocan','dioca ','diobo','dioporc','diomaial','diolup','dioschif','diosant','diomerd','dioboia','orcodio','orcamadon','ostiadio',
+    'ziocan','zioporc','porcoz','mannaggiacrist','mannaggiadio','mannaggiamadon','mannaggiagesu','mannaggiasant','candedio',
+    'cristoddi','cristodedi','madonacan','madonnalad','madonnatro','madonnazoc','madonnaputt','gesucan','gesuporc','gesubast',
+    // inglese
+    'shit','bullshit','bitch','biatch','pussy','cunt','twat','wank','jerkoff','blowjob','handjob','tits','titties','dildo','horny','milf','sperm',
+    'motherf','asshole','arsehole','dumbass','jackass','bastard','faggot','retard','nigger','nigga','killyourself','suckmy','suckit',
+    // spagnolo, francese, tedesco, rumeno, albanese, arabo (le più comuni nelle scuole)
+    'mierda','cabron','pendej','maricon','gilipoll','hijodeput','hijaput','chinga','culero','putain','salope','connard','connass','encule','niquetam','batard',
+    'scheis','arschloch','hurensohn','fotze','wichser','pizda','pizd','sharmut','sharmot','kahba',
+  ];
   // parole corte: bloccate solo come parola intera (per non bloccare nomi normali)
   const INTERA=['culo','cul','fica','figa','gnocca','ano','pene','cesso','scemo','scema','idiota','deficiente','cretino','cretina','imbecille','stupido',
     'stupida','demente','nazi','kkk','dio','madonna','cristo','gesu','troia','tr0ia','porco','porca','bestia','boia',
     'ladro','schifo','schifoso','schifosa','sfiga','minchia','mona','fesso','fessa','babbeo','tonto','tonta','cagna','cane','asino','somaro','obeso',
-    'ciccione','cicciona','grassone','nano','brutto','brutta','merdina','sex','xxx','wtf','stfu','fu','vaffa','fanculo','culetto','scemotto','pirla'];
+    'ciccione','cicciona','grassone','nano','brutto','brutta','merdina','sex','xxx','wtf','stfu','fu','vaffa','fanculo','culetto','scemotto','pirla',
+    'suca','suka','canna','canne','sega','seghe','palle','coglioni','chiappa','chiappe','figone','anale','peto','loffa','bordello','topa','sorca','potta','mussa',
+    'belin','belino','picio','padulo','pippone','piscio','pecorina','checca','cojone','scemi','sceme','lurido','lurida','cafone','cafona','buzzurro',
+    'mongolo','mongola','crepa','crepi','muori','cancro','tumore','duce','mussolini','puta','puto','putas','putos','pute','joder','verga','polla','hure',
+    'nique','fag','fags','crap','cum','kys','nude','nudes','naked','anal','pula','muie','zebi','zamel','racchia','scorfano','grassona','sfigato',
+    'merdaccia','cessa','zozzo','zozza','zozzona','mona','gnocca','figa','fighe','fiche','tette','zizze','arruso','arrusa','arrusu','busone','cacata','rutto','cyka','cyca','blyat'];
   // bestemmie: tutte le combinazioni (in entrambi i sensi)
-  const SANTI=['dio','madonna','cristo','gesu','gesucristo','santo','santa','padreterno','signore'];
-  const INS=['cane','porco','porca','boia','maiale','bestia','merda','ladro','infame','serpente','bastardo','stronzo','schifoso','assassino','cornuto','lurido','impestato','buono','santo'];
-  const BEST=[];SANTI.forEach(s=>INS.forEach(i=>{if(s!==i){BEST.push(s+i,i+s);}}));
-  const norm=t=>String(t||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'')
+  const SANTI=['dio','iddio','madonna','madona','cristo','gesu','gesucristo','santo','santa','padreterno','signore','spiritosanto','dios','god','jesus','zio'];
+  const INS=['cane','can','porco','porca','porc','boia','maiale','maiala','bestia','merda','ladro','ladra','infame','serpente','bastardo','bastarda','stronzo','stronza','schifoso','schifosa','assassino','assassina','cornuto','cornuta','lurido','lurida','impestato','impestata','buono','santo','lupo','lupa','cagna','troia','puttana','zoccola','vacca','sporco','sporca','maledetto','maledetta','fottuto','fottuta','animale','mannaggia','mannaggia la','damn','fuck'];
+  const BEST=[];SANTI.forEach(s=>INS.forEach(i=>{if(s===i)return;if(s==='zio'&&!['cane','can','porco','porca','porc','boia','maiale','merda','bestia'].includes(i))return;if(i==='santo'&&['santo','santa','spiritosanto'].includes(s))return;BEST.push(s+i);if(s!=='zio'&&i!=='mannaggia la')BEST.push(i+s);}));
+  const FINTE={'а':'a','е':'e','о':'o','р':'p','с':'c','у':'y','х':'x','і':'i','ѕ':'s','ј':'j','к':'k','м':'m','т':'t','н':'h','в':'b','ο':'o','α':'a','ε':'e','ι':'i','κ':'k','ν':'v','ρ':'p','τ':'t','υ':'u','χ':'x','€':'e','£':'l','!':'i','|':'i','2':'z','9':'g','8':'b','+':'t','(':'c','¢':'c','ß':'ss','ph':'f'};
+  const norm=t=>String(t||'').normalize('NFKC').toLowerCase().replace(/[\u200b-\u200f\u2060\ufeff\u00ad]/g,'').replace(/ph|[аеорсухіѕјкмтнвοαειкνρτυχ€£!|29+8(¢ß]/g,ch=>(FINTE[ch]!==undefined?FINTE[ch]:ch)).normalize('NFD').replace(/[̀-ͯ]/g,'')
     .replace(/0/g,'o').replace(/1/g,'i').replace(/3/g,'e').replace(/4/g,'a').replace(/5/g,'s').replace(/7/g,'t').replace(/@/g,'a').replace(/\$/g,'s').replace(/k/g,'c')
     .replace(/(.)\1+/g,'$1');
   const comp=s=>norm(s).replace(/[^a-z]/g,'');
   const D=[...new Set(DENTRO.map(comp))].filter(x=>x.length>=4), B=[...new Set(BEST.map(comp))], I=new Set(INTERA.map(comp));
-  const RAW=['fuck','dick','kazz','fck','nigga'];
+  const RAW=['fuck','fuk','fuq','phuck','fvck','dick','cock','kazz','fck','nigg','fagg','boobs','piss','sh1t','b1tch','suk4','sukk'];
   function brutto(t){
     const raw=String(t||'').toLowerCase().replace(/[^a-z0-9]/g,'');if(RAW.some(w=>raw.includes(w)))return true;
     const c=comp(t); if(!c) return false;

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Prova connessione – Modalità Teatro</title>
 <meta name="robots" content="noindex">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-XTq3EfMwqKQ21tmmgz19eIMeQM4C24GGrFmFL1KTUxI=' 'sha256-Z7SZ2FPnT37+9KNcGkrTTBu5uSLsunJzpqq/YTyjq1k='; style-src 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; font-src data:; worker-src blob:; connect-src 'self' wss://r21a1286.ala.eu-central-1.emqxsl.com:8084; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-XTq3EfMwqKQ21tmmgz19eIMeQM4C24GGrFmFL1KTUxI=' 'sha256-gXZM7BortNuM5VH2SfMrS+SskTxpq6B8om4jtslLgUk='; style-src 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; font-src data:; worker-src blob:; connect-src 'self' wss://r21a1286.ala.eu-central-1.emqxsl.com:8084; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 
 <style>
@@ -90,16 +90,15 @@ async function prova(){
       c.on('connect',()=>{clearTimeout(t);ok(c);});c.on('error',e=>{clearTimeout(t);try{c.end(true);}catch(x){}ko(e);});});
     r.server=true;segna('server','✅',Math.round(performance.now()-t0)+' ms');}
   catch(e){r.server=false;segna('server','❌','bloccato: questa rete non lascia passare l\'app (porta 8084)');segna('giro','❌','');segna('foto','❌','');}
-  // 3. andata e ritorno + 4. foto da 300 KB
-  if(cl){const top=CFG.topic+'/prova/'+Math.random().toString(36).slice(2,10);const arrivi=new Map();
-    cl.on('message',(t,p)=>{const k=p.length>1000?'foto':new TextDecoder().decode(p);const f=arrivi.get(k);if(f)f();});
-    await new Promise(z=>cl.subscribe(top,{qos:1},z));
-    const giro=(k,payload,ms)=>new Promise(ok=>{const t0=performance.now();const t=setTimeout(()=>{arrivi.delete(k);ok(null);},ms);arrivi.set(k,()=>{clearTimeout(t);arrivi.delete(k);ok(performance.now()-t0);});cl.publish(top,payload,{qos:1});});
-    const tempi=[];for(let i=0;i<8;i++){const x=await giro('g'+i,'g'+i,5000);if(x!=null)tempi.push(x);segna('giro','⏳',`${i+1}/8`);await attesa(150);}
-    tempi.sort((a,b)=>a-b);r.persi=8-tempi.length;r.lat=tempi.length?tempi[tempi.length>>1]:null;
-    segna('giro',r.persi===0&&r.lat<800?'✅':r.lat?'🟡':'❌',r.lat?`${Math.round(r.lat)} ms${r.persi?' · '+r.persi+' su 8 persi':''}`:'nessun messaggio tornato');
-    const foto=new Uint8Array(300000);crypto.getRandomValues(foto.subarray(0,65536));
-    const tf=await giro('foto',foto,30000);r.foto=tf;segna('foto',tf!=null&&tf<6000?'✅':tf!=null?'🟡':'❌',tf!=null?`${(tf/1000).toFixed(1)} s per 300 KB`:'non arrivata');
+  // 3. invio messaggi (con conferma del server) + ricezione + 4. foto da 300 KB
+  //    usa solo i canali permessi ai telefoni; la regia li scarta (codice «PROVA» non valido)
+  if(cl){const manda=(top,payload,ms)=>new Promise(ok=>{const t0=performance.now();const t=setTimeout(()=>ok(null),ms);cl.publish(top,payload,{qos:1},e=>{clearTimeout(t);ok(e?null:performance.now()-t0);});});
+    const tempi=[];for(let i=0;i<8;i++){const x=await manda(CFG.topic+'/hb','PROVA|',5000);if(x!=null)tempi.push(x);segna('giro','⏳',`${i+1}/8`);await attesa(150);}
+    let ric=false;try{ric=await new Promise(ok=>{const t=setTimeout(()=>ok(false),6000);cl.subscribe(CFG.topic+'/r/stato',{qos:1},(e,g)=>{clearTimeout(t);ok(!e&&g&&g[0]&&g[0].qos!==128);});});}catch(e){}
+    tempi.sort((a,b)=>a-b);r.persi=8-tempi.length+(ric?0:8);r.lat=tempi.length?tempi[tempi.length>>1]:null;
+    segna('giro',r.persi===0&&r.lat<800?'✅':r.lat&&ric?'🟡':'❌',r.lat?`${Math.round(r.lat)} ms${tempi.length<8?' · '+(8-tempi.length)+' su 8 persi':''}${ric?'':' · ricezione bloccata'}`:'nessuna risposta dal server');
+    const foto=new Uint8Array(300000);foto[0]=80;crypto.getRandomValues(foto.subarray(1,65536));
+    const tf=await manda(CFG.topic+'/selfie',foto,30000);r.foto=tf;segna('foto',tf!=null&&tf<6000?'✅':tf!=null?'🟡':'❌',tf!=null?`${(tf/1000).toFixed(1)} s per 300 KB`:'non arrivata');
     try{cl.end(true);}catch(e){}}
   // esito
   const E=$('esito');let cls,ic,tit,txt;

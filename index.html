@@ -475,6 +475,21 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 @media (max-height:700px){.sf-chips{gap:6px}.sf-chips button{padding:6px 10px;font-size:13px}#s-selfie h2{font-size:26px}}
 
 #s-grazie [hidden]{display:none!important}
+
+/* richiamo: il bottone del selfie si illumina, suona e il dito lo indica */
+.sf-wrap{position:relative;z-index:7;margin:16px 0 26px;width:min(420px,100%)}
+.sf-wrap .fine-btn{margin-top:0;width:100%;overflow:hidden}
+.sf-wrap .dito{display:none}
+.sf-wrap.richiamo .fine-btn{background:linear-gradient(#fffef6,#fff1b8);animation:luceBtn 1.2s ease-in-out infinite}
+.sf-wrap.richiamo .fine-btn::after{content:"";position:absolute;top:-20%;bottom:-20%;width:40%;left:-60%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.95),transparent);transform:skewX(-20deg);animation:lampo 2.4s ease-in-out infinite;pointer-events:none}
+@keyframes luceBtn{0%,100%{transform:scale(1);box-shadow:0 5px 0 #8a3b00,0 0 0 0 rgba(255,216,74,.0)}50%{transform:scale(1.045);box-shadow:0 5px 0 #8a3b00,0 0 30px 12px rgba(255,216,74,.95)}}
+@keyframes lampo{0%,55%{left:-60%}100%{left:130%}}
+.sf-wrap.richiamo .dito{display:block;position:absolute;right:-10px;bottom:-30px;width:92px;height:92px;pointer-events:none;z-index:8;filter:drop-shadow(0 4px 4px rgba(0,0,0,.35));animation:tocca 1.2s ease-in-out infinite;transform-origin:20% 15%}
+.dito svg{position:relative;z-index:2}
+.dito i{position:absolute;left:6px;top:0;width:40px;height:40px;border-radius:50%;border:4px solid #ffd84a;opacity:0;animation:onda 1.2s ease-out infinite;z-index:1}
+.dito i+i{animation-delay:.25s}
+@keyframes tocca{0%,100%{transform:translate(14px,14px) scale(1)}40%{transform:translate(0,0) scale(.92)}55%{transform:translate(0,0) scale(.92)}}
+@keyframes onda{0%,35%{transform:scale(.2);opacity:0}45%{opacity:1}100%{transform:scale(2.4);opacity:0}}
 </style>
 </head>
 <body>
@@ -661,7 +676,8 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
     <div class="firma">Firmato: la Regia 🎭</div>
   </div>
   <div class="screen-hint">📸 Fai uno screenshot per ricordo!</div>
-  <button class="fine-btn" id="btnSelfie">📸 Manda un selfie e un messaggio a Roby, Jenny e Lore<small style="display:block;font-family:var(--testo);font-weight:900;font-size:13px;margin-top:4px;color:#5d0a12">SOLO SE VUOI · non è obbligatorio</small></button>
+  <div class="sf-wrap" id="sfWrap"><button class="fine-btn" id="btnSelfie">📸 Manda un selfie e un messaggio a Roby, Jenny e Lore<small style="display:block;font-family:var(--testo);font-weight:900;font-size:13px;margin-top:4px;color:#5d0a12">SOLO SE VUOI · non è obbligatorio</small></button>
+    <div class="dito" aria-hidden="true"><i></i><i></i><svg viewBox="0 0 100 100" width="100%" height="100%"><g transform="rotate(-20 50 50)"><path d="M38 12c5 0 8 4 8 9v27c2-3 5-5 9-4 3 1 5 4 5 7 2-3 6-4 9-2 3 1 4 4 4 7 3-2 7-1 9 2 2 2 2 5 2 8v14c0 12-9 22-22 22H52c-8 0-14-4-18-11L18 63c-2-4-1-8 3-10 4-2 8 0 10 3l-1 0V21c0-5 3-9 8-9z" fill="#fff" stroke="#2a0508" stroke-width="6" stroke-linejoin="round"/><path d="M46 48v14M60 51v12M73 56v9" stroke="#2a0508" stroke-width="5" stroke-linecap="round"/></g></svg></div></div>
   <a class="t1-btn" href="https://www.ticketone.it/artist/roby-jenny-lorenzist/" target="_blank" rel="noopener"><span>⭐⭐⭐⭐⭐</span>Ti è piaciuto? Lascia una recensione su TicketOne</a>
   <div class="titoloC" style="font-size:clamp(30px,9vw,42px);text-shadow:3px 3px 0 #b3121f">GRAZIE!</div>
 </section>
@@ -1014,6 +1030,7 @@ const SFX={
   boom(){rumore(0,1,.18);tono(120,0,.8,'sine',.12,40);},
   colpo(){tono(160,0,.09,'square',.06,60);},
   voto(){tono(660,0,.08,'triangle',.06);tono(990,.08,.12,'triangle',.06);},
+  ding(){[1319,1568,2093,2637].forEach((f,i)=>tono(f,i*.07,.35,'sine',.06));tono(3136,.32,.5,'sine',.035);},
 };
 function sfx(n){try{SFX[n]&&SFX[n]();}catch(e){}}
 
@@ -1079,7 +1096,9 @@ const SCENES={
     for(let i=0;i<8;i++)later(()=>{sfx('bip');vibra(30);},300+i*500);later(()=>{sfx('glitch');vibra([200,100,200]);flash();},4400);},
   fine(){show('fine');aggiornaBtnSelfie();$('attNome').textContent=(nome||'Agente speciale').toUpperCase();
     $('attTeam').textContent=team?`Squadra: TEAM ${({roby:'ROBY',jenny:'JENNY',lore:'LORENZIST'})[team]}`:'';
-    sfx('festa');rain(['🏆','🎉','⭐','🎭','🎊'],14);vibra([80,40,80,40,200]);},
+    sfx('festa');rain(['🏆','🎉','⭐','🎭','🎊'],14);vibra([80,40,80,40,200]);
+    // richiamo sul bottone del selfie: suono + lucetta, qualche volta (non all'infinito)
+    [1600,7000,13000,20000].forEach(ms=>later(()=>{if(current==='fine'&&store.get(KEY_LETTERA)!=='1'){sfx('ding');if(ms===1600)vibra(60);}},ms));},
 };
 
 /* ---------- Caos sbuca nei telefoni (in qualsiasi momento) ---------- */
@@ -1112,7 +1131,7 @@ function apriSelfie(){clearTimers();$('fx').innerHTML='';show('selfie');$('sfSta
   if(store.get(KEY_LETTERA)==='1'){passo(4);$('sfAncora').hidden=!ultimaRisposta;return;}passo(1);}
 let ultimaRisposta=null;
 $('btnSelfie').addEventListener('click',()=>{if(store.get(KEY_LETTERA)==='1'&&ultimaRisposta)mostraGrazie();else apriSelfie();});
-function aggiornaBtnSelfie(){const fatta=store.get(KEY_LETTERA)==='1';$('btnSelfie').innerHTML=fatta?'💌 La tua lettera è stata spedita'+(ultimaRisposta?'<small style="display:block;font-size:13px;color:#5d0a12">Tocca per rivedere e scaricare la risposta</small>':''):$('btnSelfie').dataset.orig;}
+function aggiornaBtnSelfie(){const fatta=store.get(KEY_LETTERA)==='1';$('sfWrap').classList.toggle('richiamo',!fatta);$('btnSelfie').innerHTML=fatta?'💌 La tua lettera è stata spedita'+(ultimaRisposta?'<small style="display:block;font-size:13px;color:#5d0a12">Tocca per rivedere e scaricare la risposta</small>':''):$('btnSelfie').dataset.orig;}
 $('btnSelfie').dataset.orig=$('btnSelfie').innerHTML;
 $('sfIndietro').addEventListener('click',()=>SCENES.fine());
 $('sfAncora').addEventListener('click',()=>{if(ultimaRisposta)mostraGrazie();});
@@ -1383,7 +1402,7 @@ function adatta(){
     if(SCORRONO.includes(s.id)){if(su>1.02)figli.forEach(c=>{if(getComputedStyle(c).position!=='absolute')c.style.zoom=su;});}
     else{const m=misura(s);if(m){const cs=getComputedStyle(s);
       const ah=s.clientHeight-parseFloat(cs.paddingTop)-parseFloat(cs.paddingBottom),aw=s.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight)+30;
-      let k=Math.min(su,stretto,ah/m.h,aw/m.w);k=Math.max(.5,Math.min(k,su));
+      let k=Math.min(su,ah/m.h,aw/m.w);if(stretto<1)k=Math.min(k,stretto);k=Math.max(.5,Math.min(k,su));
       if(Math.abs(k-1)>.02)figli.forEach(c=>{if(getComputedStyle(c).position!=='absolute')c.style.zoom=k.toFixed(3);});
       s.style.overflowY=k<=.5?'auto':'';}}}
   // la lettera

@@ -1027,7 +1027,8 @@ $('sfInvia').addEventListener('click',()=>{
 let rispSilenziosa=false;
 function rispostaRegia(r){
   if(typeof r==='string')r={t:r};ultimaRisposta=r;
-  if(rispSilenziosa){if(current==='fine')aggiornaBtnSelfie();return;}  // già letta: si può rileggere dal pulsante$('ltVidWait').hidden=true;
+  if(rispSilenziosa){if(current==='fine')aggiornaBtnSelfie();return;}  // già letta: si può rileggere dal pulsante
+  $('ltVidWait').hidden=true;$('ltVidWait').textContent='🎬 Video in arrivo…';
   $('ltTesto').textContent=r.t||'';
   const fi=$('ltImg');if(r.img&&/^data:image\/jpeg;base64,/.test(r.img)){fi.src=r.img;fi.hidden=false;}else{fi.removeAttribute('src');fi.hidden=true;}
   const v=$('ltVideo');if(r.vidUrl){v.src=r.vidUrl;v.hidden=false;v.load();}else if(r.vid){v.hidden=true;$('ltVidWait').hidden=false;}
@@ -1137,19 +1138,20 @@ function applica(m){
     if(store.get('mt_rin')!==String(m.s)){store.set('mt_rin',String(m.s));nome='';team=null;store.set('mt_nome','');store.set('mt_team','');
       $('nomeIn').value='';$('nomeErr').textContent='';$('nomeIn').classList.remove('nome-bad');$('badge').classList.remove('on');lobbyPrima=!ANTEPRIMA;}
     m={...m,c:'attesa'};}
-  if(m.c==='attesa'){inCorso=null;clearTimers();clearCrack();$('fx').innerHTML='';$('riserva').style.visibility='';cueIndex=-1;lobby();aggiornaRiserva();return;}
+  if(m.c==='attesa'){inCorso=null;try{$('ltVideo').pause();}catch(e){}$('lettera').classList.remove('on','aperta');$('sus').classList.remove('on');clearTimers();clearCrack();$('fx').innerHTML='';$('riserva').style.visibility='';cueIndex=-1;lobby();aggiornaRiserva();return;}
   if(m.c==='risposta'){let r;try{r=JSON.parse(m.d)}catch(e){r={t:String(m.d||'')}}if(typeof r!=='object'||!r)r={t:String(r)};
     const out={t:String(r.t||'').slice(0,1000),v:r.v,img:typeof r.img==='string'?r.img:null,vid:r.vid&&typeof r.vid==='object'?r.vid:null};
-    if(out.vid){attesaVideo=out;setTimeout(provaVideo,50);}
+    attesaVideo=out.vid?out:null;if(out.vid)setTimeout(provaVideo,50);
     rispostaRegia(out);return;}
-  if(m.c==='resetlettera'){store.set(KEY_LETTERA,'');ultimaRisposta=null;if(current==='fine'||current==='selfie'){$('lettera').classList.remove('on','aperta');SCENES.fine();}return;}
+  if(m.c==='resetlettera'){store.set(KEY_LETTERA,'');store.set('mt_reset',String(m.s));ultimaRisposta=null;attesaVideo=null;for(const k in pezzi)delete pezzi[k];$('sfAncora').hidden=true;if(current==='fine'||current==='selfie'){$('lettera').classList.remove('on','aperta');SCENES.fine();}return;}
   if(m.c==='sussurro'){let d={};try{d=JSON.parse(m.d||'{}')}catch(e){}caosSussurra(d.p??.6,d.ms??7000);return;}
   if(m.c==='risultato'){let d;try{d=JSON.parse(m.d)}catch(e){return;}clearTimers();mostraVoto(d.v,d.r);return;}
   fire(m.c,'regia');
 }
 const pezzi={};let attesaVideo=null;
 async function provaVideo(){
-  const r=attesaVideo;if(!r||!r.vid)return;const P=pezzi[r.vid.k];if(!P||P.got<r.vid.n)return;
+  const r=attesaVideo;if(!r||!r.vid)return;const P=pezzi[r.vid.k];
+  if(!P||P.got<r.vid.n){const w=$('ltVidWait');w.textContent='🎬 Video in arrivo… '+Math.round(100*((P&&P.got)||0)/r.vid.n)+'%';return;}
   const parts=[];for(let i=0;i<r.vid.n;i++)parts.push(Uint8Array.from(atob(P.b[i]),c=>c.charCodeAt(0)));
   const blob=new Blob(parts,{type:r.vid.type||'video/mp4'});
   const h=btoa(String.fromCharCode(...new Uint8Array(await crypto.subtle.digest('SHA-256',await blob.arrayBuffer()))));
@@ -1166,6 +1168,7 @@ async function onMsg(topic,buf){
   const priv=topic.endsWith('/r/'+myId);
   if((!priv&&m.s<=lastSeq)||Date.now()-m.t>(priv?4*86400e3:6*3600e3))return;
   if(priv&&m.c!=='risposta')return;
+  if(priv&&m.s<Number(store.get('mt_reset')||0))return; // risposta di prima del reset
   let ok=false;
   try{ok=await crypto.subtle.verify({name:'ECDSA',hash:'SHA-256'},pubKey,b64d(m.g),enc.encode(`${m.c}|${m.d||''}|${m.s}|${m.t}`));}catch(e){}
   if(!ok)return;      // firma sbagliata = non viene dalla regia

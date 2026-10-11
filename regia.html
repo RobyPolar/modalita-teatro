@@ -222,7 +222,7 @@ const FILTRO=(()=>{
 </script>
 <script>
 "use strict";
-const CFG={"brokers":[{"url":"wss://r21a1286.ala.eu-central-1.emqxsl.com:8084/mqtt","user":"regia","passEnc":{"iv":"RTliwwlqa7v0wTwv","ct":"cc1YPRF/jWScCxrlpxe54+hsJtUUMhKv301HLgZr614VwEnH0YQX3w=="}}],"topic":"modalitateatro/MgU5BIBm9GA7lt","salt":"APr3dWd+1lybghzvilLbRw==","iv":"JJS0XQ19xH3VK53y","ct":"4vYE4yj9buMIBrGYROLgJ/4/y0O2IXaygrxCrFDvwoWTQ1AWAMHDtBjk8rT0XiGyW2pFmQeIPN33+ciyCTdsBI3SV5e7tSmNBSsqiRwwbddhjDKOuL3LGArmuN9A6eqjQriizLGLfEK0YYWN5bfDvwc19GLNFHrr9RPdMCvQMCfNASmF1ZPdd/TXVlR4snKikUaZV2OVX6luuQ==","iter":200000};
+const CFG={"brokers":[{"url":"wss://r21a1286.ala.eu-central-1.emqxsl.com:8084/mqtt","user":"regia","passEnc":{"iv":"HXKj9CivPPawplLI","ct":"wRHjuzUnPZIjrC8PT0OEizUJ1z95SuikVi39tb/KbjwsJIOXw5/9rQ=="}}],"topic":"modalitateatro/MgU5BIBm9GA7lt","salt":"APr3dWd+1lybghzvilLbRw==","iv":"JJS0XQ19xH3VK53y","ct":"4vYE4yj9buMIBrGYROLgJ/4/y0O2IXaygrxCrFDvwoWTQ1AWAMHDtBjk8rT0XiGyW2pFmQeIPN33+ciyCTdsBI3SV5e7tSmNBSsqiRwwbddhjDKOuL3LGArmuN9A6eqjQriizLGLfEK0YYWN5bfDvwc19GLNFHrr9RPdMCvQMCfNASmF1ZPdd/TXVlR4snKikUaZV2OVX6luuQ==","iter":200000};
 // SCALETTA DELLO SPETTACOLO (uguale per pubblico e regia)
 const CUES = [
   {id:'inizio',     icona:'🎭', nome:'Si comincia!',                  quando:'Si spengono le luci e sul ledwall parte il logo MODALITÀ TEATRO'},
@@ -287,7 +287,9 @@ function avvia(){
   $('grid').onclick=e=>{const b=e.target.closest('.cue');if(b)manda(+b.dataset.i);};
   $('btnNext').onclick=()=>{if(idx+1<CUES.length)manda(idx+1);};
   $('btnSus').onclick=()=>invia('sussurro','🤫 Caos sbuca (circa 6 telefoni su 10, nei prossimi 7 secondi)',JSON.stringify({p:.6,ms:7000}),true);
-  $('btnResetLet').onclick=()=>{giaArrivati.clear();invia('resetlettera','🔄 Lettere riaperte per tutti',null,true);};
+  $('btnResetLet').onclick=async()=>{giaArrivati.clear();
+    const cl=clients.find((c,i)=>conn[i]);if(cl)for(const [id,n] of videoMandati){cl.publish(CFG.topic+'/r/'+id,'',{qos:1,retain:true});for(let i=0;i<n;i++)cl.publish(CFG.topic+'/r/'+id+'/v/'+i,'',{qos:1,retain:true});}
+    videoMandati.clear();await invia('resetlettera','🔄 Lettere riaperte per tutti (e vecchie risposte cancellate)',null,true);};
   $('btnRinomina').onclick=()=>{idx=-1;votoLive=null;$('votoBox').style.display='none';invia('rinomina','🔁 Tutti di nuovo a scegliere nome e squadra');};
   $('btnAttesa').onclick=()=>{idx=-1;votoLive=null;$('votoBox').style.display='none';invia('attesa','Attesa (scelta squadra)');};
   document.addEventListener('keydown',e=>{if(e.target.closest&&e.target.closest('input,textarea,select,[contenteditable]'))return;if(e.repeat)return;if(e.code==='Space'||e.key==='ArrowRight'){e.preventDefault();$('btnNext').click();}});
@@ -353,12 +355,19 @@ $('inList').addEventListener('change',async e=>{
     allegati.set(k,{video:f});e.target.closest('.al').classList.add('sel');
     const v=document.createElement('video');v.src=URL.createObjectURL(f);v.controls=true;v.className='pv';box.querySelector('.allega').after(v);info.textContent=`video pronto (${(f.size/1048576).toFixed(1)} MB)`;}
 });
-async function mandaVideo(dest,f,info){
+async function preparaVideo(f){ // calcola hash e pezzi PRIMA di spedire: così la lettera parte subito
   const buf=new Uint8Array(await f.arrayBuffer());const h=b64(await crypto.subtle.digest('SHA-256',buf));const key=Math.random().toString(36).slice(2,10);
-  const CH=150000,n=Math.ceil(buf.length/CH);const cl=clients.find((c,i)=>conn[i]);if(!cl)throw new Error('offline');
-  for(let i=0;i<n;i++){let s='';const part=buf.subarray(i*CH,(i+1)*CH);for(let j=0;j<part.length;j+=8192)s+=String.fromCharCode.apply(null,part.subarray(j,j+8192));
-    await new Promise(res=>cl.publish(CFG.topic+dest+'/v/'+i,JSON.stringify({k:key,i,n,b:btoa(s)}),{qos:1,retain:true},res));info.textContent=`invio video ${Math.round(100*(i+1)/n)}%`;}
-  return {k:key,h,n,type:f.type||'video/mp4'};
+  const CH=150000,n=Math.ceil(buf.length/CH);return {buf,meta:{k:key,h,n,type:f.type||'video/mp4'},CH};
+}
+const videoMandati=new Map(); // id -> numero di pezzi (per poterli cancellare col reset)
+async function mandaVideo(dest,pv,info){
+  const {buf,meta,CH}=pv;const cl=clients.find((c,i)=>conn[i]);if(!cl)throw new Error('offline');
+  let fatti=0,prossimo=0;
+  const uno=async()=>{while(prossimo<meta.n){const i=prossimo++;let s='';const part=buf.subarray(i*CH,(i+1)*CH);for(let j=0;j<part.length;j+=8192)s+=String.fromCharCode.apply(null,part.subarray(j,j+8192));
+    await new Promise((res,rej)=>cl.publish(CFG.topic+dest+'/v/'+i,JSON.stringify({k:meta.k,i,n:meta.n,b:btoa(s)}),{qos:1,retain:true},e=>e?rej(e):res()));
+    fatti++;info.textContent=`🎬 invio video ${Math.round(100*fatti/meta.n)}%`;}};
+  await Promise.all([uno(),uno(),uno(),uno()]); // 4 pezzi alla volta: molto più veloce
+  info.textContent='✅ video arrivato al telefono';
 }
 $('inList').addEventListener('click',async e=>{
   const box=e.target.closest('.msg');if(!box)return;const k=box.dataset.k,m=posta.get(k);if(!m)return;
@@ -368,9 +377,11 @@ $('inList').addEventListener('click',async e=>{
   if(e.target.classList.contains('rsp')){const t=box.querySelector('textarea').value.trim().slice(0,1000);const sel=box.querySelector('.vid.sel');const vv=sel?sel.dataset.v:null;
     const al=allegati.get(k)||{};if(!t&&!vv&&!al.img&&!al.video)return;
     e.target.disabled=true;const info=box.querySelector('.alinfo');const dest='/r/'+m.id;let vid=null;
-    try{if(al.video)vid=await mandaVideo(dest,al.video,info);}catch(err){info.textContent='⚠ invio video non riuscito';e.target.disabled=false;return;}
+    let pv=null;try{if(al.video){info.textContent='🎬 preparo il video…';pv=await preparaVideo(al.video);vid=pv.meta;}}catch(err){info.textContent='⚠ video non leggibile';e.target.disabled=false;return;}
     await invia('risposta','💌 risposta a '+(m.nome||'spettatore')+(vv?' (video '+vv+')':'')+(al.img?' (con foto)':'')+(vid?' (con video tuo)':''),JSON.stringify({t,v:vv,img:al.img||null,vid}),true,dest);
-    allegati.delete(k);info.textContent='✅ inviata (puoi mandarne un\'altra: sostituisce la precedente)';box.classList.add('risposto');e.target.disabled=false;e.target.textContent='Rispondi ancora 💌';box.querySelector('textarea').value='';box.querySelector('.conta').textContent='0/1000';box.querySelectorAll('.al').forEach(x=>x.classList.remove('sel'));box.querySelectorAll('.pv,.pvimg').forEach(x=>x.remove());m.foto=null;
+    if(pv){videoMandati.set(m.id,Math.max(videoMandati.get(m.id)||0,pv.meta.n));try{await mandaVideo(dest,pv,info);}catch(err){info.textContent='⚠ invio video interrotto: riprova';e.target.disabled=false;return;}}
+    else videoMandati.set(m.id,videoMandati.get(m.id)||0);
+    allegati.delete(k);if(!pv)info.textContent='✅ inviata (puoi mandarne un\'altra: sostituisce la precedente)';box.classList.add('risposto');e.target.disabled=false;e.target.textContent='Rispondi ancora 💌';box.querySelector('textarea').value='';box.querySelector('.conta').textContent='0/1000';box.querySelectorAll('.al').forEach(x=>x.classList.remove('sel'));box.querySelectorAll('.pv,.pvimg').forEach(x=>x.remove());m.foto=null;
     const img=box.querySelector('img');if(img)img.remove();}
 });
 function nome(u){return u.replace(/^wss?:\/\//,'').split(/[:/]/)[0];}

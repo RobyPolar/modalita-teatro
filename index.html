@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-XTq3EfMwqKQ21tmmgz19eIMeQM4C24GGrFmFL1KTUxI=' 'sha256-bpLZDchgrGIWdM1j8i9MP7v7zgEyhcevoBEEDa4fG3Q='; style-src 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; font-src data:; worker-src blob:; connect-src 'self' wss://r21a1286.ala.eu-central-1.emqxsl.com:8084; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-XTq3EfMwqKQ21tmmgz19eIMeQM4C24GGrFmFL1KTUxI=' 'sha256-7kDhm5DxPM0ZkkyyM5D9NyRhaLyKTzVpZ8GHZwitTbU='; style-src 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; font-src data:; worker-src blob:; connect-src 'self' wss://r21a1286.ala.eu-central-1.emqxsl.com:8084; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
@@ -887,6 +887,10 @@ const FILTRO=(()=>{
     'tette','tetta','zinne','culon','chiappe','pisell','pirlon','cacca','scoreggi','vomit','suicid','ammazz','uccid','morte a','droga',
     'cocain','eroin','spinell','ubriac',
     // --- aggiunte: volgarità, dialetti, insulti ---
+    // insulti usando le malattie
+    'tumorat','tumoros','tumoron','linfomon','linfomat','linfomen','leucemic','leucemat','canceros','cancerat','metastatic','metastasat',
+    'sidos','sidat','aidsat','lebbros','appestat','coleros','colerat','ebolat','covidat','covidos','chemioterapizzat','malatoterminal','malatadicancr','malatodicancr',
+    'autistic','subnormal','cerebroles','deform','storpi','ritardat','mongoloid','downat','handicap',
     'suca','sucam','minca','mincon','strons','sotrons','sotronz','tronzon','tronson','stornz','storns','bottona','botona','battona','sucal','sucat','sucabast','succhiacazz','succhiaminch','succhion','ciucciamel','leccami','leccafig','leccapall','leccacaz',
     'rompipall','rompiball','rompicoglion','rompicaz','scassacaz','scassaminch','cagacaz','cacacaz','spaccacaz','stocaz','sticaz',
     'vaacagar','cagar','cagat','cagon','cagasott','pisciar','pisciat','sborat','pugnett','segaiol','arrapat','allupat',
@@ -928,6 +932,7 @@ const FILTRO=(()=>{
     .replace(/(.)\1+/g,'$1');
   const comp=s=>norm(s).replace(/[^a-z]/g,'');
   const D=[...new Set(DENTRO.map(comp))].filter(x=>x.length>=4), B=[...new Set(BEST.map(comp))], I=new Set(INTERA.map(comp));
+  const SOLO_NOMI=['tumore','tumori','cancro','cancri','linfoma','linfomi','leucemia','metastasi','chemio','chemioterapia','aids','sida','hiv','peste','lebbra','colera','ebola','covid','coronavirus','malattia','malato','malata','morto','morta','cadavere','funerale','bara','handicappato','down','diabete','autismo'];
   const RAW=['fuck','fuk','fuq','phuck','fvck','dick','cock','kazz','fck','nigg','fagg','boobs','piss','sh1t','b1tch','suk4','sukk'];
   function brutto(t){
     const raw=String(t||'').toLowerCase().replace(/[^a-z0-9]/g,'');if(RAW.some(w=>raw.includes(w)))return true;
@@ -940,7 +945,11 @@ const FILTRO=(()=>{
   function pulisci(t){ // per i messaggi: sostituisce le parole brutte con ★
     return String(t||'').split(/(\s+)/).map(p=>/\s/.test(p)||!brutto(p)?p:'★'.repeat(Math.min(6,Math.max(3,p.length)))).join('');
   }
-  return {brutto,pulisci,quante:D.length+B.length+I.size};
+  const N=new Set(SOLO_NOMI.map(comp));
+  // per i NOMI anche le parole di malattia "da sole" (nei messaggi no: un bambino potrebbe raccontare di una persona malata)
+  function bruttoNome(t){if(brutto(t))return true;const c=comp(t);if(!c)return false;if([...N].some(w=>w.length>=5&&c.includes(w)))return true;
+    return norm(t).split(/[^a-z]+/).filter(Boolean).some(p=>N.has(p))||N.has(c);}
+  return {brutto,bruttoNome,pulisci,quante:D.length+B.length+I.size+N.size};
 })();
 
 /* ================= IMMAGINI (dai video dello spettacolo) ================= */
@@ -1219,14 +1228,14 @@ document.querySelectorAll('.team-b').forEach(b=>b.addEventListener('click',()=>{
   if(lobbyPrima&&!inCorso)lobbyPrima=false; aggiornaEntra();}));
 $('btnEntra').addEventListener('click',()=>{controllaNome(true);if(!team)return;lobbyPrima=false;const m=inCorso;inCorso=null;aggiornaEntra();if(m)applica(m);});
 function controllaNome(cancella){const el=$('nomeIn');const v=el.value.trim().slice(0,18);
-  if(FILTRO.brutto(v)){nome='';store.set('mt_nome','');el.classList.add('nome-bad');
+  if(FILTRO.bruttoNome(v)){nome='';store.set('mt_nome','');el.classList.add('nome-bad');
     $('nomeErr').textContent='😅 Questo nome non si può usare: scegline un altro!';
     if(cancella){el.value='';shake(el);vibra(80);}return false;}
   nome=v;store.set('mt_nome',nome);$('nomeErr').textContent='';el.classList.remove('nome-bad');return true;}
 $('nomeIn').addEventListener('input',()=>controllaNome(false));
 $('nomeIn').addEventListener('change',()=>controllaNome(true));
 $('nomeIn').addEventListener('blur',()=>controllaNome(true));
-if(FILTRO.brutto(nome)){nome='';store.set('mt_nome','');}
+if(FILTRO.bruttoNome(nome)){nome='';store.set('mt_nome','');}
 
 /* ---------- videochiamata ---------- */
 $('chSi').addEventListener('click',()=>{$('chMsg').textContent='📺 Collegati! Guardate lo schermo grande!';vibra(0);sfx('voto');});

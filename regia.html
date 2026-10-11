@@ -6,7 +6,7 @@
 <title>Regia – Modalità Teatro</title>
 <meta name="robots" content="noindex">
 <meta name="referrer" content="no-referrer">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-SPvMeac1VEscUcl8Slwu0gB/tFv4ZHmqBMLFlkmPS+M=' 'sha256-XTq3EfMwqKQ21tmmgz19eIMeQM4C24GGrFmFL1KTUxI=' 'sha256-f5b9HMD8weyAB72C07tdvt99p1bzqCGK8zG33Gw3ezk=' 'sha256-zUL8BiHBrtgZCPWsQkGo2ITv0U6KTbRxHcWStcu8T8E='; style-src 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; font-src data:; worker-src blob:; connect-src 'self' wss://r21a1286.ala.eu-central-1.emqxsl.com:8084; base-uri 'none'; form-action 'none'; frame-src 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-SPvMeac1VEscUcl8Slwu0gB/tFv4ZHmqBMLFlkmPS+M=' 'sha256-XTq3EfMwqKQ21tmmgz19eIMeQM4C24GGrFmFL1KTUxI=' 'sha256-r7FFWvEvqOWhnla7vvtdQi4arH03/SKA6VaZptfcy/U=' 'sha256-bewIJo6WtpWbz6P3kZexDsRk8NkpKvUirCrJmwCKE1I='; style-src 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; font-src data:; worker-src blob:; connect-src 'self' wss://r21a1286.ala.eu-central-1.emqxsl.com:8084; base-uri 'none'; form-action 'none'; frame-src 'self'">
 <meta name="referrer" content="no-referrer">
 
 <script>if(top!==self){document.documentElement.style.display="none";top.location=self.location;}</script>
@@ -169,6 +169,10 @@ const FILTRO=(()=>{
     'tette','tetta','zinne','culon','chiappe','pisell','pirlon','cacca','scoreggi','vomit','suicid','ammazz','uccid','morte a','droga',
     'cocain','eroin','spinell','ubriac',
     // --- aggiunte: volgarità, dialetti, insulti ---
+    // insulti usando le malattie
+    'tumorat','tumoros','tumoron','linfomon','linfomat','linfomen','leucemic','leucemat','canceros','cancerat','metastatic','metastasat',
+    'sidos','sidat','aidsat','lebbros','appestat','coleros','colerat','ebolat','covidat','covidos','chemioterapizzat','malatoterminal','malatadicancr','malatodicancr',
+    'autistic','subnormal','cerebroles','deform','storpi','ritardat','mongoloid','downat','handicap',
     'suca','sucam','minca','mincon','strons','sotrons','sotronz','tronzon','tronson','stornz','storns','bottona','botona','battona','sucal','sucat','sucabast','succhiacazz','succhiaminch','succhion','ciucciamel','leccami','leccafig','leccapall','leccacaz',
     'rompipall','rompiball','rompicoglion','rompicaz','scassacaz','scassaminch','cagacaz','cacacaz','spaccacaz','stocaz','sticaz',
     'vaacagar','cagar','cagat','cagon','cagasott','pisciar','pisciat','sborat','pugnett','segaiol','arrapat','allupat',
@@ -210,6 +214,7 @@ const FILTRO=(()=>{
     .replace(/(.)\1+/g,'$1');
   const comp=s=>norm(s).replace(/[^a-z]/g,'');
   const D=[...new Set(DENTRO.map(comp))].filter(x=>x.length>=4), B=[...new Set(BEST.map(comp))], I=new Set(INTERA.map(comp));
+  const SOLO_NOMI=['tumore','tumori','cancro','cancri','linfoma','linfomi','leucemia','metastasi','chemio','chemioterapia','aids','sida','hiv','peste','lebbra','colera','ebola','covid','coronavirus','malattia','malato','malata','morto','morta','cadavere','funerale','bara','handicappato','down','diabete','autismo'];
   const RAW=['fuck','fuk','fuq','phuck','fvck','dick','cock','kazz','fck','nigg','fagg','boobs','piss','sh1t','b1tch','suk4','sukk'];
   function brutto(t){
     const raw=String(t||'').toLowerCase().replace(/[^a-z0-9]/g,'');if(RAW.some(w=>raw.includes(w)))return true;
@@ -222,12 +227,16 @@ const FILTRO=(()=>{
   function pulisci(t){ // per i messaggi: sostituisce le parole brutte con ★
     return String(t||'').split(/(\s+)/).map(p=>/\s/.test(p)||!brutto(p)?p:'★'.repeat(Math.min(6,Math.max(3,p.length)))).join('');
   }
-  return {brutto,pulisci,quante:D.length+B.length+I.size};
+  const N=new Set(SOLO_NOMI.map(comp));
+  // per i NOMI anche le parole di malattia "da sole" (nei messaggi no: un bambino potrebbe raccontare di una persona malata)
+  function bruttoNome(t){if(brutto(t))return true;const c=comp(t);if(!c)return false;if([...N].some(w=>w.length>=5&&c.includes(w)))return true;
+    return norm(t).split(/[^a-z]+/).filter(Boolean).some(p=>N.has(p))||N.has(c);}
+  return {brutto,bruttoNome,pulisci,quante:D.length+B.length+I.size+N.size};
 })();
 </script>
 <script>
 "use strict";
-const CFG={"brokers":[{"url":"wss://r21a1286.ala.eu-central-1.emqxsl.com:8084/mqtt","user":"regia","v5":true,"passEnc":{"iv":"d14+gIhAUKlo9w0s","ct":"3S08YJnDcmb5eZsYZOthvxN+zurOTmkbln6kamGvWX5/4RN7Rc97ew=="}}],"topic":"modalitateatro/MgU5BIBm9GA7lt","salt":"wXB4kl7sAAgWEtLRgAt3rQ==","iv":"mRgwz8J+xI0AYSOS","ct":"HkLV2Fzf04HQLQcZBaELIi87ZXcWeF7oJyTBISx1QYYW+FO92F7AvZuE/OCZT6cUTcfO14Iv+70w0VRLw5kJwjy3wTzbhc0OlzF8fvOjrdGZxVfx4MIn6jzZKpDAc6HpvvXWQytrTTNrv9G1L6NrWC8uT2MjnsOsmNv5r59CgcNIpfu2XHhuWQ/a+ZcFH6528Dwe6gMAhcjXjg==","iter":600000};
+const CFG={"brokers":[{"url":"wss://r21a1286.ala.eu-central-1.emqxsl.com:8084/mqtt","user":"regia","v5":true,"passEnc":{"iv":"WMT+Kys2xTWIeaz9","ct":"PZWJh2dfOXTXeJSB0Y0A+3VXXkAjTLW4i37zEjKb5zNYn84CJyoaaA=="}}],"topic":"modalitateatro/MgU5BIBm9GA7lt","salt":"wXB4kl7sAAgWEtLRgAt3rQ==","iv":"mRgwz8J+xI0AYSOS","ct":"HkLV2Fzf04HQLQcZBaELIi87ZXcWeF7oJyTBISx1QYYW+FO92F7AvZuE/OCZT6cUTcfO14Iv+70w0VRLw5kJwjy3wTzbhc0OlzF8fvOjrdGZxVfx4MIn6jzZKpDAc6HpvvXWQytrTTNrv9G1L6NrWC8uT2MjnsOsmNv5r59CgcNIpfu2XHhuWQ/a+ZcFH6528Dwe6gMAhcjXjg==","iter":600000};
 // SCALETTA DELLO SPETTACOLO (uguale per pubblico e regia)
 const CUES = [
   {id:'inizio',     icona:'🎭', nome:'Si comincia!',                  quando:'Si spengono le luci e sul ledwall parte il logo MODALITÀ TEATRO'},
@@ -355,7 +364,7 @@ function arriva(m){
   giaArrivati.add(m.id);
   const foto=fotoBuona(m.foto);
   const nm=(typeof m.nome==='string'?m.nome:'').slice(0,18);const k=m.id+'_'+now;
-  const v={id:m.id,pk:typeof m.pk==='string'&&PK_OK.test(m.pk)?m.pk:null,nome:FILTRO.brutto(nm)?'(nome non adatto)':nm,team:TEAM_OK.includes(m.team)?m.team:'',testo:FILTRO.pulisci((typeof m.testo==='string'?m.testo:'').slice(0,140)),foto};
+  const v={id:m.id,pk:typeof m.pk==='string'&&PK_OK.test(m.pk)?m.pk:null,nome:FILTRO.bruttoNome(nm)?'(nome non adatto)':nm,team:TEAM_OK.includes(m.team)?m.team:'',testo:FILTRO.pulisci((typeof m.testo==='string'?m.testo:'').slice(0,140)),foto};
   posta.set(k,v);$('inVuoto').hidden=true;contatori();
   $('inList').insertAdjacentHTML('afterbegin',voce(k,v));   // aggiunge solo la nuova: non cancella le risposte che stai scrivendo
 }

@@ -164,7 +164,7 @@ const FILTRO=(()=>{
     'tette','tetta','zinne','culon','chiappe','pisell','pirlon','cacca','scoreggi','vomit','suicid','ammazz','uccid','morte a','droga',
     'cocain','eroin','spinell','ubriac',
     // --- aggiunte: volgarità, dialetti, insulti ---
-    'suca','sucam','sucal','sucat','sucabast','succhiacazz','succhiaminch','succhion','ciucciamel','leccami','leccafig','leccapall','leccacaz',
+    'suca','sucam','minca','mincon','strons','sotrons','sotronz','tronzon','tronson','stornz','storns','bottona','botona','battona','sucal','sucat','sucabast','succhiacazz','succhiaminch','succhion','ciucciamel','leccami','leccafig','leccapall','leccacaz',
     'rompipall','rompiball','rompicoglion','rompicaz','scassacaz','scassaminch','cagacaz','cacacaz','spaccacaz','stocaz','sticaz',
     'vaacagar','cagar','cagat','cagon','cagasott','pisciar','pisciat','sborat','pugnett','segaiol','arrapat','allupat',
     'ammucchiat','assatanat','scopat','trombar','chiavat','ciular','ciulat','pomiciar','slinguat','sbrodolat','smandrappat',
@@ -194,10 +194,10 @@ const FILTRO=(()=>{
     'belin','belino','picio','padulo','pippone','piscio','pecorina','checca','cojone','scemi','sceme','lurido','lurida','cafone','cafona','buzzurro',
     'mongolo','mongola','crepa','crepi','muori','cancro','tumore','duce','mussolini','puta','puto','putas','putos','pute','joder','verga','polla','hure',
     'nique','fag','fags','crap','cum','kys','nude','nudes','naked','anal','pula','muie','zebi','zamel','racchia','scorfano','grassona','sfigato',
-    'merdaccia','cessa','zozzo','zozza','zozzona','mona','gnocca','figa','fighe','fiche','tette','zizze','arruso','arrusa','arrusu','busone','cacata','rutto','cyka','cyca','blyat'];
+    'merdaccia','cessa','zozzo','zozza','zozzona','mona','gnocca','figa','fighe','fiche','tette','zizze','arruso','arrusa','arrusu','busone','cacata','rutto','cyka','cyca','blyat','minca','minche','bottona','stronso','stronsi','strunso'];
   // bestemmie: tutte le combinazioni (in entrambi i sensi)
   const SANTI=['dio','iddio','madonna','madona','cristo','gesu','gesucristo','santo','santa','padreterno','signore','spiritosanto','dios','god','jesus','zio'];
-  const INS=['cane','can','porco','porca','porc','boia','maiale','maiala','bestia','merda','ladro','ladra','infame','serpente','bastardo','bastarda','stronzo','stronza','schifoso','schifosa','assassino','assassina','cornuto','cornuta','lurido','lurida','impestato','impestata','buono','santo','lupo','lupa','cagna','troia','puttana','zoccola','vacca','sporco','sporca','maledetto','maledetta','fottuto','fottuta','animale','mannaggia','mannaggia la','damn','fuck'];
+  const INS=['cane','can','porco','porca','porc','boia','maiale','maiala','bestia','merda','ladro','ladra','infame','serpente','bastardo','bastarda','stronzo','stronza','schifoso','schifosa','assassino','assassina','cornuto','cornuta','lurido','lurida','impestato','impestata','buono','santo','lupo','lupa','cagna','troia','puttana','zoccola','vacca','sporco','sporca','maledetto','maledetta','fottuto','fottuta','animale','mannaggia','mannaggia la','damn','fuck','crop','corp','procco','porcco'];
   const BEST=[];SANTI.forEach(s=>INS.forEach(i=>{if(s===i)return;if(s==='zio'&&!['cane','can','porco','porca','porc','boia','maiale','merda','bestia'].includes(i))return;if(i==='santo'&&['santo','santa','spiritosanto'].includes(s))return;BEST.push(s+i);if(s!=='zio'&&i!=='mannaggia la')BEST.push(i+s);}));
   const FINTE={'а':'a','е':'e','о':'o','р':'p','с':'c','у':'y','х':'x','і':'i','ѕ':'s','ј':'j','к':'k','м':'m','т':'t','н':'h','в':'b','ο':'o','α':'a','ε':'e','ι':'i','κ':'k','ν':'v','ρ':'p','τ':'t','υ':'u','χ':'x','€':'e','£':'l','!':'i','|':'i','2':'z','9':'g','8':'b','+':'t','(':'c','¢':'c','ß':'ss','ph':'f'};
   const norm=t=>String(t||'').normalize('NFKC').toLowerCase().replace(/[\u200b-\u200f\u2060\ufeff\u00ad]/g,'').replace(/ph|[аеорсухіѕјкмтнвοαειкνρτυχ€£!|29+8(¢ß]/g,ch=>(FINTE[ch]!==undefined?FINTE[ch]:ch)).normalize('NFD').replace(/[̀-ͯ]/g,'')
@@ -209,9 +209,10 @@ const FILTRO=(()=>{
   function brutto(t){
     const raw=String(t||'').toLowerCase().replace(/[^a-z0-9]/g,'');if(RAW.some(w=>raw.includes(w)))return true;
     const c=comp(t); if(!c) return false;
-    if(D.some(w=>c.includes(w))||B.some(w=>c.includes(w))) return true;
+    const inv=[...c].reverse().join(''); // scritto al contrario: "odiocrop" = "porcodio"
+    if(D.some(w=>c.includes(w)||(w.length>=5&&inv.includes(w)))||B.some(w=>c.includes(w)||inv.includes(w))) return true;
     const parole=norm(t).split(/[^a-z]+/).filter(Boolean);
-    return parole.some(p=>I.has(p))||I.has(c);
+    return parole.some(p=>I.has(p)||I.has([...p].reverse().join('')))||I.has(c)||I.has(inv);
   }
   function pulisci(t){ // per i messaggi: sostituisce le parole brutte con ★
     return String(t||'').split(/(\s+)/).map(p=>/\s/.test(p)||!brutto(p)?p:'★'.repeat(Math.min(6,Math.max(3,p.length)))).join('');
@@ -221,7 +222,7 @@ const FILTRO=(()=>{
 </script>
 <script>
 "use strict";
-const CFG={"brokers":[{"url":"wss://r21a1286.ala.eu-central-1.emqxsl.com:8084/mqtt","user":"regia","passEnc":{"iv":"hwqvqOIteqjrATiN","ct":"whdsuS0dNTIPLPItNpAfKzXpP4u7SGES8iUe8Ksa4EoHdAGLDhZYHg=="}}],"topic":"modalitateatro/MgU5BIBm9GA7lt","salt":"APr3dWd+1lybghzvilLbRw==","iv":"JJS0XQ19xH3VK53y","ct":"4vYE4yj9buMIBrGYROLgJ/4/y0O2IXaygrxCrFDvwoWTQ1AWAMHDtBjk8rT0XiGyW2pFmQeIPN33+ciyCTdsBI3SV5e7tSmNBSsqiRwwbddhjDKOuL3LGArmuN9A6eqjQriizLGLfEK0YYWN5bfDvwc19GLNFHrr9RPdMCvQMCfNASmF1ZPdd/TXVlR4snKikUaZV2OVX6luuQ==","iter":200000};
+const CFG={"brokers":[{"url":"wss://r21a1286.ala.eu-central-1.emqxsl.com:8084/mqtt","user":"regia","passEnc":{"iv":"RTliwwlqa7v0wTwv","ct":"cc1YPRF/jWScCxrlpxe54+hsJtUUMhKv301HLgZr614VwEnH0YQX3w=="}}],"topic":"modalitateatro/MgU5BIBm9GA7lt","salt":"APr3dWd+1lybghzvilLbRw==","iv":"JJS0XQ19xH3VK53y","ct":"4vYE4yj9buMIBrGYROLgJ/4/y0O2IXaygrxCrFDvwoWTQ1AWAMHDtBjk8rT0XiGyW2pFmQeIPN33+ciyCTdsBI3SV5e7tSmNBSsqiRwwbddhjDKOuL3LGArmuN9A6eqjQriizLGLfEK0YYWN5bfDvwc19GLNFHrr9RPdMCvQMCfNASmF1ZPdd/TXVlR4snKikUaZV2OVX6luuQ==","iter":200000};
 // SCALETTA DELLO SPETTACOLO (uguale per pubblico e regia)
 const CUES = [
   {id:'inizio',     icona:'🎭', nome:'Si comincia!',                  quando:'Si spengono le luci e sul ledwall parte il logo MODALITÀ TEATRO'},

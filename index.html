@@ -399,7 +399,8 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 .lt-carta{position:absolute;left:6%;right:6%;top:8%;bottom:6%;background:#fffdf6;border-radius:6px;z-index:1;padding:16px 14px;color:#3a2200;transition:transform 1s cubic-bezier(.2,1.2,.3,1) .4s;
   box-shadow:0 6px 20px rgba(0,0,0,.25);overflow:auto;background-image:repeating-linear-gradient(#fffdf6 0 27px,#e8dcc4 27px 28px)}
 .lt-da{font-weight:900;font-size:13px;color:#b3121f}
-.lt-carta p{font-family:'Caveat','Patrick Hand','Comic Sans MS',cursive;font-size:26px;line-height:1.08;margin-top:6px;word-break:break-word}
+.lt-carta p{font-family:'Caveat','Patrick Hand','Comic Sans MS',cursive;font-size:26px;line-height:1.08;margin-top:6px;word-break:break-word;white-space:pre-line}
+#lettera.aperta .lt-carta{overflow-y:auto;-webkit-overflow-scrolling:touch}
 .lt-firme{margin-top:10px;font-family:'Caveat',cursive;font-size:20px;color:#b3121f;text-align:right}
 #lettera.aperta .lt-busta{animation:none;transform:none}
 #lettera.aperta .lt-lembo{transform:rotateX(180deg);z-index:0}
@@ -1102,10 +1103,14 @@ let lobbyPrima=false,inCorso=null; // primo ingresso: prima nome e squadra, poi 
 function aggiornaEntra(){const b=$('btnEntra');if(!b)return;b.hidden=!(lobbyPrima&&inCorso);b.disabled=!team;
   $('entraInfo').hidden=!(lobbyPrima&&inCorso);$('badge').style.display=(lobbyPrima&&inCorso)?'none':'';}
 function applica(m){
-  if(lobbyPrima&&!['attesa','risposta','resetlettera','sussurro'].includes(m.c)){inCorso=m;aggiornaEntra();return;}
+  if(lobbyPrima&&!['attesa','rinomina','risposta','resetlettera','sussurro'].includes(m.c)){inCorso=m;aggiornaEntra();return;}
+  if(m.c==='rinomina'){ // la regia rimanda tutti a scegliere nome e squadra (una volta sola per comando)
+    if(store.get('mt_rin')!==String(m.s)){store.set('mt_rin',String(m.s));nome='';team=null;store.set('mt_nome','');store.set('mt_team','');
+      $('nomeIn').value='';$('nomeErr').textContent='';$('nomeIn').classList.remove('nome-bad');$('badge').classList.remove('on');lobbyPrima=!ANTEPRIMA;}
+    m={...m,c:'attesa'};}
   if(m.c==='attesa'){inCorso=null;clearTimers();clearCrack();$('fx').innerHTML='';$('riserva').style.visibility='';cueIndex=-1;lobby();aggiornaRiserva();return;}
   if(m.c==='risposta'){let r;try{r=JSON.parse(m.d)}catch(e){r={t:String(m.d||'')}}if(typeof r!=='object'||!r)r={t:String(r)};
-    const out={t:String(r.t||'').slice(0,300),v:r.v,img:typeof r.img==='string'?r.img:null,vid:r.vid&&typeof r.vid==='object'?r.vid:null};
+    const out={t:String(r.t||'').slice(0,1000),v:r.v,img:typeof r.img==='string'?r.img:null,vid:r.vid&&typeof r.vid==='object'?r.vid:null};
     if(out.vid){attesaVideo=out;setTimeout(provaVideo,50);}
     rispostaRegia(out);return;}
   if(m.c==='resetlettera'){store.set(KEY_LETTERA,'');ultimaRisposta=null;if(current==='fine'||current==='selfie'){$('lettera').classList.remove('on','aperta');SCENES.fine();}return;}

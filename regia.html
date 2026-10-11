@@ -76,7 +76,8 @@ h1{font-size:22px;color:var(--oro);letter-spacing:.5px}
 .msg .nofoto{width:110px;height:80px;border-radius:10px;background:#2a2533;display:flex;align-items:center;justify-content:center;color:var(--muto);font-size:12px;text-align:center}
 .msg .chi{font-size:13px;color:var(--muto);font-weight:700}
 .msg .tx{font-weight:800;margin-top:4px;word-break:break-word}
-.msg textarea{width:100%;margin-top:8px;border-radius:10px;border:1px solid var(--line);background:#120f16;color:var(--testo);padding:8px;font:600 14px system-ui;resize:vertical;min-height:44px}
+.msg textarea{width:100%;margin-top:8px;border-radius:10px;border:1px solid var(--line);background:#120f16;color:var(--testo);padding:8px;font:600 14px system-ui;resize:vertical;min-height:110px;line-height:1.35}
+.msg .conta{font:600 11px system-ui;opacity:.6;text-align:right}
 .msg .az{display:flex;gap:8px;margin-top:6px;flex-wrap:wrap}
 .msg .az button{padding:8px 12px;border-radius:9px;font-weight:800;font-size:13px;background:var(--oro);color:#2a1a00}
 .msg .az .del{background:#2a2533;color:var(--testo)}
@@ -119,6 +120,7 @@ h1{font-size:22px;color:var(--oro);letter-spacing:.5px}
     <div class="row">
       <button class="small sus" id="btnSus">🤫 Caos sbuca nei telefoni</button>
       <button class="small" id="btnAttesa">⏸ Torna all'attesa (scelta squadra)</button>
+      <button class="small" id="btnRinomina">🔁 Tutti di nuovo a nome e squadra</button>
     </div>
     <div id="inbox"><h2>📸 Selfie e messaggi dal pubblico</h2><button class="small" id="btnResetLet" style="margin-top:6px">🔄 Permetti di nuovo una lettera a tutti (per i test)</button><p class="vuoto" id="vidInfo"></p><p class="vuoto" id="inVuoto">Arrivano alla fine, dall'attestato. Le foto non vengono salvate: dopo «Visto» spariscono.</p><div id="inList"></div></div>
     <p class="hint">Scorciatoie: barra spaziatrice o freccia → = PROSSIMO. «Caos sbuca» si può premere in qualsiasi momento, anche più volte, e non cambia la scena in corso.</p>
@@ -191,7 +193,7 @@ const FILTRO=(()=>{
 </script>
 <script>
 "use strict";
-const CFG={"brokers":[{"url":"wss://r21a1286.ala.eu-central-1.emqxsl.com:8084/mqtt","user":"regia","passEnc":{"iv":"+cEjcRhIciYdRPWI","ct":"2lHajzhQN1p6kHr3Y4jmWrXt+giqwg8IkoTW4OrBlRYk2dnIyesOCA=="}}],"topic":"modalitateatro/MgU5BIBm9GA7lt","salt":"APr3dWd+1lybghzvilLbRw==","iv":"JJS0XQ19xH3VK53y","ct":"4vYE4yj9buMIBrGYROLgJ/4/y0O2IXaygrxCrFDvwoWTQ1AWAMHDtBjk8rT0XiGyW2pFmQeIPN33+ciyCTdsBI3SV5e7tSmNBSsqiRwwbddhjDKOuL3LGArmuN9A6eqjQriizLGLfEK0YYWN5bfDvwc19GLNFHrr9RPdMCvQMCfNASmF1ZPdd/TXVlR4snKikUaZV2OVX6luuQ==","iter":200000};
+const CFG={"brokers":[{"url":"wss://r21a1286.ala.eu-central-1.emqxsl.com:8084/mqtt","user":"regia","passEnc":{"iv":"i6ywWEbWeEKxSGh5","ct":"3Pv8/WX5PU5wejK1bqU4wKJa7e6T6ZhvEj6n3T12zlnb23Z7JVyEkQ=="}}],"topic":"modalitateatro/MgU5BIBm9GA7lt","salt":"APr3dWd+1lybghzvilLbRw==","iv":"JJS0XQ19xH3VK53y","ct":"4vYE4yj9buMIBrGYROLgJ/4/y0O2IXaygrxCrFDvwoWTQ1AWAMHDtBjk8rT0XiGyW2pFmQeIPN33+ciyCTdsBI3SV5e7tSmNBSsqiRwwbddhjDKOuL3LGArmuN9A6eqjQriizLGLfEK0YYWN5bfDvwc19GLNFHrr9RPdMCvQMCfNASmF1ZPdd/TXVlR4snKikUaZV2OVX6luuQ==","iter":200000};
 // SCALETTA DELLO SPETTACOLO (uguale per pubblico e regia)
 const CUES = [
   {id:'inizio',     icona:'🎭', nome:'Si comincia!',                  quando:'Si spengono le luci e sul ledwall parte il logo MODALITÀ TEATRO'},
@@ -257,6 +259,7 @@ function avvia(){
   $('btnNext').onclick=()=>{if(idx+1<CUES.length)manda(idx+1);};
   $('btnSus').onclick=()=>invia('sussurro','🤫 Caos sbuca (circa 6 telefoni su 10, nei prossimi 7 secondi)',JSON.stringify({p:.6,ms:7000}),true);
   $('btnResetLet').onclick=()=>{giaArrivati.clear();invia('resetlettera','🔄 Lettere riaperte per tutti',null,true);};
+  $('btnRinomina').onclick=()=>{idx=-1;votoLive=null;$('votoBox').style.display='none';invia('rinomina','🔁 Tutti di nuovo a scegliere nome e squadra');};
   $('btnAttesa').onclick=()=>{idx=-1;votoLive=null;$('votoBox').style.display='none';invia('attesa','Attesa (scelta squadra)');};
   document.addEventListener('keydown',e=>{if(e.target.tagName==='INPUT')return;if(e.code==='Space'||e.key==='ArrowRight'){e.preventDefault();$('btnNext').click();}});
   CFG.brokers.forEach((url,i)=>{
@@ -302,12 +305,13 @@ function disegnaPosta(){
   $('inVuoto').hidden=posta.size>0;
   $('inList').innerHTML=[...posta].reverse().map(([k,m])=>`<div class="msg" data-k="${k}">${m.foto?`<img src="${m.foto}" alt="selfie">`:'<div class="nofoto">nessuna foto</div>'}
     <div><div class="chi">${esc(m.nome)||'Senza nome'} ${m.team?'· team '+esc(m.team):''}</div><div class="tx">${esc(m.testo)||'<i>(nessun messaggio)</i>'}</div>
-    <textarea placeholder="Rispondi (arriva solo sul suo telefono)"></textarea>
+    <textarea rows="5" maxlength="1000" placeholder="Rispondi (arriva solo sul suo telefono). Puoi andare a capo con Invio, scrivere più frasi e paragrafi."></textarea><div class="conta">0/1000</div>
     ${VIDEOS.length?`<div class="vids">🎬 Video: ${VIDEOS.map(v=>`<button class="vid" data-v="${v}">${v.replace('.mp4','').replace('video','')}</button>`).join('')}</div>`:''}
     <div class="allega"><label class="al">📷 Foto<input type="file" accept="image/*" hidden></label><label class="al">🎬 Video tuo<input type="file" accept="video/*" hidden></label><span class="alinfo"></span></div>
     <div class="az"><button class="rsp">Rispondi 💌</button><button class="del">Visto ✓ cancella</button></div></div></div>`).join('');
 }
 const allegati=new Map(); // k -> {img:dataURL} o {video:File}
+$('inList').addEventListener('input',e=>{if(e.target.tagName==='TEXTAREA'){const c=e.target.parentElement.querySelector('.conta');if(c)c.textContent=e.target.value.length+'/1000';}});
 $('inList').addEventListener('change',async e=>{
   const box=e.target.closest('.msg');if(!box)return;const k=box.dataset.k;const f=e.target.files&&e.target.files[0];if(!f)return;
   box.querySelectorAll('.al').forEach(x=>x.classList.remove('sel'));box.querySelectorAll('.pv,.pvimg').forEach(x=>x.remove());
@@ -332,12 +336,12 @@ $('inList').addEventListener('click',async e=>{
   if(e.target.classList.contains('del')){posta.delete(k);disegnaPosta();return;}
   if(e.target.classList.contains('vid')){const on=!e.target.classList.contains('sel');box.querySelectorAll('.vid').forEach(b=>b.classList.remove('sel'));if(on)e.target.classList.add('sel');
     const pv=box.querySelector('video');if(pv)pv.remove();if(on){const v=document.createElement('video');v.src='video/'+e.target.dataset.v;v.controls=true;v.className='pv';box.querySelector('.vids').after(v);}return;}
-  if(e.target.classList.contains('rsp')){const t=box.querySelector('textarea').value.trim().slice(0,300);const sel=box.querySelector('.vid.sel');const vv=sel?sel.dataset.v:null;
+  if(e.target.classList.contains('rsp')){const t=box.querySelector('textarea').value.trim().slice(0,1000);const sel=box.querySelector('.vid.sel');const vv=sel?sel.dataset.v:null;
     const al=allegati.get(k)||{};if(!t&&!vv&&!al.img&&!al.video)return;
     e.target.disabled=true;const info=box.querySelector('.alinfo');const dest='/r/'+m.id;let vid=null;
     try{if(al.video)vid=await mandaVideo(dest,al.video,info);}catch(err){info.textContent='⚠ invio video non riuscito';e.target.disabled=false;return;}
     await invia('risposta','💌 risposta a '+(m.nome||'spettatore')+(vv?' (video '+vv+')':'')+(al.img?' (con foto)':'')+(vid?' (con video tuo)':''),JSON.stringify({t,v:vv,img:al.img||null,vid}),true,dest);
-    allegati.delete(k);info.textContent='✅ inviata';box.classList.add('risposto');m.foto=null;
+    allegati.delete(k);info.textContent='✅ inviata (puoi mandarne un\'altra: sostituisce la precedente)';box.classList.add('risposto');e.target.disabled=false;e.target.textContent='Rispondi ancora 💌';box.querySelector('textarea').value='';box.querySelector('.conta').textContent='0/1000';box.querySelectorAll('.al').forEach(x=>x.classList.remove('sel'));box.querySelectorAll('.pv,.pvimg').forEach(x=>x.remove());m.foto=null;
     const img=box.querySelector('img');if(img)img.remove();}
 });
 function nome(u){return u.replace(/^wss?:\/\//,'').split(/[:/]/)[0];}

@@ -448,6 +448,33 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 .pv-breve{background:#ffe9b8;border-radius:12px;padding:8px 12px 10px}
 .pv-x{position:absolute;top:8px;right:10px;background:#b3121f;color:#fff;border:0;border-radius:50%;width:34px;height:34px;font-size:16px;cursor:pointer}
 .pv-ok{margin:10px 16px 16px;background:#b3121f;color:#ffd84a;border:0;border-radius:14px;padding:12px;font:400 20px var(--titolo);cursor:pointer}
+
+/* grazie / alla prossima */
+#s-grazie{overflow-y:auto;-webkit-overflow-scrolling:touch;justify-content:flex-start;padding-top:max(84px,calc(env(safe-area-inset-top) + 70px));padding-bottom:max(28px,env(safe-area-inset-bottom))}
+#s-grazie>*{flex-shrink:0}
+.gz-tit{position:relative;z-index:6;font-family:var(--titolo);font-size:clamp(30px,9vw,48px);line-height:1;color:var(--oro);text-shadow:3px 3px 0 #5d0a12;animation:gzPop .7s cubic-bezier(.2,1.6,.4,1) both}
+.gz-tit span{color:#fff8ec;font-size:.8em}
+@keyframes gzPop{from{transform:scale(.3) rotate(-8deg);opacity:0}to{transform:none;opacity:1}}
+.gz-card{position:relative;z-index:6;margin-top:16px;width:min(460px,100%);background:#fffdf6;color:#3a2200;border-radius:18px;padding:14px;box-shadow:0 8px 0 rgba(0,0,0,.25);text-align:center}
+.gz-da{font-weight:900;color:#b3121f;font-size:14px;margin-bottom:8px}
+.gz-media{display:block;width:100%;max-height:52vh;object-fit:contain;border-radius:12px;background:#000;margin:0 auto 8px}
+#gzTesto{font-family:'Caveat','Comic Sans MS',cursive;font-size:24px;line-height:1.1;white-space:pre-line;word-break:break-word;margin:4px 0 8px}
+.gz-az{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.gz-btn{display:inline-block;padding:11px 16px;border-radius:14px;background:#b3121f;color:#ffd84a;font-weight:900;font-size:15px;text-decoration:none;box-shadow:0 4px 0 #5d0a12}
+.gz-nota{margin-top:10px;font-size:13px;font-weight:700;line-height:1.35;background:#ffe9b8;border-radius:10px;padding:8px 10px}
+.gz-link{position:relative;z-index:6;margin-top:10px;font-weight:900;text-decoration:underline;color:#fff8ec;padding:6px}
+
+/* telefono girato in orizzontale: chiedi di raddrizzarlo */
+#giraTel{display:none;position:fixed;inset:0;z-index:200;background:#2a0508;color:#fff8ec;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;padding:20px;font-family:var(--titolo);font-size:26px}
+#giraTel b{font-size:70px;animation:gira 1.6s ease-in-out infinite}
+@keyframes gira{0%,30%{transform:rotate(90deg)}60%,100%{transform:rotate(0)}}
+#giraTel small{font-family:var(--testo);font-size:15px;font-weight:800;opacity:.8}
+@media (orientation:landscape) and (max-height:500px){#giraTel{display:flex}}
+.anteprima #giraTel{display:none!important}
+/* telefoni bassi: suggerimenti del selfie più compatti */
+@media (max-height:700px){.sf-chips{gap:6px}.sf-chips button{padding:6px 10px;font-size:13px}#s-selfie h2{font-size:26px}}
+
+#s-grazie [hidden]{display:none!important}
 </style>
 </head>
 <body>
@@ -698,6 +725,26 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
   <button class="sf-link" id="sfIndietro">← Torna all'attestato</button>
 </section>
 
+<!-- DOPO LA LETTERA: GRAZIE E ALLA PROSSIMA -->
+<section class="screen sipario" id="s-grazie">
+  <div class="gz-tit">GRAZIE DI TUTTO!<br><span>ALLA PROSSIMA! 🎭</span></div>
+  <div class="gz-card">
+    <div class="gz-da">💌 La risposta di Roby, Jenny e Lore</div>
+    <img id="gzImg" class="gz-media" alt="foto da Roby, Jenny e Lore" hidden>
+    <div id="gzVidWait" class="lt-wait" hidden>🎬 Video in arrivo…</div>
+    <video id="gzVideo" class="gz-media" playsinline controls preload="metadata" hidden></video>
+    <p id="gzTesto"></p>
+    <div class="gz-az">
+      <a id="gzScarica" class="gz-btn" download="video-Roby-Jenny-Lore.mp4" hidden>⬇️ Scarica il video</a>
+      <a id="gzScaricaFoto" class="gz-btn" download="foto-Roby-Jenny-Lore.jpg" hidden>⬇️ Scarica la foto</a>
+    </div>
+    <div class="gz-nota">⏳ La risposta resta disponibile per <b>3 giorni</b>, poi sparisce per non riempire i server: se vuoi tenerla, <b>scaricala</b>!</div>
+  </div>
+  <a class="t1-btn" href="https://www.ticketone.it/artist/roby-jenny-lorenzist/" target="_blank" rel="noopener"><span>⭐⭐⭐⭐⭐</span>Ti è piaciuto? Lascia una recensione su TicketOne</a>
+  <button class="gz-link" id="gzRileggi">💌 Riapri la lettera</button>
+  <button class="gz-link" id="gzAttestato">🏆 Torna all'attestato</button>
+</section>
+
 <!-- LETTERA IN ARRIVO -->
 <div id="lettera">
   <div class="lt-raggi"></div>
@@ -735,7 +782,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
   <li><b>Codice casuale del telefono.</b> Viene creato dalla pagina e non contiene nome, numero o altri dati della persona: serve solo per contare i telefoni collegati, i voti e per far arrivare la risposta alla lettera giusta.</li>
   <li><b>Voti e «colpi» del gioco.</b> Sono anonimi e servono solo durante lo spettacolo per mostrare i risultati.</li>
   <li><b>Lettera facoltativa (messaggio ed eventuale selfie).</b> Viene inviata solo alla regia dello spettacolo. <b>La foto non viene salvata</b> su nessun server: viene mostrata agli artisti e viene cancellata quando la regia preme «Visto» o chiude la pagina. Le parole volgari vengono filtrate automaticamente.</li>
-  <li><b>Risposta degli artisti</b> (testo, e a volte una foto o un video degli artisti). Resta sul server dei messaggi <b>al massimo 4 giorni</b>, così arriva anche se il telefono era spento, poi viene cancellata automaticamente.</li>
+  <li><b>Risposta degli artisti</b> (testo, e a volte una foto o un video degli artisti). Resta sul server dei messaggi <b>al massimo 3 giorni</b>, così arriva anche se il telefono era spento, poi viene cancellata automaticamente. Durante questi giorni la puoi rivedere e scaricare sul tuo telefono.</li>
   <li><b>Dati tecnici di connessione</b> (ad es. indirizzo IP), trattati dai fornitori tecnici solo per far funzionare il servizio.</li>
   <li><b>Memoria del telefono.</b> Soprannome, squadra, codice e «lettera già spedita» restano salvati <b>solo sul tuo telefono</b> (memoria locale del browser) e si cancellano cancellando i dati del sito. Sono strumenti tecnici necessari: non usiamo cookie di profilazione, statistiche o pubblicità.</li>
 </ul>
@@ -757,7 +804,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 <h4>5. Per quanto tempo</h4>
 <ul>
   <li>Selfie e messaggi delle lettere: non vengono salvati; restano solo sullo schermo della regia finché non vengono cancellati.</li>
-  <li>Risposte degli artisti: massimo 4 giorni, poi cancellazione automatica.</li>
+  <li>Risposte degli artisti: massimo 3 giorni, poi cancellazione automatica.</li>
   <li>Momenti dello spettacolo inviati ai telefoni: massimo 1 giorno.</li>
   <li>Voti, squadre e conteggi: solo durante lo spettacolo, non vengono archiviati.</li>
 </ul>
@@ -767,6 +814,8 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 
 <p><small>Ultimo aggiornamento: 11/10/2026</small></p>
 </div><button class="pv-ok" id="pvOk">Ho capito 👍</button></div></div>
+
+<div id="giraTel"><b>📱</b>Gira il telefono in verticale<small>Lo spettacolo sul telefono si vede in verticale</small></div>
 
 <div id="riserva">
   <span class="ear off" id="ear"></span>
@@ -921,7 +970,7 @@ let team=store.get('mt_team')||'', nome=store.get('mt_nome')||'';
 let current='start',cueIndex=-1,timers=[],started=false;
 function clearTimers(){timers.forEach(clearTimeout);timers=[];}
 function later(fn,ms){timers.push(setTimeout(fn,ms));}
-function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id==='s-'+id));current=id;}
+function show(id){if(id!=='grazie'){const gv=document.getElementById('gzVideo');if(gv)gv.pause();}document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id==='s-'+id));current=id;adattaPresto();}
 let vibra=function(p){try{navigator.vibrate&&navigator.vibrate(p)}catch(e){}};
 function flash(){const f=$('flash');f.classList.remove('go');void f.offsetWidth;f.classList.add('go');}
 function shake(el){el.classList.remove('shake');void el.offsetWidth;el.classList.add('shake');}
@@ -1062,11 +1111,11 @@ function passo(n){['sfP1','sfP2','sfP3','sfP4'].forEach((id,i)=>$(id).hidden=i!=
 function apriSelfie(){clearTimers();$('fx').innerHTML='';show('selfie');$('sfStato').textContent='';sfImg=null;$('sfPrev').innerHTML='';$('sfRifai').hidden=true;
   if(store.get(KEY_LETTERA)==='1'){passo(4);$('sfAncora').hidden=!ultimaRisposta;return;}passo(1);}
 let ultimaRisposta=null;
-$('btnSelfie').addEventListener('click',apriSelfie);
-function aggiornaBtnSelfie(){const fatta=store.get(KEY_LETTERA)==='1';$('btnSelfie').innerHTML=fatta?'💌 La tua lettera è stata spedita'+(ultimaRisposta?'<small style="display:block;font-size:13px;color:#5d0a12">Tocca per rileggere la risposta</small>':''):$('btnSelfie').dataset.orig;}
+$('btnSelfie').addEventListener('click',()=>{if(store.get(KEY_LETTERA)==='1'&&ultimaRisposta)mostraGrazie();else apriSelfie();});
+function aggiornaBtnSelfie(){const fatta=store.get(KEY_LETTERA)==='1';$('btnSelfie').innerHTML=fatta?'💌 La tua lettera è stata spedita'+(ultimaRisposta?'<small style="display:block;font-size:13px;color:#5d0a12">Tocca per rivedere e scaricare la risposta</small>':''):$('btnSelfie').dataset.orig;}
 $('btnSelfie').dataset.orig=$('btnSelfie').innerHTML;
 $('sfIndietro').addEventListener('click',()=>SCENES.fine());
-$('sfAncora').addEventListener('click',()=>{if(ultimaRisposta)rispostaRegia(ultimaRisposta);});
+$('sfAncora').addEventListener('click',()=>{if(ultimaRisposta)mostraGrazie();});
 $('sfNoFoto').addEventListener('click',()=>{sfImg=null;$('sfPrev').innerHTML='';$('sfRifai').hidden=true;passo(2);});
 $('sfRifai').addEventListener('click',()=>passo(1));
 $('sfChips').innerHTML=CHIPS.map(t=>`<button>${t}</button>`).join('');
@@ -1116,7 +1165,25 @@ function rispostaRegia(r){
   rain(['💌','⭐','✨','🎉','💖'],30);
 }
 $('ltBusta').addEventListener('click',()=>{const L=$('lettera');if(L.classList.contains('aperta'))return;L.classList.add('aperta');const v=$('ltVideo');if(!v.hidden)setTimeout(()=>{v.play().catch(()=>{});},1200);sfx('crack');setTimeout(()=>sfx('festa'),500);vibra([60,40,120]);rain(['🎊','🎉','⭐','💌'],40);});
-$('ltChiudi').addEventListener('click',()=>{$('ltVideo').pause();$('lettera').classList.remove('on','aperta');if(current==='fine')aggiornaBtnSelfie();});
+$('ltChiudi').addEventListener('click',()=>{$('ltVideo').pause();$('lettera').classList.remove('on','aperta');
+  if(ultimaRisposta){mostraGrazie();return;}   // dopo aver letto la risposta: pagina "grazie, alla prossima"
+  if(current==='fine')aggiornaBtnSelfie();});
+/* --- pagina "grazie di tutto, alla prossima" con la risposta da rivedere e scaricare --- */
+function estVideo(t){return /webm/.test(t||'')?'webm':/quicktime|mov/.test(t||'')?'mov':'mp4';}
+function mostraGrazie(){const r=ultimaRisposta;if(!r){SCENES.fine();return;}
+  clearTimers();$('fx').innerHTML='';show('grazie');$('s-grazie').scrollTop=0;
+  $('gzTesto').textContent=r.t||'';
+  const fi=$('gzImg'),fd=$('gzScaricaFoto');if(r.img&&/^data:image\/jpeg;base64,/.test(r.img)){fi.src=r.img;fi.hidden=false;fd.href=r.img;fd.hidden=false;}else{fi.removeAttribute('src');fi.hidden=true;fd.hidden=true;}
+  aggiornaVideoGrazie();
+  sfx('festa');rain(['🎭','⭐','💖','✨'],18);}
+function aggiornaVideoGrazie(){const r=ultimaRisposta;if(!r)return;const v=$('gzVideo'),dl=$('gzScarica'),w=$('gzVidWait');
+  let src=null,tipo='video/mp4';
+  if(r.vidUrl){src=r.vidUrl;tipo=(r.vid&&r.vid.type)||tipo;}else if(r.v&&/^video\d{1,2}\.mp4$/.test(r.v))src='video/'+r.v;
+  if(src){if(v.getAttribute('src')!==src){v.src=src;v.load();}v.hidden=false;dl.href=src;dl.download='video-Roby-Jenny-Lore.'+estVideo(tipo);dl.hidden=false;w.hidden=true;}
+  else if(r.vid){v.hidden=true;dl.hidden=true;w.hidden=false;}
+  else{v.pause();v.removeAttribute('src');v.hidden=true;dl.hidden=true;w.hidden=true;}}
+$('gzRileggi').addEventListener('click',()=>{$('gzVideo').pause();if(ultimaRisposta)rispostaRegia(ultimaRisposta);});
+$('gzAttestato').addEventListener('click',()=>{$('gzVideo').pause();SCENES.fine();});
 /* ---------- lobby: squadra e nome ---------- */
 function lobby(){
   show('lobby');
@@ -1222,7 +1289,7 @@ function applica(m){
     const out={t:String(r.t||'').slice(0,1000),v:r.v,img:typeof r.img==='string'?r.img:null,vid:r.vid&&typeof r.vid==='object'?r.vid:null};
     attesaVideo=out.vid?out:null;if(out.vid)setTimeout(provaVideo,50);
     rispostaRegia(out);return;}
-  if(m.c==='resetlettera'){store.set(KEY_LETTERA,'');store.set('mt_reset',String(m.s));ultimaRisposta=null;attesaVideo=null;for(const k in pezzi)delete pezzi[k];$('sfAncora').hidden=true;if(current==='fine'||current==='selfie'){$('lettera').classList.remove('on','aperta');SCENES.fine();}return;}
+  if(m.c==='resetlettera'){store.set(KEY_LETTERA,'');store.set('mt_reset',String(m.s));ultimaRisposta=null;attesaVideo=null;for(const k in pezzi)delete pezzi[k];$('sfAncora').hidden=true;if(current==='fine'||current==='selfie'||current==='grazie'){$('lettera').classList.remove('on','aperta');SCENES.fine();}return;}
   if(m.c==='sussurro'){let d={};try{d=JSON.parse(m.d||'{}')}catch(e){}caosSussurra(d.p??.6,d.ms??7000);return;}
   if(m.c==='risultato'){let d;try{d=JSON.parse(m.d)}catch(e){return;}clearTimers();mostraVoto(d.v,d.r);return;}
   fire(m.c,'regia');
@@ -1230,12 +1297,13 @@ function applica(m){
 const pezzi={};let attesaVideo=null;
 async function provaVideo(){
   const r=attesaVideo;if(!r||!r.vid)return;const P=pezzi[r.vid.k];
-  if(!P||P.got<r.vid.n){const w=$('ltVidWait');w.textContent='🎬 Video in arrivo… '+Math.round(100*((P&&P.got)||0)/r.vid.n)+'%';return;}
+  if(!P||P.got<r.vid.n){const w=$('ltVidWait');w.textContent='🎬 Video in arrivo… '+Math.round(100*((P&&P.got)||0)/r.vid.n)+'%';$('gzVidWait').textContent=w.textContent;return;}
   const parts=[];for(let i=0;i<r.vid.n;i++)parts.push(Uint8Array.from(atob(P.b[i]),c=>c.charCodeAt(0)));
   const blob=new Blob(parts,{type:r.vid.type||'video/mp4'});
   const h=btoa(String.fromCharCode(...new Uint8Array(await crypto.subtle.digest('SHA-256',await blob.arrayBuffer()))));
   if(h!==r.vid.h)return;           // il video non è quello firmato dalla regia
   r.vidUrl=URL.createObjectURL(blob);delete pezzi[r.vid.k];attesaVideo=null;
+  if(current==='grazie')aggiornaVideoGrazie();
   const v=$('ltVideo');v.src=r.vidUrl;v.hidden=false;$('ltVidWait').hidden=true;v.load();if($('lettera').classList.contains('aperta'))v.play().catch(()=>{});
 }
 async function onMsg(topic,buf){
@@ -1245,7 +1313,7 @@ async function onMsg(topic,buf){
   let m;try{m=JSON.parse(dec.decode(buf));}catch(e){return;}
   if(!m||typeof m.c!=='string'||typeof m.s!=='number'||typeof m.g!=='string')return;
   const priv=topic.endsWith('/r/'+myId);
-  if((!priv&&m.s<=lastSeq)||Date.now()-m.t>(priv?4*86400e3:6*3600e3))return;
+  if((!priv&&m.s<=lastSeq)||Date.now()-m.t>(priv?3*86400e3:6*3600e3))return;
   if(priv&&m.c!=='risposta')return;
   if(priv&&m.s<Number(store.get('mt_reset')||0))return; // risposta di prima del reset
   let ok=false;
@@ -1296,6 +1364,37 @@ if(ANTEPRIMA){
 /* ---------- privacy ---------- */
 document.addEventListener('click',e=>{if(e.target.closest('[data-privacy]')){e.preventDefault();$('privacy').hidden=false;$('privacy').querySelector('.pv-testo').scrollTop=0;}});
 ['pvChiudi','pvOk'].forEach(id=>$(id).addEventListener('click',()=>{$('privacy').hidden=true;}));
+
+/* ---------- ADATTA A OGNI SCHERMO: piccoli iPhone/Samsung, pieghevoli, tablet ---------- */
+// ogni schermata viene ingrandita (tablet) o rimpicciolita (telefoni piccoli) per stare tutta nello schermo
+const SCORRONO=['s-selfie','s-grazie'];           // queste si possono scorrere col dito
+function misura(s){let top=1e9,bot=-1e9,lef=1e9,rig=-1e9;
+  for(const c of s.children){const cs=getComputedStyle(c);if(cs.display==='none'||cs.position==='absolute'||cs.position==='fixed')continue;
+    const mt=parseFloat(cs.marginTop)||0,mb=parseFloat(cs.marginBottom)||0,w=Math.max(c.offsetWidth,c.scrollWidth);
+    top=Math.min(top,c.offsetTop-mt);bot=Math.max(bot,c.offsetTop+c.offsetHeight+mb);
+    const cx=c.offsetLeft+c.offsetWidth/2;lef=Math.min(lef,cx-w/2);rig=Math.max(rig,cx+w/2);}
+  return bot>top?{h:bot-top,w:rig-lef}:null;}
+function adatta(){
+  const vw=innerWidth,vh=innerHeight;
+  const su=Math.max(1,Math.min(1.9,vw/440,vh/620));   // tablet: ingrandisci (ma non troppo)
+  const stretto=vw<360?vw/375:1;                         // telefoni strettissimi (pieghevoli chiusi)
+  const s=document.querySelector('.screen.on');
+  if(s){const figli=[...s.children];figli.forEach(c=>c.style.zoom='');
+    if(SCORRONO.includes(s.id)){if(su>1.02)figli.forEach(c=>{if(getComputedStyle(c).position!=='absolute')c.style.zoom=su;});}
+    else{const m=misura(s);if(m){const cs=getComputedStyle(s);
+      const ah=s.clientHeight-parseFloat(cs.paddingTop)-parseFloat(cs.paddingBottom),aw=s.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight)+30;
+      let k=Math.min(su,stretto,ah/m.h,aw/m.w);k=Math.max(.5,Math.min(k,su));
+      if(Math.abs(k-1)>.02)figli.forEach(c=>{if(getComputedStyle(c).position!=='absolute')c.style.zoom=k.toFixed(3);});
+      s.style.overflowY=k<=.5?'auto':'';}}}
+  // la lettera
+  const kl=Math.max(.6,Math.min(1.8,vh/720,vw/400));
+  for(const c of $('lettera').children)c.style.zoom=Math.abs(kl-1)>.02?kl.toFixed(3):'';
+  const pb=document.querySelector('#privacy .pv-box');if(pb){const z=su>1.05?Math.min(su,1.4):1;pb.style.zoom=z>1?z.toFixed(2):'';pb.style.maxHeight=Math.floor(vh*.88/z)+'px';}
+}
+function adattaPresto(){(window._tAd||[]).forEach(clearTimeout);window._tAd=[30,350,1300].map(t=>setTimeout(()=>{try{adatta();}catch(e){}},t));}
+addEventListener('resize',adattaPresto);addEventListener('orientationchange',adattaPresto);
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(adattaPresto);
+adattaPresto();
 
 </script>
 </body>

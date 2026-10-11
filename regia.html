@@ -222,7 +222,7 @@ const FILTRO=(()=>{
 </script>
 <script>
 "use strict";
-const CFG={"brokers":[{"url":"wss://r21a1286.ala.eu-central-1.emqxsl.com:8084/mqtt","user":"regia","v5":true,"passEnc":{"iv":"M9u5biWVUk0UBFHc","ct":"HcWRl+ycG92jWkyui8naofYIrWIKDq/DZQbt7BaeSlM9O4fdZgPMoQ=="}}],"topic":"modalitateatro/MgU5BIBm9GA7lt","salt":"APr3dWd+1lybghzvilLbRw==","iv":"JJS0XQ19xH3VK53y","ct":"4vYE4yj9buMIBrGYROLgJ/4/y0O2IXaygrxCrFDvwoWTQ1AWAMHDtBjk8rT0XiGyW2pFmQeIPN33+ciyCTdsBI3SV5e7tSmNBSsqiRwwbddhjDKOuL3LGArmuN9A6eqjQriizLGLfEK0YYWN5bfDvwc19GLNFHrr9RPdMCvQMCfNASmF1ZPdd/TXVlR4snKikUaZV2OVX6luuQ==","iter":200000};
+const CFG={"brokers":[{"url":"wss://r21a1286.ala.eu-central-1.emqxsl.com:8084/mqtt","user":"regia","v5":true,"passEnc":{"iv":"kwus1C1F8jkudbiX","ct":"Or3ojsVxCgqKbCIw2eZuhPHD/mdd/923dfPAL1ZcIzMX3BEJBBXoVw=="}}],"topic":"modalitateatro/MgU5BIBm9GA7lt","salt":"APr3dWd+1lybghzvilLbRw==","iv":"JJS0XQ19xH3VK53y","ct":"4vYE4yj9buMIBrGYROLgJ/4/y0O2IXaygrxCrFDvwoWTQ1AWAMHDtBjk8rT0XiGyW2pFmQeIPN33+ciyCTdsBI3SV5e7tSmNBSsqiRwwbddhjDKOuL3LGArmuN9A6eqjQriizLGLfEK0YYWN5bfDvwc19GLNFHrr9RPdMCvQMCfNASmF1ZPdd/TXVlR4snKikUaZV2OVX6luuQ==","iter":200000};
 // SCALETTA DELLO SPETTACOLO (uguale per pubblico e regia)
 const CUES = [
   {id:'inizio',     icona:'🎭', nome:'Si comincia!',                  quando:'Si spengono le luci e sul ledwall parte il logo MODALITÀ TEATRO'},
@@ -367,7 +367,7 @@ async function preparaVideo(f){ // calcola hash e pezzi PRIMA di spedire: così 
 }
 const videoMandati=new Map(); // id -> numero di pezzi (per poterli cancellare col reset)
 let raccogli=null;
-const SCAD_RISP=4*86400, SCAD_CUE=86400; // le risposte si cancellano da sole dopo 4 giorni, i momenti dopo 1 giorno
+const SCAD_RISP=3*86400, SCAD_CUE=86400; // le risposte si cancellano da sole dopo 3 giorni, i momenti dopo 1 giorno
 function opz(retain,scad,i){const o={qos:1,retain};if(retain&&scad&&CFG.brokers[i]&&CFG.brokers[i].v5)o.properties={messageExpiryInterval:scad};return o;}
 async function mandaVideo(dest,pv,info){
   const {buf,meta,CH}=pv;const cl=clients.find((c,i)=>conn[i]);if(!cl)throw new Error('offline');

@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-XTq3EfMwqKQ21tmmgz19eIMeQM4C24GGrFmFL1KTUxI=' 'sha256-jsXx9GBMsoXn4WHuS8gPv52Qv640r5VnsOH8HA5sets='; style-src 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; font-src data:; worker-src blob:; connect-src 'self' wss://r21a1286.ala.eu-central-1.emqxsl.com:8084; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-XTq3EfMwqKQ21tmmgz19eIMeQM4C24GGrFmFL1KTUxI=' 'sha256-nmoEEOQikcS18y1BM3rAPDlpwM4QHUt/K9XuJYitmCY='; style-src 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; font-src data:; worker-src blob:; connect-src 'self' wss://r21a1286.ala.eu-central-1.emqxsl.com:8084; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
@@ -514,6 +514,19 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 
 .lt-salva{display:block;margin:8px auto 4px;font-size:16px}
 .lt-salva[hidden]{display:none}
+
+/* posta chiusa, avvisi */
+.sf-chiusa{margin:18px auto 6px;max-width:360px;background:#fff4d6;color:#5a3000;border-radius:18px;padding:18px 16px;text-align:center;font:800 17px/1.35 'Nunito',system-ui,sans-serif;box-shadow:0 6px 0 rgba(0,0,0,.25)}
+.sf-chiusa b:first-child{display:block;font-size:46px;line-height:1.1;margin-bottom:4px}
+.sf-chiusa small{display:block;margin-top:6px;font-size:14px;opacity:.85}
+.sf-attento{margin:12px auto 0;max-width:360px;background:rgba(255,200,58,.14);border:2px dashed #ffc83a;border-radius:14px;padding:10px 12px;text-align:center;font:700 14px/1.35 'Nunito',system-ui,sans-serif}
+.as-ios{background:#e8f1ff;color:#0b2a5a;border-radius:12px;padding:8px 10px}
+#reteAiuto{position:fixed;left:10px;right:10px;bottom:64px;z-index:110;background:#fff8e6;color:#3a2000;border-radius:16px;padding:12px 40px 12px 14px;box-shadow:0 8px 30px rgba(0,0,0,.5);font:700 14px/1.35 'Nunito',system-ui,sans-serif;max-width:460px;margin:0 auto}
+#reteAiuto[hidden]{display:none}
+#reteAiuto b:first-of-type{display:block;font-size:16px;margin-bottom:2px}
+#reteAiuto small{display:block;margin-top:4px;opacity:.8}
+#reteX{position:absolute;top:6px;right:8px;width:30px;height:30px;border:0;border-radius:50%;background:rgba(0,0,0,.08);font-size:15px;color:#3a2000}
+.anteprima #reteAiuto{display:none!important}
 </style>
 </head>
 <body>
@@ -723,6 +736,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
   <h2 id="sfTit">Scrivi una lettera a<br>Roby, Jenny e Lore!</h2>
   <div class="sf-steps"><i class="on"></i><i></i><i></i></div>
 
+  <div class="sf-chiusa" id="sfChiusa" hidden><b>📪</b>La posta di Roby, Jenny e Lorenzist adesso è <b>chiusa</b>.<small>Riapre durante il prossimo spettacolo! 🎭</small></div>
   <!-- passo 1: foto -->
   <div class="sf-pass" id="sfP1">
     <p class="sf-dom">1. Vuoi metterci un selfie?</p>
@@ -760,6 +774,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
     <p class="sf-dom" style="font-size:22px">Lettera spedita!</p>
     <p class="sf-attesa">Roby, Jenny e Lorenzist potrebbero metterci un po' a risponderti, perché <b>leggono e rispondono DAVVERO LORO!</b> 💌<br><br>
       <b>Non chiudere questa pagina</b> (oppure salva il link) e controlla se <b>tra oggi e domani</b> ti hanno risposto.<br>Faranno il prima possibile… il Dottor Caos li ha stancati! 😅<br><small>(si può spedire una sola lettera a testa)</small></p>
+    <p class="sf-attento">⚠️ La risposta arriva <b>solo su questo telefono e in questo browser</b>. Non usare la navigazione in incognito e non cancellare i dati del sito, altrimenti non potrai leggerla.</p>
     <button class="sf-link" id="sfAncora" hidden>💌 Rileggi la risposta</button>
   </div>
   <button class="sf-link" id="sfIndietro">← Torna all'attestato</button>
@@ -778,7 +793,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
       <button id="gzScarica" class="gz-btn salva" hidden>⬇️ SALVA IL VIDEO</button>
       <a id="gzScaricaFoto" class="gz-btn" download="foto-Roby-Jenny-Lore.jpg" hidden>⬇️ Scarica la foto</a>
     </div>
-    <div class="gz-salvato" id="gzSalvato" hidden>✅ Video salvato nel tuo telefono!<br><small>L'abbiamo cancellato dal sito: lo trovi nei tuoi download / galleria.</small></div>
+    <div class="gz-salvato" id="gzSalvato" hidden>✅ Video salvato nel tuo telefono!<br><small id="gzDove">L'abbiamo cancellato dal sito: lo trovi nei tuoi download / galleria.</small></div>
     <div class="gz-nota" id="gzNota">⬇️ <b>Salva il video nel tuo telefono!</b> Quando lo scarichi viene <b>cancellato dal sito</b> (per la tua privacy). Se non lo salvi, sparisce comunque dopo 3 giorni.</div>
   </div>
   <a class="t1-btn" href="https://www.ticketone.it/artist/roby-jenny-lorenzist/" target="_blank" rel="noopener"><span>⭐⭐⭐⭐⭐</span>Ti è piaciuto? Lascia una recensione su TicketOne</a>
@@ -791,7 +806,8 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
   <div class="as-ic">⚠️</div>
   <h3>Attenzione!</h3>
   <p>Stai per salvare il video nel tuo telefono.<br><b>Dopo che lo scarichi, il video viene cancellato dal sito</b> e non potrai scaricarlo di nuovo.</p>
-  <p>Controlla che sia salvato bene (nei <b>download</b> o nella <b>galleria</b>).</p>
+  <p id="asDove">Controlla che sia salvato bene (nei <b>download</b> o nella <b>galleria</b>).</p>
+  <p class="as-ios" id="asIos" hidden>📱 <b>iPhone:</b> nel menu che si apre scegli <b>«Salva video»</b>. Lo troverai nell'app <b>Foto</b>.</p>
   <label class="as-ok"><input type="checkbox" id="asOk"> Ho capito: dopo il download il video viene cancellato</label>
   <button class="as-si" id="asSi" disabled>⬇️ SCARICA IL VIDEO</button>
   <button class="as-no" id="asNo">Non ora</button>
@@ -867,6 +883,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 <p><small>Ultimo aggiornamento: 11/10/2026</small></p>
 </div><button class="pv-ok" id="pvOk">Ho capito 👍</button></div></div>
 
+<div id="reteAiuto" hidden><button id="reteX" aria-label="Chiudi">✕</button><b>📶 Connessione difficile?</b>Prova a <b>spegnere il Wi‑Fi</b> e usare i dati (o il contrario).<small>Non ti preoccupare: lo spettacolo va avanti lo stesso e le sorprese arriveranno anche fuori dal teatro!</small></div>
 <div id="giraTel"><b>📱</b>Gira il telefono in verticale<small>Lo spettacolo sul telefono si vede in verticale</small></div>
 
 <div id="riserva">
@@ -1143,7 +1160,7 @@ const SCENES={
     $('attTeam').textContent=team?`Squadra: TEAM ${({roby:'ROBY',jenny:'JENNY',lore:'LORENZIST'})[team]}`:'';
     sfx('festa');rain(['🏆','🎉','⭐','🎭','🎊'],14);vibra([80,40,80,40,200]);
     // richiamo sul bottone del selfie: suono + lucetta, qualche volta (non all'infinito)
-    [1600,7000,13000,20000].forEach(ms=>later(()=>{if(current==='fine'&&store.get(KEY_LETTERA)!=='1'){sfx('ding');if(ms===1600)vibra(60);}},ms));},
+    [1600,7000,13000,20000].forEach(ms=>later(()=>{if(current==='fine'&&postaAperta&&store.get(KEY_LETTERA)!=='1'){sfx('ding');if(ms===1600)vibra(60);}},ms));},
 };
 
 /* ---------- Caos sbuca nei telefoni (in qualsiasi momento) ---------- */
@@ -1170,13 +1187,15 @@ let sfImg=null;
 const FOTO_OK=()=>!!(CFG.privato||CFG.demo);   // la foto parte solo con server privato
 const KEY_LETTERA='mt_lettera_'+new Date().toISOString().slice(0,10); // una lettera per spettacolo (si azzera ogni giorno)
 const CHIPS=['Siete fortissimi! 💪','Viva Pingu! 🐧','Caos è il mio preferito 😈','Team Roby per sempre ❄️','Jenny sei troppo simpatica 💖','Lore, batti il clone! 🤖','Tornate presto! 🎭'];
-function passo(n){['sfP1','sfP2','sfP3','sfP4'].forEach((id,i)=>$(id).hidden=i!==n-1);
+let passoOra=1,postaAperta=true,statoS=0;
+function passo(n){passoOra=n;const ch=!postaAperta&&n<4;['sfP1','sfP2','sfP3','sfP4'].forEach((id,i)=>$(id).hidden=ch||i!==n-1);$('sfChiusa').hidden=!ch;
   document.querySelectorAll('.sf-steps i').forEach((x,i)=>x.classList.toggle('on',i<Math.min(n,3)));$('s-selfie').scrollTop=0;}
 function apriSelfie(){ping();clearTimers();$('fx').innerHTML='';show('selfie');$('sfStato').textContent='';sfImg=null;$('sfPrev').innerHTML='';$('sfRifai').hidden=true;
   if(store.get(KEY_LETTERA)==='1'){passo(4);$('sfAncora').hidden=!ultimaRisposta;return;}passo(1);}
 let ultimaRisposta=null;
 $('btnSelfie').addEventListener('click',()=>{if(store.get(KEY_LETTERA)==='1'&&ultimaRisposta)mostraGrazie();else apriSelfie();});
 function aggiornaBtnSelfie(){const fatta=!/anteprima/.test(location.search)&&store.get(KEY_LETTERA)==='1'; // l'anteprima della regia mostra sempre quello che vede il pubblico
+  if(!fatta&&!postaAperta){$('sfWrap').classList.remove('richiamo');$('btnSelfie').innerHTML='📪 La posta di Roby, Jenny e Lore è chiusa<small style="display:block;font-size:13px;color:#5d0a12">riapre al prossimo spettacolo</small>';return;}
   $('sfWrap').classList.toggle('richiamo',!fatta);$('btnSelfie').innerHTML=fatta?'💌 La tua lettera è stata spedita'+(ultimaRisposta?'<small style="display:block;font-size:13px;color:#5d0a12">Tocca per rivedere e scaricare la risposta</small>':''):$('btnSelfie').dataset.orig;}
 $('btnSelfie').dataset.orig=$('btnSelfie').innerHTML;
 $('sfIndietro').addEventListener('click',()=>SCENES.fine());
@@ -1210,11 +1229,12 @@ $('sfAvanti').addEventListener('click',()=>{
 });
 $('sfInvia').addEventListener('click',async()=>{
   const testo=FILTRO.pulisci($('sfMsg').value.trim().slice(0,140)),conFoto=sfImg&&FOTO_OK();
+  if(!postaAperta){passo(passoOra);return;}
   if(conFoto&&!$('sfOk').checked){$('sfStato').textContent='Per mandare la foto serve il permesso di mamma o papà ✔️';shake($('sfOkRow'));return;}
   let pk=null;try{pk=(await chiaviLettera()).pub;}catch(e){}
   const ok=pubblica('/selfie',JSON.stringify({id:myId,nome:nome.slice(0,18),team,testo,foto:conFoto?sfImg:null,pk}));
   if(!ok){$('sfStato').textContent='⚠️ Nessuna connessione, riprova tra poco';return;}
-  store.set(KEY_LETTERA,'1');$('sfAncora').hidden=true;
+  store.set(KEY_LETTERA,'1');$('sfAncora').hidden=true;try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist();}catch(e){}
   sfx('festa');vibra([60,40,60]);flash();passo(4);
 });
 /* --- la lettera di risposta: arrivo esplosivo --- */
@@ -1255,18 +1275,26 @@ function aggiornaVideoGrazie(){const r=ultimaRisposta;if(!r)return;const v=$('gz
 /* salvare il video: avviso, si accetta, si scarica, poi si cancella dal sito e dalla pagina */
 function aggiornaLtSalva(){const b=$('ltSalva');if(b)b.hidden=!videoDaSalvare();}
 function videoDaSalvare(){const r=ultimaRisposta;return !!(r&&r.vid&&r.vidUrl&&store.get('mt_vsalvato')!==r.vid.k);}
-$('ltSalva').addEventListener('click',e=>{e.stopPropagation();if(!videoDaSalvare())return;$('ltVideo').pause();$('asOk').checked=false;$('asSi').disabled=true;$('avvisoSalva').hidden=false;});
+$('ltSalva').addEventListener('click',e=>{e.stopPropagation();if(!videoDaSalvare())return;$('ltVideo').pause();apriAvviso();});
 ['gzVideo','ltVideo'].forEach(id=>$(id).addEventListener('contextmenu',e=>e.preventDefault()));
 $('gzScarica').addEventListener('click',()=>{const r=ultimaRisposta;if(!r)return;
   if(!r.vid){scarica($('gzScarica').dataset.src,$('gzScarica').dataset.nome);return;}   // video uguale per tutti: niente da cancellare
-  $('asOk').checked=false;$('asSi').disabled=true;$('avvisoSalva').hidden=false;});
+  apriAvviso();});
 $('asOk').addEventListener('change',()=>{$('asSi').disabled=!$('asOk').checked;});
 $('asNo').addEventListener('click',()=>{$('avvisoSalva').hidden=true;});
+const IOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+function fileVideo(r){try{if(!r||!r.vidBlob||!navigator.canShare)return null;const f=new File([r.vidBlob],$('gzScarica').dataset.nome||'video-Roby-Jenny-Lore.mp4',{type:r.vidBlob.type||'video/mp4'});return navigator.canShare({files:[f]})?f:null;}catch(e){return null;}}
+function apriAvviso(){const ios=IOS&&!!fileVideo(ultimaRisposta);$('asIos').hidden=!ios;$('asDove').hidden=ios;$('asSi').textContent=ios?'📲 SALVA IL VIDEO':'⬇️ SCARICA IL VIDEO';$('asOk').checked=false;$('asSi').disabled=true;$('avvisoSalva').hidden=false;}
 $('asSi').addEventListener('click',()=>{const r=ultimaRisposta;$('avvisoSalva').hidden=true;if(!r||!r.vid||!r.vidUrl)return;
-  scarica(r.vidUrl,$('gzScarica').dataset.nome||'video-Roby-Jenny-Lore.mp4');
+  const f=IOS?fileVideo(r):null;
+  if(f){navigator.share({files:[f]}).then(()=>salvatoOk(r,'Lo trovi nell\'app Foto 📷 (o dove l\'hai salvato).')).catch(err=>{
+      if(err&&err.name==='AbortError'){$('gzNota').innerHTML='⬇️ <b>Non l\'hai ancora salvato.</b> Tocca «SALVA IL VIDEO» e scegli <b>«Salva video»</b>.';return;}
+      scarica(r.vidUrl,f.name);salvatoOk(r,'Lo trovi nell\'app File → Download.');});return;}
+  scarica(r.vidUrl,$('gzScarica').dataset.nome||'video-Roby-Jenny-Lore.mp4');salvatoOk(r,IOS?'Lo trovi nell\'app File → Download.':'Lo trovi nei Download o nella Galleria.');});
+function salvatoOk(r,dove){if(!r||!r.vid||store.get('mt_vsalvato')===r.vid.k)return;$('gzDove').textContent='L\'abbiamo cancellato dal sito. '+dove;
   store.set('mt_vsalvato',r.vid.k);ackVideo=r.vid.k;ping();setTimeout(ping,4000);   // dice alla regia di cancellarlo dal server
   sfx('festa');rain(['✅','💾','🎉'],16);
-  const vecchio=r.vidUrl;setTimeout(()=>{const lt=$('ltVideo');lt.pause();lt.removeAttribute('src');lt.hidden=true;try{URL.revokeObjectURL(vecchio);}catch(e){}r.vidUrl=null;aggiornaVideoGrazie();aggiornaLtSalva();},2500);$('ltSalva').hidden=true;});
+  const vecchio=r.vidUrl;setTimeout(()=>{const lt=$('ltVideo');lt.pause();lt.removeAttribute('src');lt.hidden=true;try{URL.revokeObjectURL(vecchio);}catch(e){}r.vidUrl=null;r.vidBlob=null;aggiornaVideoGrazie();aggiornaLtSalva();},2500);$('ltSalva').hidden=true;}
 function scarica(href,nome){const a=document.createElement('a');a.href=href;a.download=nome;a.rel='noopener';document.body.appendChild(a);a.click();setTimeout(()=>a.remove(),1000);}
 addEventListener('beforeunload',e=>{if(videoDaSalvare()){e.preventDefault();e.returnValue='';}});   // "sei sicuro? non hai salvato il video"
 $('gzRileggi').addEventListener('click',()=>{$('gzVideo').pause();if(ultimaRisposta)rispostaRegia(ultimaRisposta);});
@@ -1409,13 +1437,19 @@ async function provaVideo(){
   const blob=new Blob(parts,{type:r.vid.type||'video/mp4'});
   const h=btoa(String.fromCharCode(...new Uint8Array(await crypto.subtle.digest('SHA-256',await blob.arrayBuffer()))));
   if(h!==r.vid.h){delete pezzi[r.vid.k];basteVideo();setTimeout(vuoiVideo,1500);return;}   // pezzo rovinato: si riscarica
-  r.vidUrl=URL.createObjectURL(blob);delete pezzi[r.vid.k];attesaVideo=null;basteVideo();
+  r.vidBlob=blob;r.vidUrl=URL.createObjectURL(blob);delete pezzi[r.vid.k];attesaVideo=null;basteVideo();
   if(current==='grazie')aggiornaVideoGrazie();
   const v=$('ltVideo');v.src=r.vidUrl;v.hidden=false;$('ltVidWait').hidden=true;v.load();aggiornaLtSalva();if($('lettera').classList.contains('aperta'))v.play().catch(()=>{});
 }
 async function onMsg(topic,buf){
   if(topic.includes('/r/'+myId+'/v/')){try{const c=JSON.parse(dec.decode(buf));if(!c||typeof c.k!=='string'||!Number.isInteger(c.n)||c.n<1||c.n>60||!Number.isInteger(c.i))return;if(!pezzi[c.k]){const ks=Object.keys(pezzi);if(ks.length>=4)delete pezzi[ks[0]];}/* tiene i pezzi di più video, anche se arrivano prima della lettera */const P=pezzi[c.k]=pezzi[c.k]||{b:[],got:0};
     if(typeof c.i!=='number'||c.i<0||c.i>=c.n||typeof c.b!=='string')return;if(!P.b[c.i]){P.b[c.i]=c.b;(P.iv=P.iv||[])[c.i]=typeof c.iv==='string'?c.iv:null;P.got++;}provaVideo();}catch(e){}return;}
+  if(topic.endsWith('/stato')){let m;try{m=JSON.parse(dec.decode(buf));}catch(e){return;}
+    if(!m||m.c!=='posta'||typeof m.d!=='string'||m.d.length>60||typeof m.s!=='number'||typeof m.t!=='number'||typeof m.g!=='string')return;
+    let ok=false;try{ok=await crypto.subtle.verify({name:'ECDSA',hash:'SHA-256'},pubKey,b64d(m.g),enc.encode(`${m.c}|${m.d}|${m.s}|${m.t}|/stato`));}catch(e){}
+    if(!ok)return;let d={};try{d=JSON.parse(m.d)||{};}catch(e){}
+    if(m.s<=statoS&&d.w!=='lwt')return;   // vecchio (ma il «regia spenta» vale sempre: è firmato quando la regia si collega)
+    statoS=Math.max(statoS,m.s);postaAperta=d.p!==0;aggiornaPosta();return;}
   if(topic.endsWith('/tot')){const n=parseInt(dec.decode(buf),10);if(current==='scena8'&&n>0)$('s8tot').textContent=`💥 Colpi di tutto il teatro: ${n.toLocaleString('it-IT')}`;return;}
   let m;try{m=JSON.parse(dec.decode(buf));}catch(e){return;}
   if(!m||typeof m.c!=='string'||typeof m.s!=='number'||typeof m.g!=='string')return;
@@ -1436,15 +1470,18 @@ function connetti(){
   CFG.brokers.forEach((b,i)=>{
     conn[i]=false;
     const c=mqtt.connect(b.url,{clientId:'mt_'+myId+'_'+i+'_'+Math.random().toString(36).slice(2,5),username:b.user,password:b.pass,clean:true,keepalive:20,reconnectPeriod:2000+Math.floor(Math.random()*6000),connectTimeout:8000}); // riconnessione sfasata: il server accetta max 100 nuovi collegamenti/s
-    c.on('connect',()=>{conn[i]=true;lastOk=Date.now();c.subscribe([CFG.topic+'/cue',CFG.topic+'/tot',CFG.topic+'/r/'+myId].concat(videoSu?[CFG.topic+'/r/'+myId+'/v/#']:[]),{qos:1});aggiornaConn();if(started)ping();});
+    c.on('connect',()=>{conn[i]=true;lastOk=Date.now();c.subscribe([CFG.topic+'/cue',CFG.topic+'/tot',CFG.topic+'/r/'+myId].concat(videoSu?[CFG.topic+'/r/'+myId+'/v/#']:[]),{qos:1});c.subscribe(CFG.topic+'/stato',{qos:1});aggiornaConn();if(started)ping();});
     c.on('close',()=>{conn[i]=false;aggiornaConn();});
     c.on('offline',()=>{conn[i]=false;aggiornaConn();});
     c.on('message',(t,p)=>onMsg(t,p));
     clients[i]=c;
   });
   setTimeout(()=>setInterval(()=>{if(started)ping();},20000),Math.random()*20000); // ogni 20 s, sfasati
-  setInterval(()=>{if(!conn.some(Boolean))aggiornaRiserva();else lastOk=Date.now();},2000);
+  setInterval(()=>{const on=conn.some(Boolean);if(!on)aggiornaRiserva();else lastOk=Date.now();
+    $('reteAiuto').hidden=on||reteChiuso||!started||Date.now()-lastOk<15000;},2000);
 }
+function aggiornaPosta(){if(current==='selfie')passo(passoOra);if(current==='fine')aggiornaBtnSelfie();}
+let reteChiuso=false;$('reteX').addEventListener('click',()=>{reteChiuso=true;$('reteAiuto').hidden=true;});
 function aggiornaConn(){$('ear').classList.toggle('off',!conn.some(Boolean));aggiornaRiserva();}
 async function keepAwake(){try{if('wakeLock' in navigator)await navigator.wakeLock.request('screen');}catch(e){}}
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){keepAwake();audio();clients.forEach(c=>{if(!c.connected)c.reconnect();});}});
@@ -1466,7 +1503,7 @@ if(ANTEPRIMA){
 }else (async()=>{
   try{pubKey=await crypto.subtle.importKey('jwk',CFG.pub,{name:'ECDSA',namedCurve:'P-256'},false,['verify']);}
   catch(e){$('errMic').style.display='block';$('errMic').textContent='Apri la pagina dal link https (QR code).';return;}
-  connetti();
+  lastOk=Date.now();setTimeout(connetti,Math.random()*1500);   // sfasato: se 700 persone scansionano il QR insieme, il server ne accetta max 100 al secondo
 })();
 
 /* ---------- privacy ---------- */

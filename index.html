@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-XTq3EfMwqKQ21tmmgz19eIMeQM4C24GGrFmFL1KTUxI=' 'sha256-vDNHlgcOzLkn/iTH+cnL0O+HYOqnwo8pFanFcIchq7A='; style-src 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; font-src data:; worker-src blob:; connect-src 'self' wss://r21a1286.ala.eu-central-1.emqxsl.com:8084; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-XTq3EfMwqKQ21tmmgz19eIMeQM4C24GGrFmFL1KTUxI=' 'sha256-jsXx9GBMsoXn4WHuS8gPv52Qv640r5VnsOH8HA5sets='; style-src 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; font-src data:; worker-src blob:; connect-src 'self' wss://r21a1286.ala.eu-central-1.emqxsl.com:8084; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
@@ -511,6 +511,9 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 .as-si{display:block;width:100%;padding:14px;border-radius:14px;border:0;background:#b3121f;color:#ffd84a;font:400 22px var(--titolo);cursor:pointer}
 .as-si:disabled{opacity:.4}
 .as-no{margin-top:8px;background:none;border:0;text-decoration:underline;font-weight:900;color:#5d0a12;cursor:pointer;padding:6px}
+
+.lt-salva{display:block;margin:8px auto 4px;font-size:16px}
+.lt-salva[hidden]{display:none}
 </style>
 </head>
 <body>
@@ -769,7 +772,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
     <div class="gz-da">💌 La risposta di Roby, Jenny e Lore</div>
     <img id="gzImg" class="gz-media" alt="foto da Roby, Jenny e Lore" hidden>
     <div id="gzVidWait" class="lt-wait" hidden>🎬 Video in arrivo…</div>
-    <video id="gzVideo" class="gz-media" playsinline controls preload="metadata" hidden></video>
+    <video id="gzVideo" class="gz-media" playsinline controls controlslist="nodownload noplaybackrate" disablepictureinpicture preload="metadata" hidden></video>
     <p id="gzTesto"></p>
     <div class="gz-az">
       <button id="gzScarica" class="gz-btn salva" hidden>⬇️ SALVA IL VIDEO</button>
@@ -799,7 +802,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
   <div class="lt-raggi"></div>
   <div class="lt-tit">HAI RICEVUTO<br>UNA LETTERA!</div>
   <div class="lt-busta" id="ltBusta">
-    <div class="lt-carta"><div class="lt-da">Da: Roby, Jenny e Lore 💌</div><img id="ltImg" class="lt-video" alt="foto da Roby, Jenny e Lore" hidden><div id="ltVidWait" class="lt-wait" hidden>🎬 Video in arrivo…</div><video id="ltVideo" class="lt-video" playsinline controls hidden></video><p id="ltTesto"></p><div class="lt-firme">Roby ❄️ · Jenny 💖 · Lore 🐧</div></div>
+    <div class="lt-carta"><div class="lt-da">Da: Roby, Jenny e Lore 💌</div><img id="ltImg" class="lt-video" alt="foto da Roby, Jenny e Lore" hidden><div id="ltVidWait" class="lt-wait" hidden>🎬 Video in arrivo…</div><video id="ltVideo" class="lt-video" playsinline controls controlslist="nodownload noplaybackrate" disablepictureinpicture hidden></video><button class="gz-btn salva lt-salva" id="ltSalva" hidden>⬇️ SALVA IL VIDEO</button><p id="ltTesto"></p><div class="lt-firme">Roby ❄️ · Jenny 💖 · Lore 🐧</div></div>
     <div class="lt-retro"></div><div class="lt-lembo"></div><div class="lt-sigillo">RJL</div>
   </div>
   <div class="lt-tocca" id="ltTocca">👆 Tocca la busta per aprirla</div>
@@ -1224,6 +1227,7 @@ function rispostaRegia(r){
   const fi=$('ltImg');if(r.img&&/^data:image\/jpeg;base64,/.test(r.img)){fi.src=r.img;fi.hidden=false;}else{fi.removeAttribute('src');fi.hidden=true;}
   const v=$('ltVideo');if(r.vid&&store.get('mt_vsalvato')===r.vid.k){v.removeAttribute('src');v.hidden=true;}else if(r.vidUrl){v.src=r.vidUrl;v.hidden=false;v.load();}else if(r.vid){v.hidden=true;$('ltVidWait').hidden=false;}
   else if(r.url&&String(r.url).startsWith('blob:')){v.src=r.url;v.hidden=false;v.load();}else if(r.v&&/^video\d{1,2}\.mp4$/.test(r.v)){v.src='video/'+r.v;v.hidden=false;v.load();}else{v.removeAttribute('src');v.hidden=true;}const L=$('lettera');L.classList.remove('aperta');void L.offsetWidth;L.classList.add('on');
+  setTimeout(aggiornaLtSalva,0);
   sfx('boom');setTimeout(()=>sfx('festa'),600);vibra([200,80,200,80,400]);flash();
   rain(['💌','⭐','✨','🎉','💖'],30);
 }
@@ -1249,7 +1253,10 @@ function aggiornaVideoGrazie(){const r=ultimaRisposta;if(!r)return;const v=$('gz
   else if(r.vid){v.hidden=true;dl.hidden=true;w.hidden=false;attesaVideo=r;vuoiVideo();setTimeout(provaVideo,50);}
   else{v.pause();v.removeAttribute('src');v.hidden=true;dl.hidden=true;w.hidden=true;}}
 /* salvare il video: avviso, si accetta, si scarica, poi si cancella dal sito e dalla pagina */
+function aggiornaLtSalva(){const b=$('ltSalva');if(b)b.hidden=!videoDaSalvare();}
 function videoDaSalvare(){const r=ultimaRisposta;return !!(r&&r.vid&&r.vidUrl&&store.get('mt_vsalvato')!==r.vid.k);}
+$('ltSalva').addEventListener('click',e=>{e.stopPropagation();if(!videoDaSalvare())return;$('ltVideo').pause();$('asOk').checked=false;$('asSi').disabled=true;$('avvisoSalva').hidden=false;});
+['gzVideo','ltVideo'].forEach(id=>$(id).addEventListener('contextmenu',e=>e.preventDefault()));
 $('gzScarica').addEventListener('click',()=>{const r=ultimaRisposta;if(!r)return;
   if(!r.vid){scarica($('gzScarica').dataset.src,$('gzScarica').dataset.nome);return;}   // video uguale per tutti: niente da cancellare
   $('asOk').checked=false;$('asSi').disabled=true;$('avvisoSalva').hidden=false;});
@@ -1259,7 +1266,7 @@ $('asSi').addEventListener('click',()=>{const r=ultimaRisposta;$('avvisoSalva').
   scarica(r.vidUrl,$('gzScarica').dataset.nome||'video-Roby-Jenny-Lore.mp4');
   store.set('mt_vsalvato',r.vid.k);ackVideo=r.vid.k;ping();setTimeout(ping,4000);   // dice alla regia di cancellarlo dal server
   sfx('festa');rain(['✅','💾','🎉'],16);
-  const vecchio=r.vidUrl;setTimeout(()=>{const lt=$('ltVideo');lt.pause();lt.removeAttribute('src');lt.hidden=true;try{URL.revokeObjectURL(vecchio);}catch(e){}r.vidUrl=null;aggiornaVideoGrazie();},2500);});
+  const vecchio=r.vidUrl;setTimeout(()=>{const lt=$('ltVideo');lt.pause();lt.removeAttribute('src');lt.hidden=true;try{URL.revokeObjectURL(vecchio);}catch(e){}r.vidUrl=null;aggiornaVideoGrazie();aggiornaLtSalva();},2500);$('ltSalva').hidden=true;});
 function scarica(href,nome){const a=document.createElement('a');a.href=href;a.download=nome;a.rel='noopener';document.body.appendChild(a);a.click();setTimeout(()=>a.remove(),1000);}
 addEventListener('beforeunload',e=>{if(videoDaSalvare()){e.preventDefault();e.returnValue='';}});   // "sei sicuro? non hai salvato il video"
 $('gzRileggi').addEventListener('click',()=>{$('gzVideo').pause();if(ultimaRisposta)rispostaRegia(ultimaRisposta);});
@@ -1392,7 +1399,8 @@ function applica(m){
 }
 const pezzi={};let attesaVideo=null,videoSu=false;
 // i pezzi del video si scaricano SOLO quando servono (risparmia traffico: il server ha 1 GB gratis al mese)
-function vuoiVideo(){if(videoSu)return;videoSu=true;clients.forEach((c,i)=>{if(conn[i])c.subscribe(CFG.topic+'/r/'+myId+'/v/#',{qos:1});});}
+let vigila=null;
+function vuoiVideo(){clearInterval(vigila);vigila=setInterval(()=>{if(!attesaVideo){clearInterval(vigila);return;}const P=pezzi[attesaVideo.vid.k];if(!P||P.got<attesaVideo.vid.n){videoSu=false;clients.forEach((c,i)=>{if(conn[i]){c.unsubscribe(CFG.topic+'/r/'+myId+'/v/#');c.subscribe(CFG.topic+'/r/'+myId+'/v/#',{qos:1});}});videoSu=true;}},15000);if(videoSu)return;videoSu=true;clients.forEach((c,i)=>{if(conn[i])c.subscribe(CFG.topic+'/r/'+myId+'/v/#',{qos:1});});}
 function basteVideo(){if(!videoSu)return;videoSu=false;clients.forEach((c,i)=>{if(conn[i])c.unsubscribe(CFG.topic+'/r/'+myId+'/v/#');});}
 async function provaVideo(){
   const r=attesaVideo;if(!r||!r.vid)return;const P=pezzi[r.vid.k];
@@ -1403,10 +1411,10 @@ async function provaVideo(){
   if(h!==r.vid.h){delete pezzi[r.vid.k];basteVideo();setTimeout(vuoiVideo,1500);return;}   // pezzo rovinato: si riscarica
   r.vidUrl=URL.createObjectURL(blob);delete pezzi[r.vid.k];attesaVideo=null;basteVideo();
   if(current==='grazie')aggiornaVideoGrazie();
-  const v=$('ltVideo');v.src=r.vidUrl;v.hidden=false;$('ltVidWait').hidden=true;v.load();if($('lettera').classList.contains('aperta'))v.play().catch(()=>{});
+  const v=$('ltVideo');v.src=r.vidUrl;v.hidden=false;$('ltVidWait').hidden=true;v.load();aggiornaLtSalva();if($('lettera').classList.contains('aperta'))v.play().catch(()=>{});
 }
 async function onMsg(topic,buf){
-  if(topic.includes('/r/'+myId+'/v/')){try{const c=JSON.parse(dec.decode(buf));if(!c||typeof c.k!=='string'||!Number.isInteger(c.n)||c.n<1||c.n>60||!Number.isInteger(c.i))return;if(attesaVideo&&attesaVideo.vid&&attesaVideo.vid.k!==c.k)return;if(Object.keys(pezzi).length>3&&!pezzi[c.k])return;const P=pezzi[c.k]=pezzi[c.k]||{b:[],got:0};
+  if(topic.includes('/r/'+myId+'/v/')){try{const c=JSON.parse(dec.decode(buf));if(!c||typeof c.k!=='string'||!Number.isInteger(c.n)||c.n<1||c.n>60||!Number.isInteger(c.i))return;if(!pezzi[c.k]){const ks=Object.keys(pezzi);if(ks.length>=4)delete pezzi[ks[0]];}/* tiene i pezzi di più video, anche se arrivano prima della lettera */const P=pezzi[c.k]=pezzi[c.k]||{b:[],got:0};
     if(typeof c.i!=='number'||c.i<0||c.i>=c.n||typeof c.b!=='string')return;if(!P.b[c.i]){P.b[c.i]=c.b;(P.iv=P.iv||[])[c.i]=typeof c.iv==='string'?c.iv:null;P.got++;}provaVideo();}catch(e){}return;}
   if(topic.endsWith('/tot')){const n=parseInt(dec.decode(buf),10);if(current==='scena8'&&n>0)$('s8tot').textContent=`💥 Colpi di tutto il teatro: ${n.toLocaleString('it-IT')}`;return;}
   let m;try{m=JSON.parse(dec.decode(buf));}catch(e){return;}

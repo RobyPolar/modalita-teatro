@@ -2,6 +2,9 @@
 <html lang="it">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-XTq3EfMwqKQ21tmmgz19eIMeQM4C24GGrFmFL1KTUxI=' 'sha256-bpLZDchgrGIWdM1j8i9MP7v7zgEyhcevoBEEDa4fG3Q='; style-src 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; font-src data:; worker-src blob:; connect-src 'self' wss://r21a1286.ala.eu-central-1.emqxsl.com:8084; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#2a0508">
 <title>Modalità Teatro – La Sfida</title>
@@ -979,8 +982,8 @@ const VOTI = {
 const CFG = {"brokers":[{"url":"wss://r21a1286.ala.eu-central-1.emqxsl.com:8084/mqtt","user":"pubblico","pass":"kwHPxbGXoBG8nhiY","privato":true}],"topic":"modalitateatro/MgU5BIBm9GA7lt","pub":{"kty":"EC","crv":"P-256","x":"KnzLEVBgv2vpcgAGFqnOeax9GlqunEsej2Mj0RVvVz8","y":"klEXmySwNFXEMzOQi3G0TbEJXZFTvXfuUXWdv0o5xYs"},"privato":true};
 const $=id=>document.getElementById(id);
 const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
-const myId=store.get('mt_id')||Math.random().toString(36).slice(2,10); store.set('mt_id',myId);
-let team=store.get('mt_team')||'', nome=store.get('mt_nome')||'';
+let myId=store.get('mt_id')||'';if(!/^[a-z0-9]{3,12}$/.test(myId))myId=(Math.random().toString(36).slice(2)+Math.random().toString(36).slice(2)).slice(0,10); store.set('mt_id',myId);
+let team=['roby','jenny','lore'].includes(store.get('mt_team'))?store.get('mt_team'):'', nome=String(store.get('mt_nome')||'').slice(0,18);
 
 /* ================= SCHERMATE ================= */
 let current='start',cueIndex=-1,timers=[],started=false;
@@ -1127,7 +1130,7 @@ const KEY_LETTERA='mt_lettera_'+new Date().toISOString().slice(0,10); // una let
 const CHIPS=['Siete fortissimi! 💪','Viva Pingu! 🐧','Caos è il mio preferito 😈','Team Roby per sempre ❄️','Jenny sei troppo simpatica 💖','Lore, batti il clone! 🤖','Tornate presto! 🎭'];
 function passo(n){['sfP1','sfP2','sfP3','sfP4'].forEach((id,i)=>$(id).hidden=i!==n-1);
   document.querySelectorAll('.sf-steps i').forEach((x,i)=>x.classList.toggle('on',i<Math.min(n,3)));$('s-selfie').scrollTop=0;}
-function apriSelfie(){clearTimers();$('fx').innerHTML='';show('selfie');$('sfStato').textContent='';sfImg=null;$('sfPrev').innerHTML='';$('sfRifai').hidden=true;
+function apriSelfie(){ping();clearTimers();$('fx').innerHTML='';show('selfie');$('sfStato').textContent='';sfImg=null;$('sfPrev').innerHTML='';$('sfRifai').hidden=true;
   if(store.get(KEY_LETTERA)==='1'){passo(4);$('sfAncora').hidden=!ultimaRisposta;return;}passo(1);}
 let ultimaRisposta=null;
 $('btnSelfie').addEventListener('click',()=>{if(store.get(KEY_LETTERA)==='1'&&ultimaRisposta)mostraGrazie();else apriSelfie();});
@@ -1163,10 +1166,11 @@ $('sfAvanti').addEventListener('click',()=>{
     :(sfImg?'📸 Il selfie resta <b>solo sul tuo telefono</b> come ricordo (fai uno screenshot). Nella lettera arriva il tuo messaggio.':'✉️ Nella lettera arriva il tuo messaggio.');
   passo(3);
 });
-$('sfInvia').addEventListener('click',()=>{
+$('sfInvia').addEventListener('click',async()=>{
   const testo=FILTRO.pulisci($('sfMsg').value.trim().slice(0,140)),conFoto=sfImg&&FOTO_OK();
   if(conFoto&&!$('sfOk').checked){$('sfStato').textContent='Per mandare la foto serve il permesso di mamma o papà ✔️';shake($('sfOkRow'));return;}
-  const ok=pubblica('/selfie',JSON.stringify({id:myId,nome:nome.slice(0,18),team,testo,foto:conFoto?sfImg:null}));
+  let pk=null;try{pk=(await chiaviLettera()).pub;}catch(e){}
+  const ok=pubblica('/selfie',JSON.stringify({id:myId,nome:nome.slice(0,18),team,testo,foto:conFoto?sfImg:null,pk}));
   if(!ok){$('sfStato').textContent='⚠️ Nessuna connessione, riprova tra poco';return;}
   store.set(KEY_LETTERA,'1');$('sfAncora').hidden=true;
   sfx('festa');vibra([60,40,60]);flash();passo(4);
@@ -1200,7 +1204,7 @@ function aggiornaVideoGrazie(){const r=ultimaRisposta;if(!r)return;const v=$('gz
   let src=null,tipo='video/mp4';
   if(r.vidUrl){src=r.vidUrl;tipo=(r.vid&&r.vid.type)||tipo;}else if(r.v&&/^video\d{1,2}\.mp4$/.test(r.v))src='video/'+r.v;
   if(src){if(v.getAttribute('src')!==src){v.src=src;v.load();}v.hidden=false;dl.href=src;dl.download='video-Roby-Jenny-Lore.'+estVideo(tipo);dl.hidden=false;w.hidden=true;}
-  else if(r.vid){v.hidden=true;dl.hidden=true;w.hidden=false;}
+  else if(r.vid){v.hidden=true;dl.hidden=true;w.hidden=false;attesaVideo=r;vuoiVideo();setTimeout(provaVideo,50);}
   else{v.pause();v.removeAttribute('src');v.hidden=true;dl.hidden=true;w.hidden=true;}}
 $('gzRileggi').addEventListener('click',()=>{$('gzVideo').pause();if(ultimaRisposta)rispostaRegia(ultimaRisposta);});
 $('gzAttestato').addEventListener('click',()=>{$('gzVideo').pause();SCENES.fine();});
@@ -1234,7 +1238,7 @@ $('btnColpisci').addEventListener('pointerdown',()=>{
   s8++;const pc=Math.min(100,s8*4);$('s8bar').style.width=pc+'%';vibra(30);sfx('colpo');shake($('s8caos'));
   if(s8%5===0) crack(4,20+Math.random()*60,20+Math.random()*60);
 });
-setInterval(()=>{if(current==='scena8'&&s8!==s8sent){s8sent=s8;pubblica('/colpi',myId+'|'+s8);}},800);
+setTimeout(()=>setInterval(()=>{if(current==='scena8'&&s8!==s8sent){s8sent=s8;pubblica('/colpi',myId+'|'+s8);}},4000),Math.random()*4000); // ogni 4 s (900 telefoni = ~225 msg/s)
 $('btnRisata').addEventListener('click',()=>{$('risata').textContent='Risata… non rilevata. Pubblico difettoso. 🤖';vibra(40);sfx('risata');});
 
 /* ---------- votazioni ---------- */
@@ -1293,12 +1297,26 @@ $('btnSuoni').textContent=suoni?'🔊 Effetti sonori: SÌ':'🔇 Effetti sonori:
 let pubKey=null,lastSeq=0,pending=null,clients=[],conn=[],lastOk=0;
 const enc=new TextEncoder(),dec=new TextDecoder();
 function b64d(s){return Uint8Array.from(atob(s),c=>c.charCodeAt(0));}
+function b64e(u){let s='';u=new Uint8Array(u);for(let i=0;i<u.length;i+=8192)s+=String.fromCharCode.apply(null,u.subarray(i,i+8192));return btoa(s);}
+/* la risposta di Roby, Jenny e Lore arriva CIFRATA: solo questo telefono la può leggere */
+let _chiavi=null;
+async function chiaviLettera(){if(_chiavi)return _chiavi;
+  try{const o=JSON.parse(store.get('mt_ek')||'null');if(o&&o.priv&&o.pub)return (_chiavi={priv:await crypto.subtle.importKey('jwk',o.priv,{name:'ECDH',namedCurve:'P-256'},false,['deriveKey']),pub:o.pub});}catch(e){}
+  const kp=await crypto.subtle.generateKey({name:'ECDH',namedCurve:'P-256'},true,['deriveKey']);
+  const pub=b64e(await crypto.subtle.exportKey('raw',kp.publicKey));store.set('mt_ek',JSON.stringify({priv:await crypto.subtle.exportKey('jwk',kp.privateKey),pub}));
+  return (_chiavi={priv:kp.privateKey,pub});}
+const chiaviVideo={};
+async function apriCifrato(o){const {priv}=await chiaviLettera();
+  const epk=await crypto.subtle.importKey('raw',b64d(o.e),{name:'ECDH',namedCurve:'P-256'},false,[]);
+  const k=await crypto.subtle.deriveKey({name:'ECDH',public:epk},priv,{name:'AES-GCM',length:256},false,['decrypt']);
+  const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:b64d(o.iv)},k,b64d(o.ct));return {k,testo:dec.decode(pt)};}
 function pubblica(sub,payload){const i=conn.findIndex(Boolean);if(i<0)return false;clients[i].publish(CFG.topic+sub,payload,{qos:sub==='/hb'?0:1});return true;}
 function ping(){pubblica('/hb',myId+'|'+team);}
 let lobbyPrima=false,inCorso=null; // primo ingresso: prima nome e squadra, poi lo spettacolo
 function aggiornaEntra(){const b=$('btnEntra');if(!b)return;b.hidden=!(lobbyPrima&&inCorso);b.disabled=!team;
   $('entraInfo').hidden=!(lobbyPrima&&inCorso);$('badge').style.display=(lobbyPrima&&inCorso)?'none':'';}
 function applica(m){
+  if(current==='scena8'&&s8!==s8sent&&m&&m.c!=='sussurro'){s8sent=s8;pubblica('/colpi',myId+'|'+s8);} // ultimi colpi prima di cambiare scena
   if(lobbyPrima&&!['attesa','rinomina','risposta','resetlettera','sussurro'].includes(m.c)){inCorso=m;aggiornaEntra();return;}
   if(m.c==='rinomina'){ // la regia rimanda tutti a scegliere nome e squadra (una volta sola per comando)
     if(store.get('mt_rin')!==String(m.s)){store.set('mt_rin',String(m.s));nome='';team=null;store.set('mt_nome','');store.set('mt_team','');
@@ -1307,28 +1325,31 @@ function applica(m){
   if(m.c==='attesa'){inCorso=null;try{$('ltVideo').pause();}catch(e){}$('lettera').classList.remove('on','aperta');$('sus').classList.remove('on');clearTimers();clearCrack();$('fx').innerHTML='';$('riserva').style.visibility='';cueIndex=-1;lobby();aggiornaRiserva();return;}
   if(m.c==='risposta'){let r;try{r=JSON.parse(m.d)}catch(e){r={t:String(m.d||'')}}if(typeof r!=='object'||!r)r={t:String(r)};
     const out={t:String(r.t||'').slice(0,1000),v:r.v,img:typeof r.img==='string'?r.img:null,vid:r.vid&&typeof r.vid==='object'?r.vid:null};
-    attesaVideo=out.vid?out:null;if(out.vid)setTimeout(provaVideo,50);
+    attesaVideo=out.vid?out:null;if(out.vid){if(!rispSilenziosa)vuoiVideo();setTimeout(provaVideo,50);}
     rispostaRegia(out);return;}
   if(m.c==='resetlettera'){store.set(KEY_LETTERA,'');store.set('mt_reset',String(m.s));ultimaRisposta=null;attesaVideo=null;for(const k in pezzi)delete pezzi[k];$('sfAncora').hidden=true;if(current==='fine'||current==='selfie'||current==='grazie'){$('lettera').classList.remove('on','aperta');SCENES.fine();}return;}
   if(m.c==='sussurro'){let d={};try{d=JSON.parse(m.d||'{}')}catch(e){}caosSussurra(d.p??.6,d.ms??7000);return;}
   if(m.c==='risultato'){let d;try{d=JSON.parse(m.d)}catch(e){return;}clearTimers();mostraVoto(d.v,d.r);return;}
   fire(m.c,'regia');
 }
-const pezzi={};let attesaVideo=null;
+const pezzi={};let attesaVideo=null,videoSu=false;
+// i pezzi del video si scaricano SOLO quando servono (risparmia traffico: il server ha 1 GB gratis al mese)
+function vuoiVideo(){if(videoSu)return;videoSu=true;clients.forEach((c,i)=>{if(conn[i])c.subscribe(CFG.topic+'/r/'+myId+'/v/#',{qos:1});});}
+function basteVideo(){if(!videoSu)return;videoSu=false;clients.forEach((c,i)=>{if(conn[i])c.unsubscribe(CFG.topic+'/r/'+myId+'/v/#');});}
 async function provaVideo(){
   const r=attesaVideo;if(!r||!r.vid)return;const P=pezzi[r.vid.k];
   if(!P||P.got<r.vid.n){const w=$('ltVidWait');w.textContent='🎬 Video in arrivo… '+Math.round(100*((P&&P.got)||0)/r.vid.n)+'%';$('gzVidWait').textContent=w.textContent;return;}
-  const parts=[];for(let i=0;i<r.vid.n;i++)parts.push(Uint8Array.from(atob(P.b[i]),c=>c.charCodeAt(0)));
+  const parts=[];for(let i=0;i<r.vid.n;i++){let u=b64d(P.b[i]);if(P.iv&&P.iv[i]){const k=chiaviVideo[r.vid.k];if(!k)return;try{u=new Uint8Array(await crypto.subtle.decrypt({name:'AES-GCM',iv:b64d(P.iv[i])},k,u));}catch(e){delete pezzi[r.vid.k];basteVideo();setTimeout(vuoiVideo,1500);return;}}parts.push(u);}
   const blob=new Blob(parts,{type:r.vid.type||'video/mp4'});
   const h=btoa(String.fromCharCode(...new Uint8Array(await crypto.subtle.digest('SHA-256',await blob.arrayBuffer()))));
-  if(h!==r.vid.h)return;           // il video non è quello firmato dalla regia
-  r.vidUrl=URL.createObjectURL(blob);delete pezzi[r.vid.k];attesaVideo=null;
+  if(h!==r.vid.h){delete pezzi[r.vid.k];basteVideo();setTimeout(vuoiVideo,1500);return;}   // pezzo rovinato: si riscarica
+  r.vidUrl=URL.createObjectURL(blob);delete pezzi[r.vid.k];attesaVideo=null;basteVideo();
   if(current==='grazie')aggiornaVideoGrazie();
   const v=$('ltVideo');v.src=r.vidUrl;v.hidden=false;$('ltVidWait').hidden=true;v.load();if($('lettera').classList.contains('aperta'))v.play().catch(()=>{});
 }
 async function onMsg(topic,buf){
-  if(topic.includes('/r/'+myId+'/v/')){try{const c=JSON.parse(dec.decode(buf));if(typeof c.k!=='string'||c.n>60)return;const P=pezzi[c.k]=pezzi[c.k]||{b:[],got:0};
-    if(!P.b[c.i]){P.b[c.i]=c.b;P.got++;}provaVideo();}catch(e){}return;}
+  if(topic.includes('/r/'+myId+'/v/')){try{const c=JSON.parse(dec.decode(buf));if(!c||typeof c.k!=='string'||!Number.isInteger(c.n)||c.n<1||c.n>60||!Number.isInteger(c.i))return;if(attesaVideo&&attesaVideo.vid&&attesaVideo.vid.k!==c.k)return;if(Object.keys(pezzi).length>3&&!pezzi[c.k])return;const P=pezzi[c.k]=pezzi[c.k]||{b:[],got:0};
+    if(typeof c.i!=='number'||c.i<0||c.i>=c.n||typeof c.b!=='string')return;if(!P.b[c.i]){P.b[c.i]=c.b;(P.iv=P.iv||[])[c.i]=typeof c.iv==='string'?c.iv:null;P.got++;}provaVideo();}catch(e){}return;}
   if(topic.endsWith('/tot')){const n=parseInt(dec.decode(buf),10);if(current==='scena8'&&n>0)$('s8tot').textContent=`💥 Colpi di tutto il teatro: ${n.toLocaleString('it-IT')}`;return;}
   let m;try{m=JSON.parse(dec.decode(buf));}catch(e){return;}
   if(!m||typeof m.c!=='string'||typeof m.s!=='number'||typeof m.g!=='string')return;
@@ -1337,9 +1358,10 @@ async function onMsg(topic,buf){
   if(priv&&m.c!=='risposta')return;
   if(priv&&m.s<Number(store.get('mt_reset')||0))return; // risposta di prima del reset
   let ok=false;
-  try{ok=await crypto.subtle.verify({name:'ECDSA',hash:'SHA-256'},pubKey,b64d(m.g),enc.encode(`${m.c}|${m.d||''}|${m.s}|${m.t}`));}catch(e){}
+  try{ok=await crypto.subtle.verify({name:'ECDSA',hash:'SHA-256'},pubKey,b64d(m.g),enc.encode(`${m.c}|${m.d||''}|${m.s}|${m.t}`+(priv?'|/r/'+myId:'')));}catch(e){}
   if(!ok)return;      // firma sbagliata = non viene dalla regia
-  if(priv){rispSilenziosa=store.get('mt_risp')===String(m.s);store.set('mt_risp',String(m.s));applica(m);rispSilenziosa=false;return;}
+  if(priv){try{const o=JSON.parse(m.d||'null');if(o&&o.e&&o.ct){const r=await apriCifrato(o);m={...m,d:r.testo};try{const v=JSON.parse(r.testo).vid;if(v&&v.k)chiaviVideo[v.k]=r.k;}catch(e){}}}catch(e){return;}
+    rispSilenziosa=store.get('mt_risp')===String(m.s);store.set('mt_risp',String(m.s));applica(m);rispSilenziosa=false;return;}
   if(m.s<=lastSeq)return;
   lastSeq=m.s;
   if(started)applica(m);else pending=m;
@@ -1347,14 +1369,14 @@ async function onMsg(topic,buf){
 function connetti(){
   CFG.brokers.forEach((b,i)=>{
     conn[i]=false;
-    const c=mqtt.connect(b.url,{clientId:'mt_'+myId+'_'+i+'_'+Math.random().toString(36).slice(2,5),username:b.user,password:b.pass,clean:true,keepalive:20,reconnectPeriod:2000,connectTimeout:8000});
-    c.on('connect',()=>{conn[i]=true;lastOk=Date.now();c.subscribe([CFG.topic+'/cue',CFG.topic+'/tot',CFG.topic+'/r/'+myId,CFG.topic+'/r/'+myId+'/v/#'],{qos:1});aggiornaConn();if(started)ping();});
+    const c=mqtt.connect(b.url,{clientId:'mt_'+myId+'_'+i+'_'+Math.random().toString(36).slice(2,5),username:b.user,password:b.pass,clean:true,keepalive:20,reconnectPeriod:2000+Math.floor(Math.random()*6000),connectTimeout:8000}); // riconnessione sfasata: il server accetta max 100 nuovi collegamenti/s
+    c.on('connect',()=>{conn[i]=true;lastOk=Date.now();c.subscribe([CFG.topic+'/cue',CFG.topic+'/tot',CFG.topic+'/r/'+myId].concat(videoSu?[CFG.topic+'/r/'+myId+'/v/#']:[]),{qos:1});aggiornaConn();if(started)ping();});
     c.on('close',()=>{conn[i]=false;aggiornaConn();});
     c.on('offline',()=>{conn[i]=false;aggiornaConn();});
     c.on('message',(t,p)=>onMsg(t,p));
     clients[i]=c;
   });
-  setInterval(()=>{if(started)ping();},10000);
+  setTimeout(()=>setInterval(()=>{if(started)ping();},20000),Math.random()*20000); // ogni 20 s, sfasati
   setInterval(()=>{if(!conn.some(Boolean))aggiornaRiserva();else lastOk=Date.now();},2000);
 }
 function aggiornaConn(){$('ear').classList.toggle('off',!conn.some(Boolean));aggiornaRiserva();}

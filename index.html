@@ -1131,7 +1131,8 @@ function apriSelfie(){clearTimers();$('fx').innerHTML='';show('selfie');$('sfSta
   if(store.get(KEY_LETTERA)==='1'){passo(4);$('sfAncora').hidden=!ultimaRisposta;return;}passo(1);}
 let ultimaRisposta=null;
 $('btnSelfie').addEventListener('click',()=>{if(store.get(KEY_LETTERA)==='1'&&ultimaRisposta)mostraGrazie();else apriSelfie();});
-function aggiornaBtnSelfie(){const fatta=store.get(KEY_LETTERA)==='1';$('sfWrap').classList.toggle('richiamo',!fatta);$('btnSelfie').innerHTML=fatta?'💌 La tua lettera è stata spedita'+(ultimaRisposta?'<small style="display:block;font-size:13px;color:#5d0a12">Tocca per rivedere e scaricare la risposta</small>':''):$('btnSelfie').dataset.orig;}
+function aggiornaBtnSelfie(){const fatta=!/anteprima/.test(location.search)&&store.get(KEY_LETTERA)==='1'; // l'anteprima della regia mostra sempre quello che vede il pubblico
+  $('sfWrap').classList.toggle('richiamo',!fatta);$('btnSelfie').innerHTML=fatta?'💌 La tua lettera è stata spedita'+(ultimaRisposta?'<small style="display:block;font-size:13px;color:#5d0a12">Tocca per rivedere e scaricare la risposta</small>':''):$('btnSelfie').dataset.orig;}
 $('btnSelfie').dataset.orig=$('btnSelfie').innerHTML;
 $('sfIndietro').addEventListener('click',()=>SCENES.fine());
 $('sfAncora').addEventListener('click',()=>{if(ultimaRisposta)mostraGrazie();});

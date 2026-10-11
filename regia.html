@@ -6,7 +6,7 @@
 <title>Regia – Modalità Teatro</title>
 <meta name="robots" content="noindex">
 <meta name="referrer" content="no-referrer">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-SPvMeac1VEscUcl8Slwu0gB/tFv4ZHmqBMLFlkmPS+M=' 'sha256-XTq3EfMwqKQ21tmmgz19eIMeQM4C24GGrFmFL1KTUxI=' 'sha256-r7FFWvEvqOWhnla7vvtdQi4arH03/SKA6VaZptfcy/U=' 'sha256-Cc/KoBTpa9ZALgut4E0HFNuJ1mdqkGEhjlVl3vB0OUE='; style-src 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; font-src data:; worker-src blob:; connect-src 'self' wss://r21a1286.ala.eu-central-1.emqxsl.com:8084; base-uri 'none'; form-action 'none'; frame-src 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-SPvMeac1VEscUcl8Slwu0gB/tFv4ZHmqBMLFlkmPS+M=' 'sha256-XTq3EfMwqKQ21tmmgz19eIMeQM4C24GGrFmFL1KTUxI=' 'sha256-r7FFWvEvqOWhnla7vvtdQi4arH03/SKA6VaZptfcy/U=' 'sha256-QdpbdQjKYq+6v7h9JICrTmqYXEQwCjpzxpkcxIHbL8A='; style-src 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; font-src data:; worker-src blob:; connect-src 'self' wss://r21a1286.ala.eu-central-1.emqxsl.com:8084; base-uri 'none'; form-action 'none'; frame-src 'self'">
 <meta name="referrer" content="no-referrer">
 
 <script>if(top!==self){document.documentElement.style.display="none";top.location=self.location;}</script>
@@ -269,7 +269,7 @@ const FILTRO=(()=>{
 </script>
 <script>
 "use strict";
-const CFG={"brokers":[{"url":"wss://r21a1286.ala.eu-central-1.emqxsl.com:8084/mqtt","user":"regia","v5":true,"passEnc":{"iv":"ceO8IXQqzYJnAdI8","ct":"yqg3OG8/woBJT96XVKWt1WsXKWe8R3FkWskm7kfyvYGDLVgtwUr9Hw=="}}],"topic":"modalitateatro/MgU5BIBm9GA7lt","salt":"wXB4kl7sAAgWEtLRgAt3rQ==","iv":"mRgwz8J+xI0AYSOS","ct":"HkLV2Fzf04HQLQcZBaELIi87ZXcWeF7oJyTBISx1QYYW+FO92F7AvZuE/OCZT6cUTcfO14Iv+70w0VRLw5kJwjy3wTzbhc0OlzF8fvOjrdGZxVfx4MIn6jzZKpDAc6HpvvXWQytrTTNrv9G1L6NrWC8uT2MjnsOsmNv5r59CgcNIpfu2XHhuWQ/a+ZcFH6528Dwe6gMAhcjXjg==","iter":600000};
+const CFG={"brokers":[{"url":"wss://r21a1286.ala.eu-central-1.emqxsl.com:8084/mqtt","user":"regia","v5":true,"passEnc":{"iv":"SwUJd5ymsC0ILEo8","ct":"OxIzrCpdyFUctvFiOXB/8Ik0brptTtfhgFj4OskgsUyRdJet9aoMCg=="}}],"topic":"modalitateatro/MgU5BIBm9GA7lt","salt":"wXB4kl7sAAgWEtLRgAt3rQ==","iv":"mRgwz8J+xI0AYSOS","ct":"HkLV2Fzf04HQLQcZBaELIi87ZXcWeF7oJyTBISx1QYYW+FO92F7AvZuE/OCZT6cUTcfO14Iv+70w0VRLw5kJwjy3wTzbhc0OlzF8fvOjrdGZxVfx4MIn6jzZKpDAc6HpvvXWQytrTTNrv9G1L6NrWC8uT2MjnsOsmNv5r59CgcNIpfu2XHhuWQ/a+ZcFH6528Dwe6gMAhcjXjg==","iter":600000,"lk":{"iv":"NUMFPmEy83wX+N8e","ct":"BEv3U96RiHwg3DgYgtcUDl64qjSlhnseWkoEpBfj0O3oNiLviQWOzQRSktIO99x8TO5FMThBVgCWheCiRxZ+N7it3+4+ZSKDq4OQbnvAIWrXMs3Va+fOcPD1oKkG972W9msxSBU9Eny2G4bUpDPcwp2QfkkaeTMvKQ2whFFgi2JjyLG5e1cGv1DJ/pGvyAxz9B0VBJfsSuE3pA=="}};
 // SCALETTA DELLO SPETTACOLO (uguale per pubblico e regia)
 const CUES = [
   {id:'inizio',     icona:'🎭', nome:'Si comincia!',                  quando:'Si spengono le luci e sul ledwall parte il logo MODALITÀ TEATRO'},
@@ -302,7 +302,7 @@ const VOTI = {
 
 const $=id=>document.getElementById(id);
 const enc=new TextEncoder();
-let key=null,pubV=null,clients=[],conn=[],idx=-1,seen=new Map(),voti={},colpi=new Map(),votoLive=null;
+let key=null,pubV=null,chiaveLettere=null,clients=[],conn=[],idx=-1,seen=new Map(),voti={},colpi=new Map(),votoLive=null;
 function b64(u){let s='';u=new Uint8Array(u);for(let i=0;i<u.length;i++)s+=String.fromCharCode(u[i]);return btoa(s);}
 function b64d(s){return Uint8Array.from(atob(s),c=>c.charCodeAt(0));}
 function log(s){const l=$('log');l.textContent=(new Date().toLocaleTimeString()+'  '+s+'\n'+l.textContent).split('\n').slice(0,200).join('\n');}
@@ -311,6 +311,7 @@ async function unlock(pw){
   const base=await crypto.subtle.importKey('raw',enc.encode(pw),'PBKDF2',false,['deriveKey']);
   const aes=await crypto.subtle.deriveKey({name:'PBKDF2',salt:b64d(CFG.salt),iterations:CFG.iter,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,['decrypt']);
   const pk=await crypto.subtle.decrypt({name:'AES-GCM',iv:b64d(CFG.iv)},aes,b64d(CFG.ct));
+  if(CFG.lk){try{chiaveLettere=await crypto.subtle.importKey('pkcs8',await crypto.subtle.decrypt({name:'AES-GCM',iv:b64d(CFG.lk.iv)},aes,b64d(CFG.lk.ct)),{name:'ECDH',namedCurve:'P-256'},false,['deriveKey']);}catch(e){}}
   for(const b of CFG.brokers){if(b.passEnc){b.pass=new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:b64d(b.passEnc.iv)},aes,b64d(b.passEnc.ct)));}}
   try{const kx=await crypto.subtle.importKey('pkcs8',pk,{name:'ECDSA',namedCurve:'P-256'},true,['sign']);const j=await crypto.subtle.exportKey('jwk',kx);delete j.d;j.key_ops=['verify'];pubV=await crypto.subtle.importKey('jwk',j,{name:'ECDSA',namedCurve:'P-256'},false,['verify']);}catch(e){}
   return crypto.subtle.importKey('pkcs8',pk,{name:'ECDSA',namedCurve:'P-256'},false,['sign']);
@@ -367,10 +368,10 @@ function avvia(){
     if(url.v5){setTimeout(passaA4,9000);c.on('error',passaA4);}
     c.on('connect',()=>{ok=true;conn[i]=true;c.subscribe([CFG.topic+'/hb',CFG.topic+'/voto',CFG.topic+'/colpi',CFG.topic+'/selfie',CFG.topic+'/r/stato']);stato();log('collegato a '+nome(url.url));setTimeout(()=>mandaStato('auto'),800);});
     c.on('close',()=>{conn[i]=false;stato();});
-    c.on('message',(t,p)=>{if(t.endsWith('/r/stato')){if(p.length&&p.length<400&&!raccogli)riceviStato(new TextDecoder().decode(p));return;}if(raccogli&&t.includes('/r/')){if(p.length)raccogli.add(t);return;}if(p.length>(t.endsWith('/selfie')?420000:400))return;const x=new TextDecoder().decode(p);
+    c.on('message',(t,p)=>{if(t.endsWith('/r/stato')){if(p.length&&p.length<400&&!raccogli)riceviStato(new TextDecoder().decode(p));return;}if(raccogli&&t.includes('/r/')){if(p.length)raccogli.add(t);return;}if(p.length>(t.endsWith('/selfie')?600000:400))return;const x=new TextDecoder().decode(p);
       if(t.endsWith('/hb')){if(x.length>40)return;const [id,tm,ak]=x.split('|');if(!ID_OK.test(id||''))return;if(ak&&videoInfo[id])cancellaVideo(id,ak);if(seen.size<3000||seen.has(id))seen.set(id,{t:Date.now(),tm:TEAM_OK.includes(tm)?tm:''});if(!spIds.has(id)&&spIds.size<20000){spIds.add(id);salvaSpett();}if(!primaVolta.has(id)){const n=Date.now();if(n-nuovi.t>1000)nuovi={t:n,n:0};if(++nuovi.n>30)return;if(primaVolta.size>8000){const [k0,t0]=primaVolta.entries().next().value;if(n-t0>600000)primaVolta.delete(k0);else return;}primaVolta.set(id,n);}}
-      else if(t.endsWith('/voto')){try{const m=JSON.parse(x);if(m&&typeof m.v==='string'&&Object.prototype.hasOwnProperty.call(VOTI,m.v)&&VOTI[m.v].a.some(o=>o.k===m.k)&&typeof m.id==='string'&&ID_OK.test(m.id)&&seen.has(m.id)){const mv=(voti[m.v]=voti[m.v]||new Map());if(mv.size<3000||mv.has(m.id))mv.set(m.id,m.k);}}catch(e){}}
-      else if(t.endsWith('/selfie')){try{const m=JSON.parse(x);if(typeof m.id==='string')arriva(m);}catch(e){}}
+      else if(t.endsWith('/voto')){try{const m=JSON.parse(x);if(m&&typeof m.v==='string'&&Object.prototype.hasOwnProperty.call(VOTI,m.v)&&VOTI[m.v].a.some(o=>o.k===m.k)&&typeof m.id==='string'&&ID_OK.test(m.id)&&seen.has(m.id)&&(Date.now()-AVVIO<90000||(primaVolta.has(m.id)&&Date.now()-primaVolta.get(m.id)>=ATTESA_SPAM))){const mv=(voti[m.v]=voti[m.v]||new Map());if(mv.size<3000||mv.has(m.id))mv.set(m.id,m.k);}}catch(e){}}
+      else if(t.endsWith('/selfie')){apriLettera(x);}
       else if(t.endsWith('/colpi')){if(x.length>40)return;const [id,n]=x.split('|');const v=Math.min(5000,Math.max(0,parseInt(n,10)||0));if(ID_OK.test(id||'')&&seen.has(id)&&(colpi.size<3000||colpi.has(id))&&v>(colpi.get(id)||0))colpi.set(id,v);}
     });
     clients[i]=c;
@@ -405,8 +406,19 @@ const bloccati=new Set((()=>{try{return JSON.parse(localStorage.getItem('mt_bloc
 function salvaBloccati(){try{localStorage.setItem('mt_bloccati',JSON.stringify([...bloccati].slice(-3000)));}catch(e){}} let scartate=0, spam=0, bucket={t:0,n:0};
 let nuovi={t:0,n:0};
 const primaVolta=new Map(); // id -> quando l'abbiamo visto la prima volta (battito)
+const AVVIO=Date.now();   // appena riaperta la regia non conosce ancora nessuno: per 90 s i voti valgono tutti
 const ATTESA_SPAM=/[?&]prova/.test(location.search)?0:30000;
 const PK_OK=/^[A-Za-z0-9+\/]{86,88}={0,2}$/;
+const B64_OK=/^[A-Za-z0-9+\/]+={0,2}$/;
+async function apriLettera(x){let m;try{m=JSON.parse(x);}catch(e){return;}if(!m||typeof m!=='object'||Array.isArray(m))return;
+  if(m.x===1){   // lettera cifrata (le pagine nuove mandano solo così)
+    if(!chiaveLettere||typeof m.e!=='string'||typeof m.iv!=='string'||typeof m.ct!=='string'||m.e.length>100||m.iv.length>24||m.ct.length>590000||!B64_OK.test(m.e)||!B64_OK.test(m.iv))return;
+    try{const epk=await crypto.subtle.importKey('raw',b64d(m.e),{name:'ECDH',namedCurve:'P-256'},false,[]);
+      const k=await crypto.subtle.deriveKey({name:'ECDH',public:epk},chiaveLettere,{name:'AES-GCM',length:256},false,['decrypt']);
+      const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:b64d(m.iv)},k,b64d(m.ct));const d=JSON.parse(new TextDecoder().decode(pt));if(d&&typeof d==='object'&&!Array.isArray(d))arriva(d);}catch(e){}
+    return;}
+  // lettera NON cifrata (pagina vecchia ancora aperta): solo testo, la foto viene scartata
+  if(typeof m.id==='string'){m.foto=null;arriva(m);}}
 function arriva(m){
   if(!m||typeof m!=='object'||typeof m.id!=='string'||!ID_OK.test(m.id))return;          // id strano = messaggio falso
   if(giaArrivati.has(m.id))return;
@@ -587,7 +599,7 @@ $('inbox').addEventListener('click',async e=>{
       if(fv===al.video&&!/^video\/mp4$/.test(fv.type||'')){info.textContent='⚠ questo video non si riesce a convertire (forse è HEVC da iPhone): rifallo con Fotocamera › Formati › «Più compatibile», oppure usa un altro video';e.target.disabled=false;return;}if(fv.size>3*1024*1024){info.textContent='⚠ il video è ancora troppo grande dopo la compressione: fallo più corto (10-20 secondi)';e.target.disabled=false;return;}pv=await preparaVideo(fv);vid=pv.meta;}}catch(err){info.textContent='⚠ video non leggibile';e.target.disabled=false;return;}
     let dati=JSON.stringify({t,v:vv,img:al.img||null,vid}),ck=null;
     if(m.pk){try{const c=await chiavePer(m.pk);ck=c.k;const x=await cifra(c.k,new TextEncoder().encode(dati));dati=JSON.stringify({e:c.e,iv:x.iv,ct:b64(x.ct)});}catch(err){info.textContent='⚠ cifratura non riuscita';e.target.disabled=false;return;}}
-    if(!ck)log('⚠️ questa risposta NON è cifrata (telefono con pagina vecchia)');
+    if(!ck){info.textContent='⚠ questo telefono ha la pagina vecchia: la risposta non sarebbe protetta, quindi NON la mando. Chiedi di ricaricare la pagina e rimandare la lettera.';e.target.disabled=false;return;}
     spett.risposte++;if(pv||vv)spett.video++;salvaSpett();risposteId.add(m.id);salvaRisposteId();rispT[m.id]=Date.now();salvaRispT();
     await invia('risposta','💌 risposta '+(ck?'🔒 ':'')+'a '+(m.nome||'spettatore')+(vv?' (video '+vv+')':'')+(al.img?' (con foto)':'')+(vid?' (con video tuo)':''),dati,true,dest);
     lavori++;try{

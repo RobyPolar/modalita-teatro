@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-XTq3EfMwqKQ21tmmgz19eIMeQM4C24GGrFmFL1KTUxI=' 'sha256-x9QEIXAQ+ccx7WIFohn+Ilgl24RU71MJ3NVbtpEO7YM='; style-src 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; font-src data:; worker-src blob:; connect-src 'self' wss://r21a1286.ala.eu-central-1.emqxsl.com:8084; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-XTq3EfMwqKQ21tmmgz19eIMeQM4C24GGrFmFL1KTUxI=' 'sha256-eD04a0g7iVj5Yrs+Z2qE7Zs2lvTkFG2dl4hBPj7Oz8I='; style-src 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; font-src data:; worker-src blob:; connect-src 'self' wss://r21a1286.ala.eu-central-1.emqxsl.com:8084; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
@@ -1038,7 +1038,7 @@ const VOTI = {
   finale: {q:'Cosa devono fare Roby e Jenny?', a:[{k:'salva',e:'🐧',t:'Salvare Lorenzo!',c:'#ff8a1c',d:'#9a4a00'},{k:'ai',e:'🤖',t:'Tenere Giga Lorenzist',c:'#13b5d6',d:'#0a6577'}]},
 };
 
-const CFG = {"brokers":[{"url":"wss://r21a1286.ala.eu-central-1.emqxsl.com:8084/mqtt","user":"pubblico","pass":"kwHPxbGXoBG8nhiY","privato":true}],"topic":"modalitateatro/MgU5BIBm9GA7lt","pub":{"kty":"EC","crv":"P-256","x":"KnzLEVBgv2vpcgAGFqnOeax9GlqunEsej2Mj0RVvVz8","y":"klEXmySwNFXEMzOQi3G0TbEJXZFTvXfuUXWdv0o5xYs"},"privato":true};
+const CFG = {"brokers":[{"url":"wss://r21a1286.ala.eu-central-1.emqxsl.com:8084/mqtt","user":"pubblico","pass":"kwHPxbGXoBG8nhiY","privato":true}],"topic":"modalitateatro/MgU5BIBm9GA7lt","pub":{"kty":"EC","crv":"P-256","x":"KnzLEVBgv2vpcgAGFqnOeax9GlqunEsej2Mj0RVvVz8","y":"klEXmySwNFXEMzOQi3G0TbEJXZFTvXfuUXWdv0o5xYs"},"rk":"BF7lF5eZGkJSmGF0dJIR4mz1T09nBTrCD4+oR39ggtWoiZ0mf04P8gOpCeh3/C+gDHdXqAnRVJk6pfXnnj3lLO8=","privato":true};
 const $=id=>document.getElementById(id);
 const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
 let myId=store.get('mt_id')||'';if(!/^[a-z0-9]{3,12}$/.test(myId))myId=(Math.random().toString(36).slice(2)+Math.random().toString(36).slice(2)).slice(0,10); store.set('mt_id',myId);
@@ -1232,7 +1232,9 @@ $('sfInvia').addEventListener('click',async()=>{
   if(!postaAperta){passo(passoOra);return;}
   if(conFoto&&!$('sfOk').checked){$('sfStato').textContent='Per mandare la foto serve il permesso di mamma o papà ✔️';shake($('sfOkRow'));return;}
   let pk=null;try{pk=(await chiaviLettera()).pub;}catch(e){}
-  const ok=pubblica('/selfie',JSON.stringify({id:myId,nome:nome.slice(0,18),team,testo,foto:conFoto?sfImg:null,pk}));
+  let lett=JSON.stringify({id:myId,nome:nome.slice(0,18),team,testo,foto:conFoto?sfImg:null,pk});
+  try{lett=await perRegia(lett);}catch(e){if(conFoto){$('sfStato').textContent='⚠️ Questo telefono non riesce a proteggere la foto: manda solo il messaggio';return;}}
+  const ok=pubblica('/selfie',lett);
   if(!ok){$('sfStato').textContent='⚠️ Nessuna connessione, riprova tra poco';return;}
   store.set(KEY_LETTERA,'1');$('sfAncora').hidden=true;try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist();}catch(e){}
   sfx('festa');vibra([60,40,60]);flash();passo(4);
@@ -1397,6 +1399,13 @@ async function chiaviLettera(){if(_chiavi)return _chiavi;
   const pub=b64e(await crypto.subtle.exportKey('raw',kp.publicKey));store.set('mt_ek',JSON.stringify({priv:await crypto.subtle.exportKey('jwk',kp.privateKey),pub}));
   return (_chiavi={priv:kp.privateKey,pub});}
 const chiaviVideo={};
+/* la lettera parte CIFRATA: solo la regia (con la sua password) la può leggere, nemmeno il server */
+async function perRegia(testo){if(!CFG.rk)throw new Error('no');
+  const eph=await crypto.subtle.generateKey({name:'ECDH',namedCurve:'P-256'},true,['deriveKey']);
+  const rk=await crypto.subtle.importKey('raw',b64d(CFG.rk),{name:'ECDH',namedCurve:'P-256'},false,[]);
+  const k=await crypto.subtle.deriveKey({name:'ECDH',public:rk},eph.privateKey,{name:'AES-GCM',length:256},false,['encrypt']);
+  const iv=crypto.getRandomValues(new Uint8Array(12));const ct=await crypto.subtle.encrypt({name:'AES-GCM',iv},k,enc.encode(testo));
+  return JSON.stringify({x:1,e:b64e(await crypto.subtle.exportKey('raw',eph.publicKey)),iv:b64e(iv),ct:b64e(ct)});}
 async function apriCifrato(o){const {priv}=await chiaviLettera();
   const epk=await crypto.subtle.importKey('raw',b64d(o.e),{name:'ECDH',namedCurve:'P-256'},false,[]);
   const k=await crypto.subtle.deriveKey({name:'ECDH',public:epk},priv,{name:'AES-GCM',length:256},false,['decrypt']);

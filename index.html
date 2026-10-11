@@ -1014,12 +1014,17 @@ function lobby(){
   $('nomeIn').value=nome;
   if(team){$('badge').classList.add('on');$('badgeT').textContent='AGENTE TEAM '+({roby:'ROBY',jenny:'JENNY',lore:'LORENZIST'})[team];}
 }
-document.querySelectorAll('.team-b').forEach(b=>b.addEventListener('click',()=>{team=b.dataset.team;store.set('mt_team',team);sfx('voto');vibra(40);lobby();ping();
+document.querySelectorAll('.team-b').forEach(b=>b.addEventListener('click',()=>{controllaNome(true);team=b.dataset.team;store.set('mt_team',team);sfx('voto');vibra(40);lobby();ping();
   if(lobbyPrima&&!inCorso)lobbyPrima=false; aggiornaEntra();}));
-$('btnEntra').addEventListener('click',()=>{if(!team)return;lobbyPrima=false;const m=inCorso;inCorso=null;aggiornaEntra();if(m)applica(m);});
-$('nomeIn').addEventListener('input',e=>{const v=e.target.value.trim().slice(0,18);
-  if(FILTRO.brutto(v)){nome='';store.set('mt_nome','');$('nomeErr').textContent='😅 Questo nome non si può usare: scegline un altro!';e.target.classList.add('nome-bad');}
-  else{nome=v;store.set('mt_nome',nome);$('nomeErr').textContent='';e.target.classList.remove('nome-bad');}});
+$('btnEntra').addEventListener('click',()=>{controllaNome(true);if(!team)return;lobbyPrima=false;const m=inCorso;inCorso=null;aggiornaEntra();if(m)applica(m);});
+function controllaNome(cancella){const el=$('nomeIn');const v=el.value.trim().slice(0,18);
+  if(FILTRO.brutto(v)){nome='';store.set('mt_nome','');el.classList.add('nome-bad');
+    $('nomeErr').textContent='😅 Questo nome non si può usare: scegline un altro!';
+    if(cancella){el.value='';shake(el);vibra(80);}return false;}
+  nome=v;store.set('mt_nome',nome);$('nomeErr').textContent='';el.classList.remove('nome-bad');return true;}
+$('nomeIn').addEventListener('input',()=>controllaNome(false));
+$('nomeIn').addEventListener('change',()=>controllaNome(true));
+$('nomeIn').addEventListener('blur',()=>controllaNome(true));
 if(FILTRO.brutto(nome)){nome='';store.set('mt_nome','');}
 
 /* ---------- videochiamata ---------- */

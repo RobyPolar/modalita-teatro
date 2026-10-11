@@ -191,7 +191,7 @@ const FILTRO=(()=>{
 </script>
 <script>
 "use strict";
-const CFG={"brokers":[{"url":"wss://r21a1286.ala.eu-central-1.emqxsl.com:8084/mqtt","user":"regia","passEnc":{"iv":"FHi+fPYQPagaEe7e","ct":"7iL0ND1MYaEjSNW5M/XmnrwNGUtUAUtLwDAlSdat/YUmLjIysXxSsA=="}}],"topic":"modalitateatro/MgU5BIBm9GA7lt","salt":"APr3dWd+1lybghzvilLbRw==","iv":"JJS0XQ19xH3VK53y","ct":"4vYE4yj9buMIBrGYROLgJ/4/y0O2IXaygrxCrFDvwoWTQ1AWAMHDtBjk8rT0XiGyW2pFmQeIPN33+ciyCTdsBI3SV5e7tSmNBSsqiRwwbddhjDKOuL3LGArmuN9A6eqjQriizLGLfEK0YYWN5bfDvwc19GLNFHrr9RPdMCvQMCfNASmF1ZPdd/TXVlR4snKikUaZV2OVX6luuQ==","iter":200000};
+const CFG={"brokers":[{"url":"wss://r21a1286.ala.eu-central-1.emqxsl.com:8084/mqtt","user":"regia","passEnc":{"iv":"yX3XHtLzJry0j7no","ct":"u6PXGrW/T3n4rTEhbzdXmL4GbrzJV8io4mGoUpdzGAUpVOl+auLo7g=="}}],"topic":"modalitateatro/MgU5BIBm9GA7lt","salt":"APr3dWd+1lybghzvilLbRw==","iv":"JJS0XQ19xH3VK53y","ct":"4vYE4yj9buMIBrGYROLgJ/4/y0O2IXaygrxCrFDvwoWTQ1AWAMHDtBjk8rT0XiGyW2pFmQeIPN33+ciyCTdsBI3SV5e7tSmNBSsqiRwwbddhjDKOuL3LGArmuN9A6eqjQriizLGLfEK0YYWN5bfDvwc19GLNFHrr9RPdMCvQMCfNASmF1ZPdd/TXVlR4snKikUaZV2OVX6luuQ==","iter":200000};
 // SCALETTA DELLO SPETTACOLO (uguale per pubblico e regia)
 const CUES = [
   {id:'inizio',     icona:'🎭', nome:'Si comincia!',                  quando:'Si spengono le luci e sul ledwall parte il logo MODALITÀ TEATRO'},
@@ -324,7 +324,7 @@ async function mandaVideo(dest,f,info){
   const buf=new Uint8Array(await f.arrayBuffer());const h=b64(await crypto.subtle.digest('SHA-256',buf));const key=Math.random().toString(36).slice(2,10);
   const CH=150000,n=Math.ceil(buf.length/CH);const cl=clients.find((c,i)=>conn[i]);if(!cl)throw new Error('offline');
   for(let i=0;i<n;i++){let s='';const part=buf.subarray(i*CH,(i+1)*CH);for(let j=0;j<part.length;j+=8192)s+=String.fromCharCode.apply(null,part.subarray(j,j+8192));
-    await new Promise(res=>cl.publish(CFG.topic+dest+'/v',JSON.stringify({k:key,i,n,b:btoa(s)}),{qos:1},res));info.textContent=`invio video ${Math.round(100*(i+1)/n)}%`;}
+    await new Promise(res=>cl.publish(CFG.topic+dest+'/v/'+i,JSON.stringify({k:key,i,n,b:btoa(s)}),{qos:1,retain:true},res));info.textContent=`invio video ${Math.round(100*(i+1)/n)}%`;}
   return {k:key,h,n,type:f.type||'video/mp4'};
 }
 $('inList').addEventListener('click',async e=>{
@@ -346,7 +346,7 @@ async function invia(c,label,d,momento,dest){
   const s=Date.now(),t=s;
   const sig=await crypto.subtle.sign({name:'ECDSA',hash:'SHA-256'},key,enc.encode(`${c}|${d||''}|${s}|${t}`));
   const msg=JSON.stringify(d?{c,d,s,t,g:b64(sig)}:{c,s,t,g:b64(sig)});
-  let ok=0;clients.forEach((cl,i)=>{if(conn[i]){cl.publish(CFG.topic+(dest||'/cue'),msg,{qos:1,retain:!momento});ok++;}});
+  let ok=0;clients.forEach((cl,i)=>{if(conn[i]){cl.publish(CFG.topic+(dest||'/cue'),msg,{qos:1,retain:dest?true:!momento});ok++;}});
   log(`${label} → inviato (${ok}/${clients.length} server)`);
   if(!ok) log('⚠ NESSUN SERVER COLLEGATO: controlla internet');
   if(!dest)specchio(c==='sussurro'?{c,d:'{"p":1,"ms":300}'}:{c,d});

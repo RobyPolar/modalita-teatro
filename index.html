@@ -668,7 +668,8 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
   <div class="sf-pass" id="sfP4" hidden>
     <div class="volo">✉️</div>
     <p class="sf-dom" style="font-size:22px">Lettera spedita!</p>
-    <p class="sf-attesa">Roby, Jenny e Lore la stanno leggendo…<br>Tieni il telefono acceso: forse ti rispondono! 📬<br><small>(si può spedire una sola lettera a testa)</small></p>
+    <p class="sf-attesa">Roby, Jenny e Lorenzist potrebbero metterci un po' a risponderti, perché <b>leggono e rispondono DAVVERO LORO!</b> 💌<br><br>
+      <b>Non chiudere questa pagina</b> (oppure salva il link) e controlla se <b>tra oggi e domani</b> ti hanno risposto.<br>Faranno il prima possibile… il Dottor Caos li ha stancati! 😅<br><small>(si può spedire una sola lettera a testa)</small></p>
     <button class="sf-link" id="sfAncora" hidden>💌 Rileggi la risposta</button>
   </div>
   <button class="sf-link" id="sfIndietro">← Torna all'attestato</button>
@@ -993,8 +994,10 @@ $('sfInvia').addEventListener('click',()=>{
   sfx('festa');vibra([60,40,60]);flash();passo(4);
 });
 /* --- la lettera di risposta: arrivo esplosivo --- */
+let rispSilenziosa=false;
 function rispostaRegia(r){
-  if(typeof r==='string')r={t:r};ultimaRisposta=r;$('ltVidWait').hidden=true;
+  if(typeof r==='string')r={t:r};ultimaRisposta=r;
+  if(rispSilenziosa){if(current==='fine')aggiornaBtnSelfie();return;}  // già letta: si può rileggere dal pulsante$('ltVidWait').hidden=true;
   $('ltTesto').textContent=r.t||'';
   const fi=$('ltImg');if(r.img&&/^data:image\/jpeg;base64,/.test(r.img)){fi.src=r.img;fi.hidden=false;}else{fi.removeAttribute('src');fi.hidden=true;}
   const v=$('ltVideo');if(r.vidUrl){v.src=r.vidUrl;v.hidden=false;v.load();}else if(r.vid){v.hidden=true;$('ltVidWait').hidden=false;}
@@ -1116,18 +1119,18 @@ async function provaVideo(){
   const v=$('ltVideo');v.src=r.vidUrl;v.hidden=false;$('ltVidWait').hidden=true;v.load();if($('lettera').classList.contains('aperta'))v.play().catch(()=>{});
 }
 async function onMsg(topic,buf){
-  if(topic.endsWith('/r/'+myId+'/v')){try{const c=JSON.parse(dec.decode(buf));if(typeof c.k!=='string'||c.n>60)return;const P=pezzi[c.k]=pezzi[c.k]||{b:[],got:0};
+  if(topic.includes('/r/'+myId+'/v/')){try{const c=JSON.parse(dec.decode(buf));if(typeof c.k!=='string'||c.n>60)return;const P=pezzi[c.k]=pezzi[c.k]||{b:[],got:0};
     if(!P.b[c.i]){P.b[c.i]=c.b;P.got++;}provaVideo();}catch(e){}return;}
   if(topic.endsWith('/tot')){const n=parseInt(dec.decode(buf),10);if(current==='scena8'&&n>0)$('s8tot').textContent=`💥 Colpi di tutto il teatro: ${n.toLocaleString('it-IT')}`;return;}
   let m;try{m=JSON.parse(dec.decode(buf));}catch(e){return;}
   if(!m||typeof m.c!=='string'||typeof m.s!=='number'||typeof m.g!=='string')return;
   const priv=topic.endsWith('/r/'+myId);
-  if((!priv&&m.s<=lastSeq)||Date.now()-m.t>6*3600e3)return;
+  if((!priv&&m.s<=lastSeq)||Date.now()-m.t>(priv?4*86400e3:6*3600e3))return;
   if(priv&&m.c!=='risposta')return;
   let ok=false;
   try{ok=await crypto.subtle.verify({name:'ECDSA',hash:'SHA-256'},pubKey,b64d(m.g),enc.encode(`${m.c}|${m.d||''}|${m.s}|${m.t}`));}catch(e){}
   if(!ok)return;      // firma sbagliata = non viene dalla regia
-  if(priv){applica(m);return;}
+  if(priv){rispSilenziosa=store.get('mt_risp')===String(m.s);store.set('mt_risp',String(m.s));applica(m);rispSilenziosa=false;return;}
   if(m.s<=lastSeq)return;
   lastSeq=m.s;
   if(started)applica(m);else pending=m;
@@ -1136,7 +1139,7 @@ function connetti(){
   CFG.brokers.forEach((b,i)=>{
     conn[i]=false;
     const c=mqtt.connect(b.url,{clientId:'mt_'+myId+'_'+i+'_'+Math.random().toString(36).slice(2,5),username:b.user,password:b.pass,clean:true,keepalive:20,reconnectPeriod:2000,connectTimeout:8000});
-    c.on('connect',()=>{conn[i]=true;lastOk=Date.now();c.subscribe([CFG.topic+'/cue',CFG.topic+'/tot',CFG.topic+'/r/'+myId,CFG.topic+'/r/'+myId+'/v'],{qos:1});aggiornaConn();if(started)ping();});
+    c.on('connect',()=>{conn[i]=true;lastOk=Date.now();c.subscribe([CFG.topic+'/cue',CFG.topic+'/tot',CFG.topic+'/r/'+myId,CFG.topic+'/r/'+myId+'/v/#'],{qos:1});aggiornaConn();if(started)ping();});
     c.on('close',()=>{conn[i]=false;aggiornaConn();});
     c.on('offline',()=>{conn[i]=false;aggiornaConn();});
     c.on('message',(t,p)=>onMsg(t,p));

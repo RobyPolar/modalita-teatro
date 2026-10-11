@@ -133,7 +133,7 @@ safe-buffer/index.js:
 </script>
 <script>
 "use strict";
-const CFG={"brokers":[{"url":"wss://broker.hivemq.com:8884/mqtt"},{"url":"wss://broker.emqx.io:8084/mqtt"}],"topic":"modalitateatro/MgU5BIBm9GA7lt","salt":"APr3dWd+1lybghzvilLbRw==","iv":"JJS0XQ19xH3VK53y","ct":"4vYE4yj9buMIBrGYROLgJ/4/y0O2IXaygrxCrFDvwoWTQ1AWAMHDtBjk8rT0XiGyW2pFmQeIPN33+ciyCTdsBI3SV5e7tSmNBSsqiRwwbddhjDKOuL3LGArmuN9A6eqjQriizLGLfEK0YYWN5bfDvwc19GLNFHrr9RPdMCvQMCfNASmF1ZPdd/TXVlR4snKikUaZV2OVX6luuQ==","iter":200000};
+const CFG={"brokers":[{"url":"wss://r21a1286.ala.eu-central-1.emqxsl.com:8084/mqtt","user":"regia","passEnc":{"iv":"dpP3QJWk4Lyt0PmQ","ct":"hW9vUgDDXYwqrJv+LYY+84WEYLAgspBvl4/05dcVI59EBFpxLQKwAg=="}}],"topic":"modalitateatro/MgU5BIBm9GA7lt","salt":"APr3dWd+1lybghzvilLbRw==","iv":"JJS0XQ19xH3VK53y","ct":"4vYE4yj9buMIBrGYROLgJ/4/y0O2IXaygrxCrFDvwoWTQ1AWAMHDtBjk8rT0XiGyW2pFmQeIPN33+ciyCTdsBI3SV5e7tSmNBSsqiRwwbddhjDKOuL3LGArmuN9A6eqjQriizLGLfEK0YYWN5bfDvwc19GLNFHrr9RPdMCvQMCfNASmF1ZPdd/TXVlR4snKikUaZV2OVX6luuQ==","iter":200000};
 // SCALETTA DELLO SPETTACOLO (uguale per pubblico e regia)
 const CUES = [
   {id:'inizio',     icona:'🎭', nome:'Si comincia!',                  quando:'Si spengono le luci e sul ledwall parte il logo MODALITÀ TEATRO'},
@@ -175,6 +175,7 @@ async function unlock(pw){
   const base=await crypto.subtle.importKey('raw',enc.encode(pw),'PBKDF2',false,['deriveKey']);
   const aes=await crypto.subtle.deriveKey({name:'PBKDF2',salt:b64d(CFG.salt),iterations:CFG.iter,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,['decrypt']);
   const pk=await crypto.subtle.decrypt({name:'AES-GCM',iv:b64d(CFG.iv)},aes,b64d(CFG.ct));
+  for(const b of CFG.brokers){if(b.passEnc){b.pass=new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:b64d(b.passEnc.iv)},aes,b64d(b.passEnc.ct)));}}
   return crypto.subtle.importKey('pkcs8',pk,{name:'ECDSA',namedCurve:'P-256'},false,['sign']);
 }
 async function provaPw(pw){

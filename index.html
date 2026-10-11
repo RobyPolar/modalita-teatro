@@ -742,7 +742,7 @@ const VOTI = {
   finale: {q:'Cosa devono fare Roby e Jenny?', a:[{k:'salva',e:'🐧',t:'Salvare Lorenzo!',c:'#ff8a1c',d:'#9a4a00'},{k:'ai',e:'🤖',t:'Tenere Giga Lorenzist',c:'#13b5d6',d:'#0a6577'}]},
 };
 
-const CFG = {"brokers":[{"url":"wss://broker.hivemq.com:8884/mqtt"},{"url":"wss://broker.emqx.io:8084/mqtt"}],"topic":"modalitateatro/MgU5BIBm9GA7lt","pub":{"kty":"EC","crv":"P-256","x":"KnzLEVBgv2vpcgAGFqnOeax9GlqunEsej2Mj0RVvVz8","y":"klEXmySwNFXEMzOQi3G0TbEJXZFTvXfuUXWdv0o5xYs"},"privato":false};
+const CFG = {"brokers":[{"url":"wss://r21a1286.ala.eu-central-1.emqxsl.com:8084/mqtt","user":"pubblico","pass":"kwHPxbGXoBG8nhiY","privato":true}],"topic":"modalitateatro/MgU5BIBm9GA7lt","pub":{"kty":"EC","crv":"P-256","x":"KnzLEVBgv2vpcgAGFqnOeax9GlqunEsej2Mj0RVvVz8","y":"klEXmySwNFXEMzOQi3G0TbEJXZFTvXfuUXWdv0o5xYs"},"privato":true};
 const $=id=>document.getElementById(id);
 const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
 const myId=store.get('mt_id')||Math.random().toString(36).slice(2,10); store.set('mt_id',myId);

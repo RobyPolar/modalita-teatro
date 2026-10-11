@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-XTq3EfMwqKQ21tmmgz19eIMeQM4C24GGrFmFL1KTUxI=' 'sha256-7kDhm5DxPM0ZkkyyM5D9NyRhaLyKTzVpZ8GHZwitTbU='; style-src 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; font-src data:; worker-src blob:; connect-src 'self' wss://r21a1286.ala.eu-central-1.emqxsl.com:8084; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-XTq3EfMwqKQ21tmmgz19eIMeQM4C24GGrFmFL1KTUxI=' 'sha256-vDNHlgcOzLkn/iTH+cnL0O+HYOqnwo8pFanFcIchq7A='; style-src 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; font-src data:; worker-src blob:; connect-src 'self' wss://r21a1286.ala.eu-central-1.emqxsl.com:8084; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
@@ -493,6 +493,24 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 .dito i+i{animation-delay:.25s}
 @keyframes tocca{0%,100%{transform:translate(14px,14px) scale(1)}40%{transform:translate(0,0) scale(.92)}55%{transform:translate(0,0) scale(.92)}}
 @keyframes onda{0%,35%{transform:scale(.2);opacity:0}45%{opacity:1}100%{transform:scale(2.4);opacity:0}}
+
+/* salva il video: pulsante evidente + avviso */
+.gz-btn{border:0;cursor:pointer;font-family:inherit}
+.gz-btn.salva{font-size:18px;padding:14px 22px;animation:luceBtn 1.2s ease-in-out infinite;position:relative;overflow:hidden}
+.gz-btn.salva::after{content:"";position:absolute;top:-20%;bottom:-20%;width:40%;left:-60%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.7),transparent);transform:skewX(-20deg);animation:lampo 2.4s ease-in-out infinite}
+.gz-salvato{margin-top:8px;background:#d9ffe6;color:#0b5a2a;border-radius:12px;padding:10px;font-weight:900}
+.gz-salvato small{font-weight:700}
+#avvisoSalva{position:fixed;inset:0;z-index:120;background:rgba(10,0,6,.82);display:flex;align-items:center;justify-content:center;padding:18px}
+#avvisoSalva[hidden]{display:none}
+.as-box{background:#fffaf0;color:#2a1208;border-radius:20px;max-width:420px;width:100%;padding:20px 18px;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,.6);font:700 15px/1.4 'Nunito',system-ui,sans-serif}
+.as-ic{font-size:46px}
+.as-box h3{font-family:var(--titolo);font-size:28px;color:#b3121f;margin:4px 0 8px}
+.as-box p{margin:6px 0}
+.as-ok{display:flex;gap:10px;align-items:flex-start;text-align:left;background:#ffe9b8;border-radius:12px;padding:10px;margin:12px 0;font-weight:900}
+.as-ok input{width:22px;height:22px;flex:none;margin-top:1px}
+.as-si{display:block;width:100%;padding:14px;border-radius:14px;border:0;background:#b3121f;color:#ffd84a;font:400 22px var(--titolo);cursor:pointer}
+.as-si:disabled{opacity:.4}
+.as-no{margin-top:8px;background:none;border:0;text-decoration:underline;font-weight:900;color:#5d0a12;cursor:pointer;padding:6px}
 </style>
 </head>
 <body>
@@ -754,15 +772,27 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
     <video id="gzVideo" class="gz-media" playsinline controls preload="metadata" hidden></video>
     <p id="gzTesto"></p>
     <div class="gz-az">
-      <a id="gzScarica" class="gz-btn" download="video-Roby-Jenny-Lore.mp4" hidden>⬇️ Scarica il video</a>
+      <button id="gzScarica" class="gz-btn salva" hidden>⬇️ SALVA IL VIDEO</button>
       <a id="gzScaricaFoto" class="gz-btn" download="foto-Roby-Jenny-Lore.jpg" hidden>⬇️ Scarica la foto</a>
     </div>
-    <div class="gz-nota">⏳ La risposta resta disponibile per <b>3 giorni</b>, poi sparisce per non riempire i server: se vuoi tenerla, <b>scaricala</b>!</div>
+    <div class="gz-salvato" id="gzSalvato" hidden>✅ Video salvato nel tuo telefono!<br><small>L'abbiamo cancellato dal sito: lo trovi nei tuoi download / galleria.</small></div>
+    <div class="gz-nota" id="gzNota">⬇️ <b>Salva il video nel tuo telefono!</b> Quando lo scarichi viene <b>cancellato dal sito</b> (per la tua privacy). Se non lo salvi, sparisce comunque dopo 3 giorni.</div>
   </div>
   <a class="t1-btn" href="https://www.ticketone.it/artist/roby-jenny-lorenzist/" target="_blank" rel="noopener"><span>⭐⭐⭐⭐⭐</span>Ti è piaciuto? Lascia una recensione su TicketOne</a>
   <button class="gz-link" id="gzRileggi">💌 Riapri la lettera</button>
   <button class="gz-link" id="gzAttestato">🏆 Torna all'attestato</button>
 </section>
+
+<!-- AVVISO PRIMA DI SCARICARE IL VIDEO -->
+<div id="avvisoSalva" hidden><div class="as-box">
+  <div class="as-ic">⚠️</div>
+  <h3>Attenzione!</h3>
+  <p>Stai per salvare il video nel tuo telefono.<br><b>Dopo che lo scarichi, il video viene cancellato dal sito</b> e non potrai scaricarlo di nuovo.</p>
+  <p>Controlla che sia salvato bene (nei <b>download</b> o nella <b>galleria</b>).</p>
+  <label class="as-ok"><input type="checkbox" id="asOk"> Ho capito: dopo il download il video viene cancellato</label>
+  <button class="as-si" id="asSi" disabled>⬇️ SCARICA IL VIDEO</button>
+  <button class="as-no" id="asNo">Non ora</button>
+</div></div>
 
 <!-- LETTERA IN ARRIVO -->
 <div id="lettera">
@@ -801,7 +831,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
   <li><b>Codice casuale del telefono.</b> Viene creato dalla pagina e non contiene nome, numero o altri dati della persona: serve solo per contare i telefoni collegati, i voti e per far arrivare la risposta alla lettera giusta.</li>
   <li><b>Voti e «colpi» del gioco.</b> Sono anonimi e servono solo durante lo spettacolo per mostrare i risultati.</li>
   <li><b>Lettera facoltativa (messaggio ed eventuale selfie).</b> Viene inviata solo alla regia dello spettacolo. <b>La foto non viene salvata</b> su nessun server: viene mostrata agli artisti e viene cancellata quando la regia preme «Visto» o chiude la pagina. Le parole volgari vengono filtrate automaticamente.</li>
-  <li><b>Risposta degli artisti</b> (testo, e a volte una foto o un video degli artisti). Resta sul server dei messaggi <b>al massimo 3 giorni</b>, così arriva anche se il telefono era spento, poi viene cancellata automaticamente. Durante questi giorni la puoi rivedere e scaricare sul tuo telefono.</li>
+  <li><b>Risposta degli artisti</b> (testo, e a volte una foto o un video degli artisti). Resta sul server dei messaggi <b>al massimo 3 giorni</b>, così arriva anche se il telefono era spento, poi viene cancellata automaticamente. Se la risposta contiene un <b>video personale</b>, puoi salvarlo sul tuo telefono: <b>appena lo scarichi viene cancellato dal server e dalla pagina</b> (prima di scaricarlo te lo chiediamo e devi confermare). Se non lo scarichi, si cancella comunque dopo 3 giorni.</li>
   <li><b>Dati tecnici di connessione</b> (ad es. indirizzo IP), trattati dai fornitori tecnici solo per far funzionare il servizio.</li>
   <li><b>Memoria del telefono.</b> Soprannome, squadra, codice e «lettera già spedita» restano salvati <b>solo sul tuo telefono</b> (memoria locale del browser) e si cancellano cancellando i dati del sito. Sono strumenti tecnici necessari: non usiamo cookie di profilazione, statistiche o pubblicità.</li>
 </ul>
@@ -823,7 +853,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 <h4>5. Per quanto tempo</h4>
 <ul>
   <li>Selfie e messaggi delle lettere: non vengono salvati; restano solo sullo schermo della regia finché non vengono cancellati.</li>
-  <li>Risposte degli artisti: massimo 3 giorni, poi cancellazione automatica.</li>
+  <li>Risposte degli artisti: massimo 3 giorni, poi cancellazione automatica. I video personali vengono cancellati subito dopo che li hai scaricati.</li>
   <li>Momenti dello spettacolo inviati ai telefoni: massimo 1 giorno.</li>
   <li>Voti, squadre e conteggi: solo durante lo spettacolo, non vengono archiviati.</li>
 </ul>
@@ -1192,7 +1222,7 @@ function rispostaRegia(r){
   $('ltVidWait').hidden=true;$('ltVidWait').textContent='🎬 Video in arrivo…';
   $('ltTesto').textContent=r.t||'';
   const fi=$('ltImg');if(r.img&&/^data:image\/jpeg;base64,/.test(r.img)){fi.src=r.img;fi.hidden=false;}else{fi.removeAttribute('src');fi.hidden=true;}
-  const v=$('ltVideo');if(r.vidUrl){v.src=r.vidUrl;v.hidden=false;v.load();}else if(r.vid){v.hidden=true;$('ltVidWait').hidden=false;}
+  const v=$('ltVideo');if(r.vid&&store.get('mt_vsalvato')===r.vid.k){v.removeAttribute('src');v.hidden=true;}else if(r.vidUrl){v.src=r.vidUrl;v.hidden=false;v.load();}else if(r.vid){v.hidden=true;$('ltVidWait').hidden=false;}
   else if(r.url&&String(r.url).startsWith('blob:')){v.src=r.url;v.hidden=false;v.load();}else if(r.v&&/^video\d{1,2}\.mp4$/.test(r.v)){v.src='video/'+r.v;v.hidden=false;v.load();}else{v.removeAttribute('src');v.hidden=true;}const L=$('lettera');L.classList.remove('aperta');void L.offsetWidth;L.classList.add('on');
   sfx('boom');setTimeout(()=>sfx('festa'),600);vibra([200,80,200,80,400]);flash();
   rain(['💌','⭐','✨','🎉','💖'],30);
@@ -1212,9 +1242,26 @@ function mostraGrazie(){const r=ultimaRisposta;if(!r){SCENES.fine();return;}
 function aggiornaVideoGrazie(){const r=ultimaRisposta;if(!r)return;const v=$('gzVideo'),dl=$('gzScarica'),w=$('gzVidWait');
   let src=null,tipo='video/mp4';
   if(r.vidUrl){src=r.vidUrl;tipo=(r.vid&&r.vid.type)||tipo;}else if(r.v&&/^video\d{1,2}\.mp4$/.test(r.v))src='video/'+r.v;
-  if(src){if(v.getAttribute('src')!==src){v.src=src;v.load();}v.hidden=false;dl.href=src;dl.download='video-Roby-Jenny-Lore.'+estVideo(tipo);dl.hidden=false;w.hidden=true;}
+  const salvato=r.vid&&store.get('mt_vsalvato')===r.vid.k;
+  $('gzSalvato').hidden=!salvato;$('gzNota').hidden=!!salvato||!(src||r.vid);
+  if(salvato){v.pause();v.removeAttribute('src');v.hidden=true;dl.hidden=true;w.hidden=true;return;}
+  if(src){if(v.getAttribute('src')!==src){v.src=src;v.load();}v.hidden=false;dl.dataset.src=src;dl.dataset.nome='video-Roby-Jenny-Lore.'+estVideo(tipo);dl.hidden=false;w.hidden=true;}
   else if(r.vid){v.hidden=true;dl.hidden=true;w.hidden=false;attesaVideo=r;vuoiVideo();setTimeout(provaVideo,50);}
   else{v.pause();v.removeAttribute('src');v.hidden=true;dl.hidden=true;w.hidden=true;}}
+/* salvare il video: avviso, si accetta, si scarica, poi si cancella dal sito e dalla pagina */
+function videoDaSalvare(){const r=ultimaRisposta;return !!(r&&r.vid&&r.vidUrl&&store.get('mt_vsalvato')!==r.vid.k);}
+$('gzScarica').addEventListener('click',()=>{const r=ultimaRisposta;if(!r)return;
+  if(!r.vid){scarica($('gzScarica').dataset.src,$('gzScarica').dataset.nome);return;}   // video uguale per tutti: niente da cancellare
+  $('asOk').checked=false;$('asSi').disabled=true;$('avvisoSalva').hidden=false;});
+$('asOk').addEventListener('change',()=>{$('asSi').disabled=!$('asOk').checked;});
+$('asNo').addEventListener('click',()=>{$('avvisoSalva').hidden=true;});
+$('asSi').addEventListener('click',()=>{const r=ultimaRisposta;$('avvisoSalva').hidden=true;if(!r||!r.vid||!r.vidUrl)return;
+  scarica(r.vidUrl,$('gzScarica').dataset.nome||'video-Roby-Jenny-Lore.mp4');
+  store.set('mt_vsalvato',r.vid.k);ackVideo=r.vid.k;ping();setTimeout(ping,4000);   // dice alla regia di cancellarlo dal server
+  sfx('festa');rain(['✅','💾','🎉'],16);
+  const vecchio=r.vidUrl;setTimeout(()=>{const lt=$('ltVideo');lt.pause();lt.removeAttribute('src');lt.hidden=true;try{URL.revokeObjectURL(vecchio);}catch(e){}r.vidUrl=null;aggiornaVideoGrazie();},2500);});
+function scarica(href,nome){const a=document.createElement('a');a.href=href;a.download=nome;a.rel='noopener';document.body.appendChild(a);a.click();setTimeout(()=>a.remove(),1000);}
+addEventListener('beforeunload',e=>{if(videoDaSalvare()){e.preventDefault();e.returnValue='';}});   // "sei sicuro? non hai salvato il video"
 $('gzRileggi').addEventListener('click',()=>{$('gzVideo').pause();if(ultimaRisposta)rispostaRegia(ultimaRisposta);});
 $('gzAttestato').addEventListener('click',()=>{$('gzVideo').pause();SCENES.fine();});
 /* ---------- lobby: squadra e nome ---------- */
@@ -1320,7 +1367,8 @@ async function apriCifrato(o){const {priv}=await chiaviLettera();
   const k=await crypto.subtle.deriveKey({name:'ECDH',public:epk},priv,{name:'AES-GCM',length:256},false,['decrypt']);
   const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:b64d(o.iv)},k,b64d(o.ct));return {k,testo:dec.decode(pt)};}
 function pubblica(sub,payload){const i=conn.findIndex(Boolean);if(i<0)return false;clients[i].publish(CFG.topic+sub,payload,{qos:sub==='/hb'?0:1});return true;}
-function ping(){pubblica('/hb',myId+'|'+team);}
+let ackVideo=store.get('mt_vsalvato')||'';
+function ping(){pubblica('/hb',myId+'|'+team+(ackVideo&&/^[a-z0-9]{4,12}$/.test(ackVideo)?'|'+ackVideo:''));}
 let lobbyPrima=false,inCorso=null; // primo ingresso: prima nome e squadra, poi lo spettacolo
 function aggiornaEntra(){const b=$('btnEntra');if(!b)return;b.hidden=!(lobbyPrima&&inCorso);b.disabled=!team;
   $('entraInfo').hidden=!(lobbyPrima&&inCorso);$('badge').style.display=(lobbyPrima&&inCorso)?'none':'';}
@@ -1334,7 +1382,8 @@ function applica(m){
   if(m.c==='attesa'){inCorso=null;try{$('ltVideo').pause();}catch(e){}$('lettera').classList.remove('on','aperta');$('sus').classList.remove('on');clearTimers();clearCrack();$('fx').innerHTML='';$('riserva').style.visibility='';cueIndex=-1;lobby();aggiornaRiserva();return;}
   if(m.c==='risposta'){let r;try{r=JSON.parse(m.d)}catch(e){r={t:String(m.d||'')}}if(typeof r!=='object'||!r)r={t:String(r)};
     const out={t:String(r.t||'').slice(0,1000),v:r.v,img:typeof r.img==='string'?r.img:null,vid:r.vid&&typeof r.vid==='object'?r.vid:null};
-    attesaVideo=out.vid?out:null;if(out.vid){if(!rispSilenziosa)vuoiVideo();setTimeout(provaVideo,50);}
+    const giaSalvato=out.vid&&store.get('mt_vsalvato')===out.vid.k;
+    attesaVideo=out.vid&&!giaSalvato?out:null;if(attesaVideo){if(!rispSilenziosa)vuoiVideo();setTimeout(provaVideo,50);}
     rispostaRegia(out);return;}
   if(m.c==='resetlettera'){store.set(KEY_LETTERA,'');store.set('mt_reset',String(m.s));ultimaRisposta=null;attesaVideo=null;for(const k in pezzi)delete pezzi[k];$('sfAncora').hidden=true;if(current==='fine'||current==='selfie'||current==='grazie'){$('lettera').classList.remove('on','aperta');SCENES.fine();}return;}
   if(m.c==='sussurro'){let d={};try{d=JSON.parse(m.d||'{}')}catch(e){}caosSussurra(d.p??.6,d.ms??7000);return;}

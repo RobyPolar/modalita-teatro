@@ -6,7 +6,7 @@
 <title>Regia – Modalità Teatro</title>
 <meta name="robots" content="noindex">
 <meta name="referrer" content="no-referrer">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-SPvMeac1VEscUcl8Slwu0gB/tFv4ZHmqBMLFlkmPS+M=' 'sha256-XTq3EfMwqKQ21tmmgz19eIMeQM4C24GGrFmFL1KTUxI=' 'sha256-r7FFWvEvqOWhnla7vvtdQi4arH03/SKA6VaZptfcy/U=' 'sha256-k3vWo3wDynJnRdO3eGO4PwjdZG4U0n9tnV+gld9ippA='; style-src 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; font-src data:; worker-src blob:; connect-src 'self' wss://r21a1286.ala.eu-central-1.emqxsl.com:8084 https://ntfy.sh; base-uri 'none'; form-action 'none'; frame-src 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-SPvMeac1VEscUcl8Slwu0gB/tFv4ZHmqBMLFlkmPS+M=' 'sha256-XTq3EfMwqKQ21tmmgz19eIMeQM4C24GGrFmFL1KTUxI=' 'sha256-r7FFWvEvqOWhnla7vvtdQi4arH03/SKA6VaZptfcy/U=' 'sha256-1dPKuACVFmDWyzOGvjLU302XQjikoO6x8vM23/lijmI='; style-src 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; font-src data:; worker-src blob:; connect-src 'self' wss://r21a1286.ala.eu-central-1.emqxsl.com:8084 https://ntfy.sh; base-uri 'none'; form-action 'none'; frame-src 'self'">
 <meta name="referrer" content="no-referrer">
 
 <script>if(top!==self){document.documentElement.style.display="none";top.location=self.location;}</script>
@@ -294,27 +294,17 @@ const FILTRO=(()=>{
 const CFG={"brokers":[{"url":"wss://r21a1286.ala.eu-central-1.emqxsl.com:8084/mqtt","user":"regia","v5":true,"passEnc":{"iv":"SwUJd5ymsC0ILEo8","ct":"OxIzrCpdyFUctvFiOXB/8Ik0brptTtfhgFj4OskgsUyRdJet9aoMCg=="}}],"topic":"modalitateatro/MgU5BIBm9GA7lt","salt":"wXB4kl7sAAgWEtLRgAt3rQ==","iv":"mRgwz8J+xI0AYSOS","ct":"HkLV2Fzf04HQLQcZBaELIi87ZXcWeF7oJyTBISx1QYYW+FO92F7AvZuE/OCZT6cUTcfO14Iv+70w0VRLw5kJwjy3wTzbhc0OlzF8fvOjrdGZxVfx4MIn6jzZKpDAc6HpvvXWQytrTTNrv9G1L6NrWC8uT2MjnsOsmNv5r59CgcNIpfu2XHhuWQ/a+ZcFH6528Dwe6gMAhcjXjg==","iter":600000,"lk":{"iv":"NUMFPmEy83wX+N8e","ct":"BEv3U96RiHwg3DgYgtcUDl64qjSlhnseWkoEpBfj0O3oNiLviQWOzQRSktIO99x8TO5FMThBVgCWheCiRxZ+N7it3+4+ZSKDq4OQbnvAIWrXMs3Va+fOcPD1oKkG972W9msxSBU9Eny2G4bUpDPcwp2QfkkaeTMvKQ2whFFgi2JjyLG5e1cGv1DJ/pGvyAxz9B0VBJfsSuE3pA=="}};
 // SCALETTA DELLO SPETTACOLO (uguale per pubblico e regia)
 const CUES = [
-  {id:'inizio',     icona:'🎭', nome:'Si comincia!',                  quando:'Si spengono le luci e sul ledwall parte il logo MODALITÀ TEATRO'},
-  {id:'spariti',    icona:'❓', nome:'Dove sono finiti?!',            quando:'Narratore: «Roby non c\'è. Jenny non c\'è. Lorenzo non c\'è…»'},
-  {id:'chiamata',   icona:'📞', nome:'Videochiamata in arrivo',       quando:'Regia: «Abbiamo trovato un segnale! Stanno cercando di contattarci!»'},
-  {id:'hackerato',  icona:'📵', nome:'I telefoni vengono hackerati', quando:'La videochiamata si blocca: «SEGNALE ASSENTE» e interferenze sul ledwall'},
-  {id:'hack',       icona:'💻', nome:'ACCESSO OTTENUTO',              quando:'Il video si congela, interferenza, schermata verde'},
-  {id:'caos',       icona:'😈', nome:'Arriva il Dottor Caos',         quando:'Compare il volto gigante del Dottor Caos'},
-  {id:'urla',       icona:'📣', nome:'Urlate il mio nome!',           quando:'Sul ledwall: «URLATE IL MIO NOME!»'},
-  {id:'recensione', icona:'⭐', nome:'La recensione a una stella',    quando:'Caos: «Io le ho lette! Sentite questa!»'},
-  {id:'allarme',    icona:'🚨', nome:'Allarme: le porte si aprono',   quando:'Caos: «…NO, NO, NO!» – pannello porte sul ledwall'},
-  {id:'roby',       icona:'🐻‍❄️', nome:'Entra Roby',                 quando:'Il fascio di luce illumina Roby in fondo alla sala'},
-  {id:'jenny',      icona:'💖', nome:'Entra Jenny',                   quando:'Jenny: «ROOOOBYYYY!» – appare dal fondo'},
-  {id:'lore',       icona:'🐧', nome:'Entra Lorenzo (e Pingu)',       quando:'Lorenzo arriva correndo con Pingu'},
-  {id:'vetro',      icona:'💢', nome:'Smettetela di essere felici!',  quando:'Caos: «E VOI! SMETTETELA DI ESSERE FELICI!»'},
-  {id:'scena8',     icona:'🦶', nome:'Colpite Caos!',                 quando:'Roby: «Ci serve il vostro aiuto!»'},
-  {id:'vittoria',   icona:'💥', nome:'Caos sconfitto',                quando:'«ULTIMO COLPO! TUTTI INSIEME!» – esplosione sul ledwall'},
-  {id:'voto_gioco', icona:'🎮', nome:'VOTO: quale gioco?',            quando:'Roby: «Preferite Ruba un Uovo… oppure Murder Mystery 2?!»', voto:'gioco'},
-  {id:'giga',       icona:'🤖', nome:'Arriva Giga Lorenzist',         quando:'Il clone si gira: «Obiettivo completato…»'},
-  {id:'voto_barare',icona:'⚖️', nome:'VOTO: è giusto barare?',        quando:'Roby: «Ragazzi, secondo voi è giusto?!»', voto:'barare'},
-  {id:'sost',       icona:'🔄', nome:'Sostituzione di Lorenzo',       quando:'Giga: «Avvio procedura di sostituzione.»'},
-  {id:'voto_finale',icona:'💔', nome:'VOTO: salvare Lorenzo?',        quando:'Roby e Jenny litigano: salvare Lorenzo o tenere la versione AI?', voto:'finale'},
-  {id:'fine',       icona:'🏆', nome:'Grazie + attestato',            quando:'Saluti finali'},
+  {id:'inizio',    icona:'🎭', nome:'Si spengono le luci',               quando:'Teatro al buio: sul ledwall parte il logo MODALITÀ TEATRO — poi il telefono si mette a riposo'},
+  {id:'hackerato', icona:'📵', nome:'Caos hackera anche i telefoni',     quando:'Scena 3 – le videochiamate saltano: «…lo spettacolo è stato… CANCELLATO!»'},
+  {id:'allarme',   icona:'🚨', nome:'Allarme: il camerino si sblocca',   quando:'Fine Caos Show – secondo colpo, scatta l\'allarme (prima di «JENNY! HO TROVATO L\'USCITA!»)'},
+  {id:'sus_ultra', icona:'💅', nome:'Sussurro di Ultra Roby (facoltativo)', quando:'Brookhaven, in un momento lento (es. Casa 2, mentre cercano la stanza segreta). Se non serve, saltalo'},
+  {id:'sus_cyber', icona:'🩷', nome:'Sussurro di Cyber Jenny (facoltativo)', quando:'Gioco di Jenny, tra una prova e l\'altra. Se non serve, saltalo'},
+  {id:'sostpub',   icona:'🧬', nome:'I cloni hackerano il pubblico',     quando:'Scena 24 – Giga: «Nuovo obiettivo: HACKERARE tutte le persone presenti.»'},
+  {id:'buio',      icona:'🌑', nome:'Silenzio: Caos chiede aiuto',       quando:'Scena 24 – compare il riquadro rosso di Caos: «…Pronto? C\'è ancora qualcuno?»'},
+  {id:'chiamali',  icona:'📞', nome:'Chiamateli!',                       quando:'Scena 25 – lo schermo chiede di chiamare Roby, Jenny e Lorenzo'},
+  {id:'giu',       icona:'🙌', nome:'Sono tornati: telefoni giù!',       quando:'Scena 25 – i tre sono sul palco (prima della battaglia finale)'},
+  {id:'festa',     icona:'🎉', nome:'Modalità Festa',                    quando:'Scena 34 – sul ledwall: MODALITÀ FESTA — ATTIVATA!'},
+  {id:'fine',      icona:'🏆', nome:'Grazie + attestato',                quando:'Dopo gli inchini finali'},
 ];
 const VOTI = {
   gioco:  {q:'Quale gioco giochiamo?', a:[{k:'uovo',e:'🥚',t:'Ruba un Uovo',c:'#f2a900',d:'#8a5d00'},{k:'mm2',e:'🔪',t:'Murder Mystery 2',c:'#d61f3a',d:'#7a0614'}]},

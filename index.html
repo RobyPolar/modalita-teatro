@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-XTq3EfMwqKQ21tmmgz19eIMeQM4C24GGrFmFL1KTUxI=' 'sha256-9nEBROdgDsT29c1hlemRqaoWL9BJ+E1fFMzqLSZpciw='; style-src 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; font-src data:; worker-src blob:; connect-src 'self' wss://r21a1286.ala.eu-central-1.emqxsl.com:8084; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-XTq3EfMwqKQ21tmmgz19eIMeQM4C24GGrFmFL1KTUxI=' 'sha256-Gnjs0PGfhLVkeoCziJeHKfp84dF1KajepAnlqAE/Evo='; style-src 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; font-src data:; worker-src blob:; connect-src 'self' wss://r21a1286.ala.eu-central-1.emqxsl.com:8084; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
@@ -637,6 +637,12 @@ body.gira #giraTel{display:flex}
 #s-start{padding-top:84px!important;justify-content:flex-start!important}
 @media(min-height:760px){#s-start{justify-content:center!important}}
 @media(max-height:700px){.logo-img{width:min(74vw,310px)}#s-start .bigbtn{padding-top:12px;padding-bottom:12px}}
+
+/* finestre a comparsa: in alto e mai piu' alte dello schermo visibile, cosi' la X si raggiunge sempre (anche con la tastiera di iPhone) */
+#rbxM,#privacy{align-items:flex-start!important;padding-top:max(14px,env(safe-area-inset-top))!important;overflow-y:auto}
+#rbxM .pv-box,#privacy .pv-box{max-height:calc(100vh - 28px);max-height:calc(100dvh - 28px)}
+.pv-x{width:44px!important;height:44px!important;font-size:20px!important;top:6px!important;right:6px!important;z-index:5}
+.rbx-in{font-size:18px!important}
 </style>
 </head>
 <body>
@@ -1836,7 +1842,11 @@ function misura(s){let top=1e9,bot=-1e9,lef=1e9,rig=-1e9;
     top=Math.min(top,c.offsetTop-mt);bot=Math.max(bot,c.offsetTop+c.offsetHeight+mb);
     const cx=c.offsetLeft+c.offsetWidth/2;lef=Math.min(lef,cx-w/2);rig=Math.max(rig,cx+w/2);}
   return bot>top?{h:bot-top,w:rig-lef}:null;}
+let altezzaPiena=innerHeight,larghezzaPiena=innerWidth;
+function staScrivendo(){const a=document.activeElement;return !!a&&(a.tagName==='INPUT'||a.tagName==='TEXTAREA');}
 function adatta(){
+  if(staScrivendo()&&innerWidth===larghezzaPiena&&innerHeight<altezzaPiena)return;   // si e' solo aperta la tastiera: non toccare niente
+  altezzaPiena=innerHeight;larghezzaPiena=innerWidth;
   const vw=innerWidth,vh=innerHeight;
   const su=Math.max(1,Math.min(1.9,vw/440,vh/620));   // tablet: ingrandisci (ma non troppo)
   const stretto=vw<360?vw/375:1;                         // telefoni strettissimi (pieghevoli chiusi)
@@ -1847,6 +1857,7 @@ function adatta(){
       const ah=s.clientHeight-parseFloat(cs.paddingTop)-parseFloat(cs.paddingBottom),aw=s.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight)+30;
       let k=Math.min(su,ah/m.h,aw/m.w);if(stretto<1)k=Math.min(k,stretto);k=Math.max(.5,Math.min(k,su));
       if(Math.abs(k-1)>.02)figli.forEach(c=>{if(getComputedStyle(c).position!=='absolute')c.style.zoom=k.toFixed(3);});
+      s.querySelectorAll('input:not([type=checkbox]),textarea').forEach(el=>{el.style.fontSize=k<1?Math.ceil(16.5/k)+'px':'';});   // iPhone ingrandisce la pagina se il testo e' sotto i 16px
       s.style.overflowY=k<=.5?'auto':'';}}}
   // la lettera
   const kl=Math.max(.6,Math.min(1.8,vh/720,vw/400));
@@ -1873,6 +1884,9 @@ adattaPresto();
   document.addEventListener('focusin',controlla);document.addEventListener('focusout',()=>{ultimoScrivi=Date.now();setTimeout(controlla,2200);});
   controlla();
 })();
+
+/* finestre: si chiudono anche toccando lo sfondo scuro */
+['rbxM','privacy'].forEach(id=>{const w=document.getElementById(id);if(w)w.addEventListener('click',e=>{if(e.target===w){try{document.activeElement&&document.activeElement.blur();}catch(_){}w.hidden=true;}});});
 </script>
 </body>
 </html>

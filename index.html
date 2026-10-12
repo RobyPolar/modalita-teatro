@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-XTq3EfMwqKQ21tmmgz19eIMeQM4C24GGrFmFL1KTUxI=' 'sha256-CmEgbDAP7xmbRB13+R9nzvk18F9DRWvlYQa5cHx+q0k='; style-src 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; font-src data:; worker-src blob:; connect-src 'self' wss://r21a1286.ala.eu-central-1.emqxsl.com:8084; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-XTq3EfMwqKQ21tmmgz19eIMeQM4C24GGrFmFL1KTUxI=' 'sha256-RHI8UB3iPXB3wFM7PbA6+0nr7z/CV+L6lBj99BpWBV8='; style-src 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; font-src data:; worker-src blob:; connect-src 'self' wss://r21a1286.ala.eu-central-1.emqxsl.com:8084; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
@@ -603,6 +603,31 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 #s-sostpub .sp-team{display:flex;gap:6px;align-items:flex-end;justify-content:center}
 #s-sostpub .sp-team img{height:86px;width:auto;filter:drop-shadow(0 0 10px rgba(255,59,92,.6))}
 #s-sostpub .sp-team img:nth-child(2){height:100px}
+
+#s-clone{gap:12px;color:#fff;background:radial-gradient(circle at 50% 40%,#3d0a1e,#0b0208 72%)}
+#s-clone.t-ultra{background:radial-gradient(circle at 50% 40%,#5a0f22,#10030a 72%)}
+#s-clone.t-cyber{background:radial-gradient(circle at 50% 40%,#5a0c49,#12031a 72%)}
+#s-clone.t-tre{background:radial-gradient(circle at 50% 40%,#40060f,#050102 72%)}
+#s-clone.t-eroi{background:radial-gradient(circle at 50% 40%,#1a5bd6,#071a44 75%)}
+#s-clone .cl-top{font-size:14px;font-weight:900;letter-spacing:2px;color:#ff9db0}
+#s-clone.t-cyber .cl-top{color:#ff9be6}
+#s-clone.t-eroi .cl-top{color:#bfe3ff}
+#s-clone .cl-imgs{display:flex;align-items:flex-end;justify-content:center;gap:4px;min-height:150px}
+#s-clone .cl-imgs img{height:min(46vh,300px);width:auto;max-width:86vw;object-fit:contain;filter:drop-shadow(0 0 18px rgba(255,59,92,.65));animation:clIn .6s cubic-bezier(.2,1.5,.4,1) both}
+#s-clone.multi .cl-imgs img{height:min(24vh,150px);max-width:30vw}
+#s-clone.t-cyber .cl-imgs img{filter:drop-shadow(0 0 18px rgba(255,95,210,.75))}
+#s-clone.t-eroi .cl-imgs img{border-radius:18px;border:4px solid #fff;filter:none;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+#s-clone .cl-imgs img:nth-child(2){animation-delay:.25s}#s-clone .cl-imgs img:nth-child(3){animation-delay:.5s}
+@keyframes clIn{from{transform:scale(.3) translateY(40px);opacity:0}to{transform:none;opacity:1}}
+#s-clone .cl-h{font-family:'Lilita One',sans-serif;font-size:clamp(34px,10.5vw,50px);line-height:1;color:#fff;text-shadow:4px 4px 0 #b3121f,0 0 22px rgba(255,59,92,.6)}
+#s-clone.t-cyber .cl-h{text-shadow:4px 4px 0 #a3127a,0 0 22px rgba(255,95,210,.6)}
+#s-clone.t-eroi .cl-h{color:#ffd23f;text-shadow:4px 4px 0 #b3121f}
+#s-clone .cl-s{font-size:clamp(18px,5.4vw,23px);font-weight:900;line-height:1.3;max-width:340px}
+#s-clone .cl-team{font-size:15px;font-weight:900;letter-spacing:1px;background:rgba(0,0,0,.35);border:2px solid rgba(255,255,255,.2);border-radius:999px;padding:6px 14px}
+#s-clone .cl-team:empty{display:none}
+#s-clone .cl-righe{display:flex;flex-direction:column;gap:6px;font-weight:900;font-size:17px}
+#s-clone .cl-righe div{opacity:0;animation:clRiga .4s ease forwards}
+@keyframes clRiga{from{opacity:0;transform:translateX(-20px)}to{opacity:1;transform:none}}
 </style>
 </head>
 <body>
@@ -691,7 +716,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 
 <!-- 12. GIGA -->
 <section class="screen" id="s-giga">
-  <div class="card gigacard glitch" style="animation:none"><img data-img="lore" alt="Giga Lorenzist"></div>
+  <div class="card gigacard glitch" style="animation:none;background:transparent;border:0;box-shadow:none"><img data-img="giga" alt="Giga Lorenzist" style="object-fit:contain;filter:drop-shadow(0 0 16px #8a1bd1)"></div>
   <div class="titoloC" style="font-size:clamp(32px,10vw,46px);text-shadow:4px 4px 0 #8a1bd1,-2px -2px 0 #23e0ff">GIGA<br>LORENZIST</div>
   <div class="team">TEAM 2.0 — <b>1/3</b> ATTIVATO</div>
   <div class="risata" id="risata">Battuta in arrivo… Premi se ti fa ridere:</div>
@@ -774,7 +799,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 <!-- SOSTITUZIONE -->
 <section class="screen" id="s-sost">
   <div class="sostL" style="margin:0 0 14px">AVVIO PROCEDURA DI SOSTITUZIONE…</div>
-  <div class="sostbox"><img data-img="lore" alt=""><img class="g" data-img="lore" alt=""></div>
+  <div class="sostbox"><img data-img="lore" alt=""><img class="g" data-img="giga" alt="" style="object-fit:contain;background:#1a0630"></div>
   <div class="prog"><i></i></div>
   <div class="titoloC" style="font-size:clamp(28px,8.5vw,38px);text-shadow:3px 3px 0 #8a1bd1">UNO SISTEMATO!<br>NE MANCANO DUE!</div>
   <div class="team">TEAM 2.0 — <b>1/3</b> ATTIVATO</div>
@@ -854,6 +879,17 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
   <div class="fe-h" id="feH">MODALITÀ<br>FESTA!</div>
   <div class="fe-i" id="feI">📱</div>
   <div class="fe-t" id="feT">Alza il telefono e muovilo a ritmo!</div>
+</section>
+
+
+<!-- CLONI / MOMENTI GRANDI (schermata riusata) -->
+<section class="screen" id="s-clone">
+  <div class="cl-top" id="clTop"></div>
+  <div class="cl-imgs" id="clImgs"></div>
+  <div class="cl-h" id="clH"></div>
+  <div class="cl-s" id="clS"></div>
+  <div class="cl-righe" id="clR"></div>
+  <div class="cl-team" id="clTeam"></div>
 </section>
 
 <!-- CAOS CHE SBUCA -->
@@ -1158,17 +1194,36 @@ document.querySelectorAll('[data-img]').forEach(el=>{
 });
 // SCALETTA DELLO SPETTACOLO (uguale per pubblico e regia)
 const CUES = [
-  {id:'inizio',    icona:'🎭', nome:'Si spengono le luci',               quando:'Teatro al buio: sul ledwall parte il logo MODALITÀ TEATRO — poi il telefono si mette a riposo'},
-  {id:'hackerato', icona:'📵', nome:'Caos hackera anche i telefoni',     quando:'Scena 3 – le videochiamate saltano: «…lo spettacolo è stato… CANCELLATO!»'},
-  {id:'allarme',   icona:'🚨', nome:'Allarme: il camerino si sblocca',   quando:'Fine Caos Show – secondo colpo, scatta l\'allarme (prima di «JENNY! HO TROVATO L\'USCITA!»)'},
-  {id:'sus_ultra', icona:'💅', nome:'Sussurro di Ultra Roby (facoltativo)', quando:'Brookhaven, in un momento lento (es. Casa 2, mentre cercano la stanza segreta). Se non serve, saltalo'},
-  {id:'sus_cyber', icona:'🩷', nome:'Sussurro di Cyber Jenny (facoltativo)', quando:'Gioco di Jenny, tra una prova e l\'altra. Se non serve, saltalo'},
-  {id:'sostpub',   icona:'🧬', nome:'I cloni hackerano il pubblico',     quando:'Scena 24 – Giga: «Nuovo obiettivo: HACKERARE tutte le persone presenti.»'},
-  {id:'buio',      icona:'🌑', nome:'Silenzio: Caos chiede aiuto',       quando:'Scena 24 – compare il riquadro rosso di Caos: «…Pronto? C\'è ancora qualcuno?»'},
-  {id:'chiamali',  icona:'📞', nome:'Chiamateli!',                       quando:'Scena 25 – lo schermo chiede di chiamare Roby, Jenny e Lorenzo'},
-  {id:'giu',       icona:'🙌', nome:'Sono tornati: telefoni giù!',       quando:'Scena 25 – i tre sono sul palco (prima della battaglia finale)'},
-  {id:'festa',     icona:'🎉', nome:'Modalità Festa',                    quando:'Scena 34 – sul ledwall: MODALITÀ FESTA — ATTIVATA!'},
-  {id:'fine',      icona:'🏆', nome:'Grazie + attestato',                quando:'Dopo gli inchini finali'},
+  {id:'inizio',     icona:'🎭', nome:'Si comincia!',                     quando:'Teatro al buio: sul ledwall parte il logo MODALITÀ TEATRO'},
+  {id:'spariti',    icona:'❓', nome:'Dove sono finiti?!',               quando:'Narratore: «Roby non c\'è. Jenny non c\'è. Lorenzo non c\'è!»'},
+  {id:'chiamata',   icona:'📞', nome:'Videochiamata in arrivo',          quando:'Scena 2 – sul maxischermo arrivano le videochiamate (Roby: «Mi sentite?»)'},
+  {id:'hackerato',  icona:'📵', nome:'I telefoni vengono hackerati',     quando:'Scena 3 – le videochiamate saltano, forte interferenza'},
+  {id:'hack',       icona:'💻', nome:'ACCESSO OTTENUTO',                 quando:'Voce misteriosa: «…lo spettacolo è stato… CANCELLATO!»'},
+  {id:'urla',       icona:'📣', nome:'Urlate il mio nome!',              quando:'Sul ledwall: «URLATE IL MIO NOME!»'},
+  {id:'caos',       icona:'😈', nome:'Arriva il Dottor Caos',            quando:'Appare Caos: «Sono io, il DOTTOR CAOS 404!»'},
+  {id:'recensione', icona:'⭐', nome:'La recensione a una stella (facoltativo)', quando:'Durante il racconto di Caos (Parte 3 – «hanno barato!»). Se non serve, saltalo'},
+  {id:'allarme',    icona:'🚨', nome:'Allarme: le porte si aprono',      quando:'Fine Caos Show – secondo colpo, scatta l\'allarme del camerino'},
+  {id:'roby',       icona:'🐻‍❄️', nome:'Entra Roby',                    quando:'Scena 5 – il fascio di luce illumina Roby in fondo alla sala'},
+  {id:'jenny',      icona:'💖', nome:'Entra Jenny',                      quando:'Scena 6 – Jenny: «ROOOOOOBYYYY!» dal fondo'},
+  {id:'lore',       icona:'🐧', nome:'Entra Lorenzo (e Pingu)',          quando:'Scena 7 – Lorenzo arriva correndo con Pingu'},
+  {id:'vetro',      icona:'💢', nome:'Smettetela di essere felici!',     quando:'Caos: «E VOI... SMETTETELA DI ESSERE FELICI!»'},
+  {id:'scena8',     icona:'🦶', nome:'Colpite Caos!',                    quando:'Scena 8 – Roby: «Ci serve il vostro aiuto!»'},
+  {id:'vittoria',   icona:'💥', nome:'Caos sconfitto',                   quando:'«ULTIMO COLPO! TUTTI INSIEME!» – esplosione sul ledwall'},
+  {id:'giga',       icona:'🤖', nome:'Arriva Giga Lorenzist',            quando:'Scena 12 – Caos: «Il mio ultimo capolavoro! GIGA LORENZIST!»'},
+  {id:'sost',       icona:'🔄', nome:'Sostituzione di Lorenzo',          quando:'Giga: «Avvio procedura di sostituzione.» – «UNO SISTEMATO!»'},
+  {id:'ultra',      icona:'💅', nome:'Arriva Ultra Roby',                quando:'Scena 17 – una voce identica a Roby: «Ciao, Roby..»'},
+  {id:'sus_ultra',  icona:'🤫', nome:'Sussurro di Ultra Roby (facoltativo)', quando:'Brookhaven, in un momento lento (es. Casa 2). Se non serve, saltalo'},
+  {id:'robyvince',  icona:'🏠', nome:'Roby vince Brookhaven',            quando:'Sul ledwall: MISSIONE COMPLETATA — ROBY VINCE 2–1'},
+  {id:'cyber',      icona:'🩷', nome:'Arriva Cyber Jenny',               quando:'Scena 20 – Cyber Jenny: «CIAOOOOOOOO!»'},
+  {id:'sus_cyber',  icona:'🤫', nome:'Sussurro di Cyber Jenny (facoltativo)', quando:'Gioco di Jenny, tra una prova e l\'altra. Se non serve, saltalo'},
+  {id:'sosttot',    icona:'⚠️', nome:'Sostituzione completata',          quando:'Scena 22 – SOSTITUZIONE IN CORSO: Roby → Ultra Roby…'},
+  {id:'sostpub',    icona:'🧬', nome:'I cloni hackerano il pubblico',    quando:'Scena 24 – Giga: «Nuovo obiettivo: HACKERARE tutte le persone presenti.»'},
+  {id:'buio',       icona:'🌑', nome:'Silenzio: Caos chiede aiuto',      quando:'Scena 24 – il riquadro rosso di Caos: «…Pronto? C\'è ancora qualcuno?»'},
+  {id:'chiamali',   icona:'☎️', nome:'Chiamateli!',                      quando:'Scena 25 – lo schermo chiede di chiamare Roby, Jenny e Lorenzo'},
+  {id:'giu',        icona:'🙌', nome:'Sono tornati: telefoni giù!',      quando:'Scena 25 – i tre sono sul palco (prima della battaglia finale)'},
+  {id:'ripristinato',icona:'💯', nome:'Spettacolo ripristinato!',        quando:'Fine battaglia – SPETTACOLO RIPRISTINATO 100%'},
+  {id:'festa',      icona:'🎉', nome:'Modalità Festa',                   quando:'Scena 34 – sul ledwall: MODALITÀ FESTA — ATTIVATA!'},
+  {id:'fine',       icona:'🏆', nome:'Grazie + attestato',               quando:'Dopo gli inchini finali'},
 ];
 const VOTI = {
   gioco:  {q:'Quale gioco giochiamo?', a:[{k:'uovo',e:'🥚',t:'Ruba un Uovo',c:'#f2a900',d:'#8a5d00'},{k:'mm2',e:'🔪',t:'Murder Mystery 2',c:'#d61f3a',d:'#7a0614'}]},
@@ -1239,6 +1294,18 @@ const SCENES={
   inizio(){show('inizio');const s=$('s-inizio');s.classList.remove('aperto');later(()=>{s.classList.add('aperto');sfx('festa');rain(['🎭','⭐','🎉','✨']);},400);vibra([60,40,60]);
     later(()=>riposo('Puoi mettere giù il telefono 🤫','Si sveglierà da solo quando servirà. Ora goditi lo spettacolo!'),7000);},
   riposo(){riposo();},
+  ultra(){clone({tema:'t-ultra',top:'⚠ TEAM 2.0 · CLONE 2/3',imgs:['ultra'],h:'ULTRA<br>ROBY',s:'«Ciao, Roby… Che imbarazzo.» 💅',team:'TEAM 2.0 — 2/3 ATTIVATO'});sfx('glitch');later(()=>sfx('risata'),600);vibra([120,60,120]);flash();},
+  robyvince(){clone({tema:'t-eroi',top:'🏠 BROOKHAVEN · MISSIONE COMPLETATA',imgs:['roby'],h:'ROBY VINCE<br>2 – 1!',s:'Ultra Roby è stata sconfitta! (Grazie Lore 🐧)',team:''});sfx('festa');rain(['🐻‍❄️','🎉','⭐','🏆'],30);vibra([60,40,60]);
+    later(()=>riposo('Che sfida! 🐻‍❄️','Il telefono si sveglierà quando servirà.'),12000);},
+  cyber(){clone({tema:'t-cyber',top:'⚠ TEAM 2.0 · CLONE 3/3',imgs:['cyber'],h:'CYBER<br>JENNY',s:'«CHI È PRONTO A FARE UN DISASTRO?! AHAHAHA!» 🩷',team:'TEAM 2.0 — 3/3 ATTIVATO'});sfx('glitch');later(()=>sfx('risata'),500);vibra([100,50,100,50,200]);flash();shake(document.body);},
+  sosttot(){clone({tema:'t-tre multi',top:'⚠ SOSTITUZIONE IN CORSO',imgs:['ultra','giga','cyber'],h:'SOSTITUZIONE<br>COMPLETATA',s:'',team:'TEAM ORIGINALE 1 — TEAM 2.0 2'});
+    const R=[['🐻‍❄️ ROBY','ULTRA ROBY'],['💖 JENNY','CYBER JENNY'],['🐧 LORENZIST','GIGA LORENZIST']];
+    $('clR').innerHTML=R.map((r,i)=>`<div style="animation-delay:${.8+i*.9}s">${r[0]} → <span style="color:#ff3b5c">${r[1]}</span></div>`).join('');
+    sfx('sirena');[800,1700,2600].forEach(ms=>later(()=>{sfx('glitch');vibra(150);},ms));},
+  ripristinato(){clone({tema:'t-eroi multi',top:'✅ TEAM 2.0 SCONFITTO',imgs:['roby','jenny','lore'],h:'SPETTACOLO<br>RIPRISTINATO!',s:'100% — Ce l\'abbiamo fatta, tutti insieme! 💙',team:''});
+    flash();sfx('boom');later(()=>sfx('festa'),700);rain(['💥','🎉','⭐','💙','🎊'],48);vibra([100,50,100,50,300]);
+    later(()=>riposo('Ora ascolta… 🤫','Il telefono si sveglia per la festa finale.'),14000);},
+
   sus_ultra(){if(current!=='riposo')riposo();sussurra('ultra',1,1500);},
   sus_cyber(){if(current!=='riposo')riposo();sussurra('cyber',1,1500);},
   sostpub(){show('sostpub');const N=(nome||'agente').toUpperCase();$('spNome').textContent='Copia di '+N+' in corso…';
@@ -1323,6 +1390,10 @@ const SCENES={
     [1600,7000,13000,20000].forEach(ms=>later(()=>{if(current==='fine'&&postaAperta&&store.get(KEY_LETTERA)!=='1'){sfx('ding');if(ms===1600)vibra(60);}},ms));},
 };
 
+/* ---------- schermata riusata per cloni e momenti grandi ---------- */
+function clone(o){const s=$('s-clone');s.className='screen '+(o.tema||'');
+  $('clTop').textContent=o.top||'';$('clH').innerHTML=o.h||'';$('clS').textContent=o.s||'';$('clTeam').textContent=o.team||'';$('clR').innerHTML='';
+  $('clImgs').innerHTML=(o.imgs||[]).map(k=>`<img src="${IMG[k]}" alt="">`).join('');show('clone');}
 /* ---------- riposo: schermo scuro e calmo fra un momento e l'altro ---------- */
 function riposo(t,s){$('riserva').style.visibility='';clearTimers();$('fx').innerHTML='';clearCrack();
   if(t)$('rpT').textContent=t;if(s!==undefined)$('rpS').textContent=s;show('riposo');}
@@ -1593,10 +1664,11 @@ function mostraRisultati(v,r){
 function fire(id,fonte){
   const i=CUES.findIndex(c=>c.id===id);if(i<0)return;
   clearTimers();$('fx').innerHTML='';
+  if(!/^sus_/.test(id)){susT.forEach(clearTimeout);susT=[];$('sus').className='';}
   if(id!=='vetro'&&id!=='scena8') clearCrack();
   cueIndex=Math.max(cueIndex,i);
   const c=CUES[i];
-  $('riserva').style.visibility=['hackerato','buio','festa','sostpub'].includes(id)?'hidden':'';
+  $('riserva').style.visibility=['hackerato','buio','festa','sostpub','sosttot'].includes(id)?'hidden':'';
   if(c.voto){clearCrack();mostraVoto(c.voto);sfx('bip');vibra([60,40,60]);}
   else SCENES[id]();
   aggiornaRiserva();

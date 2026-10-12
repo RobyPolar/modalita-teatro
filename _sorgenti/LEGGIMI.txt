@@ -1,0 +1,7 @@
+Questi sono i file ORIGINALI (leggibili) del sito.
+index.html e regia.html nella cartella principale sono la versione "compatibile":
+ricompilata per funzionare anche sui telefoni vecchi (iPhone con iOS 11-14, Android vecchi).
+Per modificare il sito: cambia i file qui dentro, poi rigenera la versione compatibile con
+  python3 compat.py ../index.html ../regia.html   (dopo averci copiato sopra questi originali)
+(serve Node con esbuild e acorn: npm i esbuild@0.24.0 acorn@8.12.1)
+La cartella inizia con _ quindi GitHub Pages non la pubblica.

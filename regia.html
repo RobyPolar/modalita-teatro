@@ -6,7 +6,7 @@
 <title>Regia – Modalità Teatro</title>
 <meta name="robots" content="noindex">
 <meta name="referrer" content="no-referrer">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-SPvMeac1VEscUcl8Slwu0gB/tFv4ZHmqBMLFlkmPS+M=' 'sha256-XTq3EfMwqKQ21tmmgz19eIMeQM4C24GGrFmFL1KTUxI=' 'sha256-r7FFWvEvqOWhnla7vvtdQi4arH03/SKA6VaZptfcy/U=' 'sha256-QdpbdQjKYq+6v7h9JICrTmqYXEQwCjpzxpkcxIHbL8A='; style-src 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; font-src data:; worker-src blob:; connect-src 'self' wss://r21a1286.ala.eu-central-1.emqxsl.com:8084; base-uri 'none'; form-action 'none'; frame-src 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-SPvMeac1VEscUcl8Slwu0gB/tFv4ZHmqBMLFlkmPS+M=' 'sha256-XTq3EfMwqKQ21tmmgz19eIMeQM4C24GGrFmFL1KTUxI=' 'sha256-r7FFWvEvqOWhnla7vvtdQi4arH03/SKA6VaZptfcy/U=' 'sha256-P0tKTttAe58ZGv4QJ0XjxC9EncVKvt3qnFHUVC81F2k='; style-src 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; font-src data:; worker-src blob:; connect-src 'self' wss://r21a1286.ala.eu-central-1.emqxsl.com:8084 https://ntfy.sh; base-uri 'none'; form-action 'none'; frame-src 'self'">
 <meta name="referrer" content="no-referrer">
 
 <script>if(top!==self){document.documentElement.style.display="none";top.location=self.location;}</script>
@@ -119,6 +119,17 @@ h1{font-size:22px;color:var(--oro);letter-spacing:.5px}
 #sottoMano[hidden]{display:none}
 #sottoMano button{margin-top:18px;padding:14px 22px;border-radius:12px;background:var(--oro);color:#2a1a00;font-weight:900}
 .msg video.pv{width:100%;max-height:200px;border-radius:8px;margin-top:6px;background:#000}
+#rbx{margin-top:14px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+#rbx h2{font-size:18px;color:var(--oro)}
+#rbx .vuoto{color:var(--muto);font-size:14px;margin-top:6px}
+#rbx .riga{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
+#rbx input{background:#120f16;color:var(--testo);border:1px solid var(--line);border-radius:10px;padding:8px 10px;font:600 14px system-ui;min-width:260px;flex:1}
+#rbx textarea{width:100%;height:90px;margin-top:8px;background:#120f16;color:var(--testo);border:1px solid var(--line);border-radius:10px;padding:8px;font:12px ui-monospace,monospace}
+#rbxOn.acceso{background:#0f3a22;border-color:var(--verde);color:#fff}
+#rbx summary{cursor:pointer;margin-top:10px;color:var(--muto);font-size:14px}
+.rbxr{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line);font-size:14px}
+.rbxr .u{color:var(--muto);word-break:break-all}
+.rbxr button{padding:4px 10px}
 </style>
 </head>
 <body>
@@ -158,6 +169,14 @@ h1{font-size:22px;color:var(--oro);letter-spacing:.5px}
       <button class="small" id="btnRinomina">🔁 Tutti di nuovo a nome e squadra</button>
       <button class="small" id="btnPosta">📬 Posta APERTA</button>
       <button class="small" id="btnCopri">🙈 Foto coperte: SÌ</button>
+    </div>
+    <div id="rbx"><h2>🎮 Eroi Roblox – Battaglia Finale</h2>
+      <p class="vuoto">Spento = il sito resta esattamente com'è. Acceso = sui telefoni compare «🎮 Entra nella Battaglia Finale su Roblox!»: chi vuole scrive il suo nome utente Roblox (con il permesso di un genitore) e nel gioco compare con il suo avatar e il soprannome sopra la testa; chi non lo scrive compare solo con il soprannome. Nel gioco compaiono TUTTI, sulle tribune intorno all'arena.</p>
+      <div class="row"><button class="small" id="rbxOn">🎮 Eroi Roblox: SPENTI (tocca per accendere)</button><button class="small" id="rbxManda">📤 Manda al gioco adesso</button><button class="small" id="rbxCopia" title="Se il ponte non funziona: copia l'elenco e incollalo nel gioco (tasto E)">📋 Copia per il gioco</button><button class="small" id="rbxSvuota">🗑 Svuota elenco</button></div>
+      <div class="riga"><input id="rbxCodice" type="password" placeholder="Codice del ponte con il gioco (incollalo una volta sola)" autocomplete="off"><button class="small" id="rbxSalvaCod">🔑 Salva codice</button></div>
+      <p class="vuoto" id="rbxStato"></p>
+      <textarea id="rbxTesto" hidden readonly></textarea>
+      <details id="rbxDett"><summary>Elenco (<b id="rbxN">0</b>) – tocca ✕ per togliere un nome o un nome utente non adatto</summary><div id="rbxList"></div></details>
     </div>
     <div id="inbox"><h2>📸 Selfie e messaggi dal pubblico</h2><button class="small" id="btnResetLet" style="margin-top:6px">🔄 Permetti di nuovo una lettera a tutti (per i test)</button><p class="vuoto" id="inStat"></p><details id="boxSosp" hidden><summary>⚠️ Da controllare (<b id="nSosp">0</b>) — telefoni appena collegati: guarda tu se sono vere</summary><div id="inSosp"></div></details><p class="vuoto" id="vidInfo"></p><p class="vuoto" id="inVuoto">Arrivano alla fine, dall'attestato. Le foto non vengono salvate: dopo «Visto» spariscono.</p><div id="inList"></div></div>
     <p class="hint">Scorciatoie: barra spaziatrice o freccia → = PROSSIMO. «Caos sbuca» si può premere in qualsiasi momento, anche più volte, e non cambia la scena in corso.</p>
@@ -327,7 +346,7 @@ try{const p=sessionStorage.getItem('mt_pw');if(p)provaPw(p);}catch(e){}
 
 let ultimoPrev=null;
 function specchio(m){if(m.c!=='sussurro'&&m.c!=='resetlettera')ultimoPrev=m;const f=$('prevFrame');try{f.contentWindow.postMessage({mt:1,m},location.origin);}catch(e){}}
-window.addEventListener('message',e=>{if(e.origin===location.origin&&e.data&&e.data.mtPronta&&ultimoPrev)specchio(ultimoPrev);});
+window.addEventListener('message',e=>{if(e.origin===location.origin&&e.data&&e.data.mtPronta){if(ultimoPrev)specchio(ultimoPrev);rbxPrev();}});
 function apriAnteprima(){$('wrap').classList.add('conprev');$('prevFrame').src='index.html?anteprima='+Date.now();}
 function avvia(){
   apriAnteprima();$('prevRic').onclick=apriAnteprima;
@@ -349,12 +368,13 @@ function avvia(){
   $('spNuovo').onclick=()=>{let nome=prompt('Nuovo spettacolo: come si chiama? (es. la città)\nI numeri di «'+spett.nome+'» vengono salvati negli spettacoli passati.','');if(nome===null)return;nome=nome.trim().slice(0,40);
     let st=[];try{st=JSON.parse(localStorage.getItem(SP_STOR)||'[]')}catch(e){}st.unshift({...spett,ids:undefined,persone:spIds.size,fine:Date.now()});
     try{localStorage.setItem(SP_STOR,JSON.stringify(st.slice(0,100)));}catch(e){}
-    spett=nuovoSpett(nome);spIds=new Set();salvaSpett();aggiornaSpett();log('📊 nuovo spettacolo: '+spett.nome);};
+    spett=nuovoSpett(nome);spIds=new Set();salvaSpett();aggiornaSpett();rbx.clear();rbxTolti.clear();rbxUltimoCambio=Date.now();rbxDisegna();if(rbxOn)rbxManda('svuota');log('📊 nuovo spettacolo: '+spett.nome);};
   $('spStorico').onclick=()=>{const t=$('spTab');if(!t.hidden){t.hidden=true;return;}let st=[];try{st=JSON.parse(localStorage.getItem(SP_STOR)||'[]')}catch(e){}
     t.innerHTML=st.length?'<table><tr><th>Spettacolo</th><th>Data</th><th>Persone</th><th>Lettere</th><th>Selfie</th><th>Risposte (video)</th></tr>'+st.map(s=>`<tr><td>${esc(s.nome)}</td><td>${new Date(s.inizio).toLocaleDateString('it-IT')}</td><td>${s.persone|0}</td><td>${s.lettere|0} (${s.persone?Math.round(100*s.lettere/s.persone):0}%)</td><td>${s.foto|0}</td><td>${s.risposte|0} (${s.video|0})</td></tr>`).join('')+'</table>':'<p class="vuoto">Nessuno spettacolo passato ancora.</p>';t.hidden=false;};
   $('btnPosta').onclick=()=>{postaAperta=!postaAperta;disegnaPosta2();mandaStato('man');log(postaAperta?'📬 posta APERTA: i bambini possono mandare la lettera':'📪 posta CHIUSA: sui telefoni compare «la posta è chiusa»');};
   disegnaPosta2();
   $('btnCopri').onclick=()=>{coperte=!coperte;try{localStorage.setItem('mt_coperte',coperte?'1':'0');}catch(e){}disegnaCopri();};disegnaCopri();
+  rbxInit();
   $('bkSalva').onclick=salvaBackup;$('bkCarica').onchange=caricaBackup;
   $('smOk').onclick=()=>{$('sottoMano').hidden=true;};
   tienSveglio();controllaBrowser();contaSpazio();setInterval(contaSpazio,5000);
@@ -415,7 +435,7 @@ async function apriLettera(x){let m;try{m=JSON.parse(x);}catch(e){return;}if(!m|
     if(!chiaveLettere||typeof m.e!=='string'||typeof m.iv!=='string'||typeof m.ct!=='string'||m.e.length>100||m.iv.length>24||m.ct.length>590000||!B64_OK.test(m.e)||!B64_OK.test(m.iv))return;
     try{const epk=await crypto.subtle.importKey('raw',b64d(m.e),{name:'ECDH',namedCurve:'P-256'},false,[]);
       const k=await crypto.subtle.deriveKey({name:'ECDH',public:epk},chiaveLettere,{name:'AES-GCM',length:256},false,['decrypt']);
-      const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:b64d(m.iv)},k,b64d(m.ct));const d=JSON.parse(new TextDecoder().decode(pt));if(d&&typeof d==='object'&&!Array.isArray(d))arriva(d);}catch(e){}
+      const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:b64d(m.iv)},k,b64d(m.ct));const d=JSON.parse(new TextDecoder().decode(pt));if(d&&typeof d==='object'&&!Array.isArray(d)){if(d.k==='rbx')riceviRbx(d);else arriva(d);}}catch(e){}
     return;}
   // lettera NON cifrata (pagina vecchia ancora aperta): solo testo, la foto viene scartata
   if(typeof m.id==='string'){m.foto=null;arriva(m);}}
@@ -507,14 +527,126 @@ async function cancellaVideo(id,k){const vi=videoInfo[id];if(!vi||vi.k!==k||vi.v
   for(let j=0;j<vi.n;j++){await permesso();cl.publish(CFG.topic+'/r/'+id+'/v/'+vi.k+'/'+j,'',{qos:1,retain:true});}
   delete videoInfo[id];salvaVideoInfo();contaSpazio();log('🗑️ video salvato dal bambino: cancellato dal server');}
 let raccogli=null,giriTot=0;
+/* ---- 🎮 EROI ROBLOX della Battaglia Finale ----
+   SPENTO (di serie) = il sito resta esattamente com'era.
+   ACCESO = sui telefoni compare «🎮 Entra nella Battaglia Finale su Roblox!»: chi SCEGLIE di partecipare manda (cifrato, come le lettere)
+   soprannome, squadra e, se vuole, il nome utente Roblox. La regia gira l'elenco al gioco Roblox, cifrato e firmato con il codice
+   del ponte (passa da ntfy.sh, che vede solo byte illeggibili; il gioco accetta solo messaggi firmati con lo stesso codice).
+   Niente viene salvato: l'elenco vive solo in questa pagina (e chi non si fa vivo da 3 ore esce dall'elenco). */
+const RBX_K='mt_rbx_on',RBX_COD='mt_rbx_codice';
+const oggiStr=()=>new Date().toISOString().slice(0,10);
+let rbxOn=(()=>{try{return localStorage.getItem(RBX_K)===oggiStr()}catch(e){return false}})();   // acceso oggi = resta acceso anche se ricarichi la regia
+let rbxRt=(()=>{try{const x=(localStorage.getItem('mt_rbx_rt')||'').split('|');return x[0]===oggiStr()?Number(x[1])||0:0}catch(e){return 0}})();   // quando e' stato toccato l'interruttore (tra piu' regie vince l'ultimo)
+const rbx=new Map(), rbxTolti=new Set();
+let rbxPonte=null,rbxUltimoInvio=0,rbxUltimoCambio=0,rbxInviato=null,rbxTimer=null,rbxErrori=0,rbxEsito='',rbxBucket={t:0,n:0,nuovi:0},rbxDis=0,rbxDisT=null,rbxAvvio=Date.now();
+const RBX_ATTESA=240000;   // appena aperta, la regia aspetta 4 minuti che i telefoni si reiscrivano prima di mandare un elenco da sola
+const RBX_U=/^(?:[A-Za-z0-9_]{3,20}|id:\d{1,13})$/, RBX_VITA=3*3600e3;
+const rbxBene=s=>{s=Array.from(String(s||'')).slice(0,18).join('');return s.toWellFormed?s.toWellFormed():s.replace(/[\uD800-\uDFFF]/g,'');};
+function rbxSalva(){try{localStorage.setItem(RBX_K,rbxOn?oggiStr():'');localStorage.setItem('mt_rbx_rt',oggiStr()+'|'+rbxRt);}catch(e){}}
+async function rbxChiavi(code){
+  const h=async s=>new Uint8Array(await crypto.subtle.digest('SHA-256',enc.encode(s)));
+  const k=async s=>crypto.subtle.importKey('raw',await h(s),{name:'HMAC',hash:'SHA-256'},false,['sign']);
+  const t=await h('MT-PONTE-TOPIC|'+code);
+  return {enc:await k('MT-PONTE-ENC|'+code),mac:await k('MT-PONTE-MAC|'+code),canale:'mt'+[...t].map(b=>b.toString(16).padStart(2,'0')).join('').slice(0,30)};}
+async function rbxCifra(k,obj){
+  const pt=enc.encode(JSON.stringify(obj)),nonce=crypto.getRandomValues(new Uint8Array(16)),ct=new Uint8Array(pt.length);
+  for(let i=0;i*32<pt.length;i++){const b=new Uint8Array(20);b.set(nonce);new DataView(b.buffer).setUint32(16,i);
+    const ks=new Uint8Array(await crypto.subtle.sign('HMAC',k.enc,b));for(let j=0;j<32&&i*32+j<pt.length;j++)ct[i*32+j]=pt[i*32+j]^ks[j];}
+  const mi=new Uint8Array(18+ct.length);mi.set(enc.encode('v2'));mi.set(nonce,2);mi.set(ct,18);
+  return JSON.stringify({v:2,n:b64(nonce),c:b64(ct),m:b64(await crypto.subtle.sign('HMAC',k.mac,mi))});}
+function rbxPulisci(){const lim=Date.now()-RBX_VITA;let tolti=0;for(const [id,v] of rbx)if(v.t<lim){rbx.delete(id);tolti++;}return tolti;}
+function rbxElenco(){   // TUTTI gli iscritti (fino a 1000): nel gioco ognuno ha il suo posto sulle tribune. Oltre 4 KB ntfy.sh lo consegna come allegato (cifrato uguale)
+  rbxPulisci();
+  const v=[...rbx.values()].sort((a,b)=>((b.u?1:0)-(a.u?1:0))||(a.r-b.r));const out=[];let n=0;
+  for(const x of v){const e=x.u?[x.nome,x.team,x.u]:[x.nome,x.team];if(out.length>=1000)break;out.push(e);}
+  return out;}
+/* invio al gioco. motivo: 'auto' (l'elenco e' cambiato), 'vivo' (ogni 30 min), 'adesso' / 'interruttore' / 'svuota' (azioni della regia).
+   ntfy.sh gratis ha un tetto di messaggi al giorno: mando solo se l'elenco cambia, al massimo uno al minuto, e se fallisce aspetto sempre di piu'. */
+async function rbxManda(motivo){
+  clearTimeout(rbxTimer);rbxTimer=null;
+  if(!rbxPonte){rbxEsito='⚠️ manca il codice del ponte: incollalo qui sotto (una volta sola). Intanto puoi usare «Copia per il gioco».';rbxDisegna();return;}
+  const azione=motivo!=='auto'&&motivo!=='vivo';
+  const e=rbxOn?rbxElenco():[];
+  const firma=rbxOn?JSON.stringify(e):'spento';
+  if(!azione){
+    if(rbxOn&&!e.length&&rbxInviato===null)return;                // regia appena aperta e ancora vuota: il gioco tiene gli eroi che ha
+    if(motivo==='auto'&&firma===rbxInviato)return;                // non e' cambiato niente di quello che arriva al gioco
+    const attesa=Math.max(60000-(Date.now()-rbxUltimoInvio),RBX_ATTESA-(Date.now()-rbxAvvio));   // al massimo uno al minuto; appena aperta aspetto i telefoni
+    if(attesa>0){rbxTimer=setTimeout(()=>rbxManda(motivo),attesa);return;}
+  }
+  rbxUltimoInvio=Date.now();
+  try{const msg=await rbxCifra(rbxPonte,rbxOn?{v:1,t:Date.now(),on:true,e}:{v:1,t:Date.now(),on:false});
+    const r=await fetch('https://ntfy.sh/'+rbxPonte.canale,{method:'POST',body:msg,cache:'no-store'});
+    if(!r.ok){const err=new Error('HTTP '+r.status);err.status=r.status;throw err;}
+    rbxInviato=firma;rbxErrori=0;
+    rbxEsito=`✅ mandato al gioco alle ${new Date().toLocaleTimeString('it-IT')} (${rbxOn?e.length+' bambini':'eroi Roblox spenti'})`;}
+  catch(err){rbxErrori++;const ms=err&&err.status===429?600000:Math.min(600000,60000*Math.pow(2,rbxErrori-1));
+    rbxEsito=`⚠️ invio non riuscito (${err&&err.message||'rete'}): riprovo tra ${Math.round(ms/60000)} min. In alternativa usa «Copia per il gioco».`;
+    rbxTimer=setTimeout(()=>rbxManda(azione?motivo:'auto'),ms);}   // riprovo con lo stesso motivo (Svuota / spento non si perdono)
+  rbxDisegna();}
+function rbxCambiato(){rbxUltimoCambio=Date.now();rbxDisegna();if(rbxOn&&!rbxTimer)rbxManda('auto');}
+function riceviRbx(d){
+  if(!rbxOn||typeof d.id!=='string'||!ID_OK.test(d.id)||rbxTolti.has(d.id)||bloccati.has(d.id))return;
+  const now=Date.now(),pv=primaVolta.get(d.id);
+  if(!seen.has(d.id)||!(now-AVVIO<90000||(pv&&now-pv>=ATTESA_SPAM)))return;   // solo telefoni veri e collegati da un po' (come per i voti): il telefono riprova da solo
+  if(now-rbxBucket.t>1000)rbxBucket={t:now,n:0,nuovi:0};if(++rbxBucket.n>60)return;
+  const p=rbx.get(d.id);
+  if(!p&&(++rbxBucket.nuovi>15||rbx.size>=3000))return;          // al massimo 15 bambini nuovi al secondo
+  let nm=rbxBene(typeof d.nome==='string'?d.nome.trim():'');if(FILTRO.bruttoNome(nm))nm='';
+  let u=(typeof d.u==='string'?d.u:'').trim();if(!RBX_U.test(u))u='';
+  const team=TEAM_OK.includes(d.team)?d.team:'';
+  if(!nm&&!u){if(p){rbx.delete(d.id);rbxCambiato();}return;}     // «non partecipo piu'»
+  rbx.set(d.id,{id:d.id,nome:nm,team,u,r:p?p.r:Math.random(),t:now});
+  if(!p||p.nome!==nm||p.team!==team||p.u!==u)rbxCambiato();}
+function rbxDisegna(){if(!$('rbx'))return;
+  const b=$('rbxOn');b.textContent=rbxOn?'🎮 Eroi Roblox: ACCESI (tocca per spegnere)':'🎮 Eroi Roblox: SPENTI (tocca per accendere)';b.classList.toggle('acceso',rbxOn);
+  let conU=0;for(const v of rbx.values())if(v.u)conU++;
+  $('rbxN').textContent=rbx.size;
+  $('rbxStato').textContent=(rbxOn?`📱 ${rbx.size} bambini iscritti (${conU} con nome utente Roblox) · `:'Spento: sui telefoni non compare niente di nuovo. · ')+(rbxEsito||(rbxPonte?'🔑 codice del ponte pronto':'⚠️ manca il codice del ponte'));
+  if(!$('rbxDett').open)return;
+  if(Date.now()-rbxDis<1500){if(!rbxDisT)rbxDisT=setTimeout(()=>{rbxDisT=null;rbxDisegna();},1600);return;}   // con tanti arrivi non ridisegno di continuo
+  rbxDis=Date.now();const T={roby:'🐻‍❄️',jenny:'💖',lore:'🐧'};
+  $('rbxList').innerHTML=[...rbx.values()].sort((a,b)=>b.t-a.t).slice(0,400).map(v=>`<div class="rbxr"><span>${T[v.team]||'❔'} ${esc(v.nome||'(senza nome)')}</span><span class="u">${v.u?(v.u.startsWith('id:')?'profilo n. '+esc(v.u.slice(3)):'@'+esc(v.u)):'—'}</span><button class="small" data-id="${esc(v.id)}" title="Togli dall'elenco (non torna più)">✕</button></div>`).join('')||'<p class="vuoto">Nessuno ancora.</p>';}
+function rbxPrev(){try{$('prevFrame').contentWindow.postMessage({mtRbx:rbxOn?1:0},location.origin);}catch(e){}}
+/* piu' regie aperte insieme: vince chi ha toccato l'interruttore per ultimo (rt); uso solo stati recenti (10 min) */
+function rbxDaStato(d,s){
+  if(d.w==='lwt'||(d.r!==0&&d.r!==1)||typeof d.rt!=='number'||d.rt<=rbxRt||Math.abs(Date.now()-s)>600000)return;
+  const cambia=(d.r===1)!==rbxOn;
+  rbxRt=d.rt;rbxOn=d.r===1;rbxSalva();
+  if(!cambia)return;
+  rbxDisegna();rbxPrev();log(rbxOn?'🎮 eroi Roblox accesi (da un\'altra regia)':'🎮 eroi Roblox spenti (da un\'altra regia)');rbxDopoInterruttore();}
+function rbxDopoInterruttore(){   // avviso il gioco (anche se l'interruttore l'ha toccato un'altra regia senza il codice del ponte)
+  if(rbxOn&&!rbx.size){rbxDisegna();return;}   // acceso ma ancora nessuno iscritto: mando appena arriva qualcuno
+  rbxManda('interruttore');}
+async function rbxInit(){
+  let cod='';try{cod=(localStorage.getItem(RBX_COD)||'').trim().toLowerCase();}catch(e){}
+  if(cod){try{rbxPonte=await rbxChiavi(cod);}catch(e){}}
+  rbxAvvio=Date.now();
+  $('rbxOn').onclick=()=>{rbxOn=!rbxOn;rbxRt=Date.now();rbxSalva();mandaStato('man');rbxPrev();rbxEsito='';
+    log(rbxOn?'🎮 Eroi Roblox ACCESI: sui telefoni compare «Entra nella Battaglia Finale»':'🎮 Eroi Roblox SPENTI: il sito torna esattamente com\'era');
+    rbxDopoInterruttore();};
+  $('rbxManda').onclick=()=>{if(Date.now()-rbxUltimoInvio<5000)return;rbxManda('adesso');};
+  $('rbxCopia').onclick=async()=>{const t=JSON.stringify({v:1,e:rbxOn?rbxElenco():[]});$('rbxTesto').value=t;
+    try{await navigator.clipboard.writeText(t);rbxEsito='📋 copiato: nel gioco premi E e incolla nella casella, poi «Usa la lista incollata»';}
+    catch(e){rbxEsito='⚠️ non riesco a copiare da solo: copia a mano il testo qui sotto';$('rbxTesto').hidden=false;}rbxDisegna();};
+  $('rbxSvuota').onclick=()=>{if(!confirm('Svuotare l\'elenco degli eroi Roblox?\n(i telefoni ancora collegati che hanno scelto di partecipare si reiscrivono da soli entro pochi minuti)'))return;rbx.clear();rbxUltimoCambio=Date.now();rbxDisegna();if(rbxOn)rbxManda('svuota');};
+  $('rbxSalvaCod').onclick=async()=>{const c=$('rbxCodice').value.trim().toLowerCase();
+    if(!/^[a-z0-9-]{12,64}$/.test(c)){rbxEsito='⚠️ il codice non sembra giusto (è fatto così: abcde-fghij-klmno-pqrst)';rbxDisegna();return;}
+    try{localStorage.setItem(RBX_COD,c);}catch(e){}rbxPonte=await rbxChiavi(c);$('rbxCodice').value='';rbxEsito='🔑 codice salvato su questo computer';rbxDisegna();if(rbxOn&&rbx.size)rbxManda('adesso');};
+  $('rbxList').onclick=e=>{const b=e.target.closest('button[data-id]');if(!b)return;const id=b.dataset.id;rbxTolti.add(id);rbx.delete(id);log('🎮 tolto dall\'elenco Roblox (non torna più)');rbxCambiato();};
+  $('rbxDett').addEventListener('toggle',()=>{rbxDis=0;rbxDisegna();});
+  setInterval(()=>{const tolti=rbxPulisci();if(tolti)rbxCambiato();
+    if(rbxOn&&rbxPonte&&rbx.size&&!rbxTimer&&Date.now()-rbxUltimoInvio>1800000&&Date.now()-rbxUltimoCambio<4*3600e3)rbxManda('vivo');},60000);   // ogni 30 min lo rimando (se il gioco si riavvia lo ritrova), per al massimo 4 ore
+  rbxDisegna();rbxPrev();}
 /* ---- posta aperta / chiusa: lo vedono i telefoni (messaggio firmato). Se la regia si spegne, il server la chiude da solo ---- */
 let postaAperta=true,statoVisto=0;   // ogni volta che apri la regia la posta riparte APERTA (così non te la dimentichi chiusa)
-async function firmaStato(p,w){const s=Date.now();const d=JSON.stringify({p:p?1:0,w});const g=await crypto.subtle.sign({name:'ECDSA',hash:'SHA-256'},key,enc.encode(`posta|${d}|${s}|${s}|/stato`));return JSON.stringify({c:'posta',d,s,t:s,g:b64(g)});}
+async function firmaStato(p,w){const s=Date.now();const d=JSON.stringify(w==='lwt'?{p:p?1:0,w}:{p:p?1:0,w,r:rbxOn?1:0,rt:rbxRt});/* r = eroi Roblox accesi, rt = quando e' stato toccato l'interruttore (il «regia spenta» non li porta) */const g=await crypto.subtle.sign({name:'ECDSA',hash:'SHA-256'},key,enc.encode(`posta|${d}|${s}|${s}|/stato`));return JSON.stringify({c:'posta',d,s,t:s,g:b64(g)});}
 async function mandaStato(w){const msg=await firmaStato(postaAperta,w);clients.forEach((cl,i)=>{if(conn[i])cl.publish(CFG.topic+'/r/stato',msg,{qos:1,retain:true});});}
 async function riceviStato(x){let m;try{m=JSON.parse(x);}catch(e){return;}if(!m||m.c!=='posta'||typeof m.d!=='string'||typeof m.s!=='number'||typeof m.g!=='string')return;
   let ok=false;try{ok=pubV&&await crypto.subtle.verify({name:'ECDSA',hash:'SHA-256'},pubV,b64d(m.g),enc.encode(`${m.c}|${m.d}|${m.s}|${m.t}|/stato`));}catch(e){}if(!ok)return;
   let d={};try{d=JSON.parse(m.d)||{};}catch(e){}if(m.s<=statoVisto&&d.w!=='lwt')return;statoVisto=Math.max(statoVisto,m.s);
   if(d.w==='lwt'){if(postaAperta)setTimeout(()=>mandaStato('auto'),500+Math.random()*1500);return;}   // un'altra regia si è spenta: se qui è aperta, la riapro
+  rbxDaStato(d,m.s);
   if(d.w==='man'&&(d.p===1)!==postaAperta){postaAperta=d.p===1;disegnaPosta2();log(postaAperta?'📬 posta aperta (da un\'altra regia)':'📪 posta chiusa (da un\'altra regia)');}}
 function disegnaPosta2(){const b=$('btnPosta');b.textContent=postaAperta?'📬 Posta APERTA (tocca per chiudere)':'📪 Posta CHIUSA (tocca per aprire)';b.classList.toggle('chiusa',!postaAperta);}
 setInterval(()=>{if(key&&conn.some(Boolean))mandaStato('auto');},60000);

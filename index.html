@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-XTq3EfMwqKQ21tmmgz19eIMeQM4C24GGrFmFL1KTUxI=' 'sha256-eD04a0g7iVj5Yrs+Z2qE7Zs2lvTkFG2dl4hBPj7Oz8I='; style-src 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; font-src data:; worker-src blob:; connect-src 'self' wss://r21a1286.ala.eu-central-1.emqxsl.com:8084; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-XTq3EfMwqKQ21tmmgz19eIMeQM4C24GGrFmFL1KTUxI=' 'sha256-lYhzzHU7SS8GZGF4yGHKMRnMXuzfMADWCT1tAPwWPKM='; style-src 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; font-src data:; worker-src blob:; connect-src 'self' wss://r21a1286.ala.eu-central-1.emqxsl.com:8084; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
@@ -225,6 +225,21 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 .badge.on{display:flex}
 .badge b{font-family:var(--titolo);font-size:22px;color:var(--oro)}
 .badge span{font-weight:900;font-size:14px}
+.rbx-b{margin:14px 0 10px;width:min(340px,100%);padding:12px 14px;border-radius:16px;font:900 16px var(--testo);color:#fff;background:linear-gradient(#2b7bff,#1146b8);border:3px solid #9fd0ff;box-shadow:0 5px 0 #0b2f7a,0 10px 24px rgba(0,0,0,.4);animation:rbxPulse 1.6s ease-in-out infinite;cursor:pointer}
+.rbx-b small{display:block;font-weight:800;font-size:12px;opacity:.85;margin-top:2px}
+.rbx-b.fatto{animation:none;background:linear-gradient(#1fa85a,#0d6b34);border-color:#8dffbd;box-shadow:0 5px 0 #064a22,0 10px 24px rgba(0,0,0,.4)}
+.rbx-b[hidden]{display:none}
+@keyframes rbxPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+@media (prefers-reduced-motion:reduce){.rbx-b{animation:none}}
+#rbxM{position:fixed;inset:0;z-index:89;background:rgba(10,0,6,.82);display:flex;align-items:center;justify-content:center;padding:14px}
+#rbxM[hidden]{display:none}
+.rbx-in{width:100%;margin:10px 0 4px;padding:12px;border-radius:12px;border:3px solid #1146b8;font:900 18px var(--testo);text-align:center;color:#1a1a1a;background:#fff}
+.rbx-pw{color:#b3121f;font-weight:900;margin:6px 0 10px!important}
+.rbx-msg{font-weight:900;min-height:1.3em;margin-top:10px!important}
+.rbx-nota{font-size:12px;opacity:.85}
+.rbx-no{display:block;margin:8px auto 0;background:none;border:0;color:#b3121f;font:800 13px var(--testo);text-decoration:underline;cursor:pointer;padding:6px}
+.rbx-no[hidden]{display:none}
+#rbxM .sf-ok{border:2px solid #f0d9a8}
 
 /* sipario che si apre */
 #s-inizio{background:radial-gradient(ellipse 70% 50% at 50% 45%,#ffe9a0,#ffb22e 40%,#5d0a12 80%)}
@@ -637,6 +652,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
   <div class="entra-info" id="entraInfo" hidden>🎭 Lo spettacolo è già iniziato! Scegli la squadra e entra:</div>
   <button class="bigbtn" id="btnEntra" hidden>ENTRA ▶</button>
   <div class="badge" id="badge"><b id="badgeT">AGENTE TEAM ROBY</b><span>Tieni la pagina aperta: lo spettacolo sta per iniziare…</span></div>
+  <button class="rbx-b" id="rbxBtn" hidden>🎮 Entra nella Battaglia Finale su Roblox!<small id="rbxSub">Il tuo avatar sul maxischermo (facoltativo)</small></button>
   
 </section>
 
@@ -826,6 +842,19 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 </div>
 
 
+<!-- EROI ROBLOX: compare solo se la regia lo accende -->
+<div id="rbxM" hidden><div class="pv-box"><button class="pv-x" id="rbxX" aria-label="Chiudi">✕</button><div class="pv-testo">
+<h2>🎮 Battaglia Finale</h2>
+<p>Alla fine Jenny combatte i cattivi in un videogioco <b>Roblox</b> sul maxischermo… e la squadra di eroi <b>siete voi!</b></p>
+<p>Vuoi essere uno degli eroi? Se hai un account Roblox scrivi qui il tuo <b>nome utente</b>: compari sulle tribune della battaglia con il tuo avatar e con il tuo nome da agente sopra la testa. Se non ce l'hai (o non vuoi scriverlo), va benissimo: tocca FATTO e puoi comparire solo con il nome.</p>
+<input class="rbx-in" id="rbxIn" maxlength="60" placeholder="il tuo nome utente Roblox" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
+<p class="rbx-pw">⚠️ Solo il <b>nome utente</b>. <b>MAI la password!</b></p>
+<label class="sf-ok"><input type="checkbox" id="rbxOk">Ho chiesto il permesso a mamma o papà per usare il mio nome utente Roblox</label>
+<p class="rbx-msg" id="rbxMsg"></p>
+<p class="rbx-nota">🔒 Nome e nome utente arrivano cifrati alla regia e al gioco e si usano solo durante lo spettacolo. <button class="pv-link in" data-privacy>Privacy</button></p>
+<button class="rbx-no" id="rbxNo" hidden>Non voglio più partecipare</button>
+</div><button class="pv-ok" id="rbxFatto">FATTO ✔</button></div></div>
+
 <!-- PRIVACY -->
 <div id="privacy" hidden><div class="pv-box"><button class="pv-x" id="pvChiudi" aria-label="Chiudi">✕</button><div class="pv-testo"><h2>🔒 Privacy</h2>
 <div class="pv-breve">
@@ -833,6 +862,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
   <ul>
     <li>Questa pagina serve solo a <b>giocare con lo spettacolo</b>.</li>
     <li>Il <b>nome è facoltativo</b>: puoi usare un soprannome. Non scrivere cognome, indirizzo o numero di telefono.</li>
+    <li>Se la regia accende la <b>Battaglia Finale su Roblox</b> e tu <b>scegli di partecipare</b>, il tuo soprannome può comparire sopra il tuo eroe sul maxischermo. Se vuoi, con il permesso di mamma o papà, puoi scrivere anche il tuo <b>nome utente Roblox</b> per far comparire il tuo avatar. <b>Mai la password!</b></li>
     <li>Il <b>selfie è facoltativo</b> e serve il <b>permesso di mamma o papà</b>. Lo vedono solo Roby, Jenny e Lorenzist e poi viene <b>cancellato</b>. Non lo pubblichiamo da nessuna parte.</li>
     <li><b>Niente pubblicità</b> e niente cookie per seguirti su internet.</li>
   </ul>
@@ -851,21 +881,25 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
   <li><b>Voti e «colpi» del gioco.</b> Sono anonimi e servono solo durante lo spettacolo per mostrare i risultati.</li>
   <li><b>Lettera facoltativa (messaggio ed eventuale selfie).</b> Viene inviata solo alla regia dello spettacolo. <b>La foto non viene salvata</b> su nessun server: viene mostrata agli artisti e viene cancellata quando la regia preme «Visto» o chiude la pagina. Le parole volgari vengono filtrate automaticamente.</li>
   <li><b>Risposta degli artisti</b> (testo, e a volte una foto o un video degli artisti). Resta sul server dei messaggi <b>al massimo 3 giorni</b>, così arriva anche se il telefono era spento, poi viene cancellata automaticamente. Se la risposta contiene un <b>video personale</b>, puoi salvarlo sul tuo telefono: <b>appena lo scarichi viene cancellato dal server e dalla pagina</b> (prima di scaricarlo te lo chiediamo e devi confermare). Se non lo scarichi, si cancella comunque dopo 3 giorni.</li>
+  <li><b>«Battaglia Finale» su Roblox (facoltativa, solo se la regia la attiva e solo se scegli di partecipare): soprannome, squadra e, se vuoi, nome utente Roblox.</b> Servono a far comparire il tuo eroe nel videogioco proiettato sul maxischermo durante lo spettacolo: con il tuo avatar Roblox se hai dato il nome utente, altrimenti con un aspetto preimpostato; sopra la testa compare il soprannome. Vengono inviati cifrati alla regia, che li inoltra cifrati al gioco; non vengono conservati dopo lo spettacolo. Puoi ritirarti in qualsiasi momento dalla stessa finestra («Non voglio più partecipare»).</li>
   <li><b>Dati tecnici di connessione</b> (ad es. indirizzo IP), trattati dai fornitori tecnici solo per far funzionare il servizio.</li>
-  <li><b>Memoria del telefono.</b> Soprannome, squadra, codice e «lettera già spedita» restano salvati <b>solo sul tuo telefono</b> (memoria locale del browser) e si cancellano cancellando i dati del sito. Sono strumenti tecnici necessari: non usiamo cookie di profilazione, statistiche o pubblicità.</li>
+  <li><b>Memoria del telefono.</b> Soprannome, squadra, codice, «lettera già spedita» e, se partecipi alla «Battaglia Finale», nome utente Roblox e conferma del permesso restano salvati <b>solo sul tuo telefono</b> (memoria locale del browser) e si cancellano cancellando i dati del sito. Sono strumenti tecnici necessari: non usiamo cookie di profilazione, statistiche o pubblicità.</li>
 </ul>
 
 <h4>3. Perché e su quale base</h4>
 <ul>
   <li>Far funzionare l'esperienza interattiva che hai scelto di aprire (art. 6.1.b GDPR, servizio richiesto) e il legittimo interesse a gestire lo spettacolo in modo sicuro (art. 6.1.f).</li>
+  <li>«Battaglia Finale»: <b>consenso</b> (art. 6.1.a): partecipa solo chi lo sceglie; per il nome utente Roblox si chiede la conferma del permesso di un genitore, come per il selfie.</li>
   <li>Lettera e selfie: <b>consenso</b> (art. 6.1.a). Per i minori di 14 anni il consenso è dato da chi esercita la responsabilità genitoriale (art. 2-quinquies D.Lgs. 196/2003); per questo la pagina chiede di confermare il permesso di un genitore. Il consenso si può ritirare in qualsiasi momento scrivendo all'indirizzo sopra.</li>
 </ul>
 
 <h4>4. Chi vede i dati</h4>
-<p>Solo gli artisti e la regia dello spettacolo. Selfie e lettere <b>non vengono pubblicati</b> (né sui social né altrove) e non vengono usati per altri scopi.</p>
+<p>Solo gli artisti e la regia dello spettacolo. Selfie e lettere <b>non vengono pubblicati</b> (né sui social né altrove) e non vengono usati per altri scopi. Se partecipi alla «Battaglia Finale», il tuo soprannome (e il tuo avatar, se hai dato il nome utente) compare sul maxischermo del teatro durante lo spettacolo.</p>
 <p>Fornitori tecnici che trattano i dati per nostro conto:</p>
 <ul>
   <li><b>GitHub, Inc.</b> (GitHub Pages) — ospita il sito. Può trattare l'indirizzo IP anche negli Stati Uniti, con le garanzie previste dal GDPR (EU-US Data Privacy Framework e/o clausole contrattuali standard).</li>
+  <li><b>ntfy.sh</b> — servizio che trasporta l'elenco della «Battaglia Finale» dalla regia al gioco: riceve solo dati cifrati (illeggibili) e li cancella entro 12 ore.</li>
+  <li><b>Roblox Corporation</b> — il gioco della «Battaglia Finale» gira su Roblox: per mostrare l'avatar il gioco usa il nome utente sui servizi di Roblox (anche negli Stati Uniti) e controlla il soprannome con il filtro di Roblox.</li>
   <li><b>EMQ Technologies</b> (EMQX Cloud) — server che fa arrivare i messaggi ai telefoni, situato nell'Unione Europea (Francoforte).</li>
 </ul>
 
@@ -875,12 +909,13 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
   <li>Risposte degli artisti: massimo 3 giorni, poi cancellazione automatica. I video personali vengono cancellati subito dopo che li hai scaricati.</li>
   <li>Momenti dello spettacolo inviati ai telefoni: massimo 1 giorno.</li>
   <li>Voti, squadre e conteggi: solo durante lo spettacolo, non vengono archiviati.</li>
+  <li>Elenco della «Battaglia Finale» (soprannome, squadra, nome utente Roblox): solo durante lo spettacolo, nella memoria della regia e del gioco; sul servizio di inoltro solo in forma cifrata, cancellato entro 12 ore.</li>
 </ul>
 
 <h4>6. I tuoi diritti</h4>
 <p>Puoi chiedere in ogni momento di accedere ai dati, correggerli, cancellarli, limitarne l'uso, opporti al trattamento o ritirare il consenso, scrivendo a <b></b>. Hai anche diritto di fare reclamo al Garante per la protezione dei dati personali (<a href="https://www.garanteprivacy.it" target="_blank" rel="noopener">www.garanteprivacy.it</a>).</p>
 
-<p><small>Ultimo aggiornamento: 11/10/2026</small></p>
+<p><small>Ultimo aggiornamento: 12/10/2026</small></p>
 </div><button class="pv-ok" id="pvOk">Ho capito 👍</button></div></div>
 
 <div id="reteAiuto" hidden><button id="reteX" aria-label="Chiudi">✕</button><b>📶 Connessione difficile?</b>Prova a <b>spegnere il Wi‑Fi</b> e usare i dati (o il contrario).<small>Non ti preoccupare: lo spettacolo va avanti lo stesso e le sorprese arriveranno anche fuori dal teatro!</small></div>
@@ -1307,6 +1342,7 @@ function lobby(){
   document.querySelectorAll('.team-b').forEach(b=>{b.classList.toggle('sel',b.dataset.team===team);b.classList.toggle('dim',!!team&&b.dataset.team!==team);});
   $('nomeIn').value=nome;
   if(team){$('badge').classList.add('on');$('badgeT').textContent='AGENTE TEAM '+({roby:'ROBY',jenny:'JENNY',lore:'LORENZIST'})[team];}
+  aggiornaRbx();
 }
 document.querySelectorAll('.team-b').forEach(b=>b.addEventListener('click',()=>{controllaNome(true);team=b.dataset.team;store.set('mt_team',team);sfx('voto');vibra(40);lobby();ping();
   if(lobbyPrima&&!inCorso)lobbyPrima=false; aggiornaEntra();}));
@@ -1315,11 +1351,60 @@ function controllaNome(cancella){const el=$('nomeIn');const v=el.value.trim().sl
   if(FILTRO.bruttoNome(v)){nome='';store.set('mt_nome','');el.classList.add('nome-bad');
     $('nomeErr').textContent='😅 Questo nome non si può usare: scegline un altro!';
     if(cancella){el.value='';shake(el);vibra(80);}return false;}
-  nome=v;store.set('mt_nome',nome);$('nomeErr').textContent='';el.classList.remove('nome-bad');return true;}
+  nome=v;store.set('mt_nome',nome);$('nomeErr').textContent='';el.classList.remove('nome-bad');rbxTocca();return true;}
 $('nomeIn').addEventListener('input',()=>controllaNome(false));
 $('nomeIn').addEventListener('change',()=>controllaNome(true));
 $('nomeIn').addEventListener('blur',()=>controllaNome(true));
 if(FILTRO.bruttoNome(nome)){nome='';store.set('mt_nome','');}
+/* ---------- 🎮 eroi Roblox della Battaglia Finale: compare SOLO se la regia lo accende ----------
+   Partecipa solo chi lo sceglie (tocca il bottone e poi FATTO). Chi vuole aggiunge il suo nome utente Roblox (mai la password!)
+   con il permesso di un genitore: nel gioco proiettato compare con il suo avatar e il soprannome sopra la testa.
+   Chi non lo aggiunge compare solo col soprannome. Parte cifrato verso la regia, come le lettere. */
+let rbxOn=false,rbxVisto=0,rbxSi=store.get('mt_rbx_si')==='1',rbxUser=String(store.get('mt_rbx_u')||'').slice(0,60),rbxOk=store.get('mt_rbx_ok')==='1',rbxMandato='',rbxQuando=0,rbxDeb=null;
+const rbxTaglia=(s,n)=>{const t=Array.from(String(s||'')).slice(0,n).join('');return t.toWellFormed?t.toWellFormed():t;};   // taglia senza spezzare le emoji
+function rbxPulisci(v){v=String(v||'').trim();
+  const m=v.match(/roblox\.com\/(?:[a-z]{2}(?:-[a-z]{2,4})?\/)?users\/(\d{1,13})/i);if(m)return 'id:'+m[1];   // il link del profilo
+  v=v.replace(/^@/,'');return /^[A-Za-z0-9_]{3,20}$/.test(v)?v:'';}
+function rbxTesto(){const el=$('rbxMsg');if(!el)return;const v=$('rbxIn')?$('rbxIn').value:rbxUser;const u=rbxPulisci(v);
+  if(!team){el.textContent='☝️ Prima scegli la tua squadra (chiudi questa finestra e tocca Roby, Jenny o Lorenzist).';return;}
+  if(v.trim()&&!u){el.textContent='😅 Questo non sembra un nome utente Roblox: solo lettere, numeri e _ (da 3 a 20).';return;}
+  if(u&&!$('rbxOk').checked){el.textContent='☝️ Spunta la casella: serve il permesso di mamma o papà.';return;}
+  if(u){el.textContent='👉 Tocca FATTO: compari con il tuo avatar'+(nome?' e il nome «'+nome+'»':'')+'.';return;}
+  el.textContent=nome?'👉 Niente Roblox? Va bene! Tocca FATTO e compari con il nome «'+nome+'».':'✏️ Scrivi il tuo nome utente Roblox, oppure scegli un nome da agente nella pagina prima.';}
+function aggiornaRbx(){const b=$('rbxBtn');if(!b)return;const era=b.hidden;b.hidden=!rbxOn;
+  if(!rbxOn)$('rbxM').hidden=true;
+  b.classList.toggle('fatto',rbxOn&&rbxSi);
+  b.firstChild.textContent=rbxSi?'✅ Sei nella squadra della Battaglia Finale!':'🎮 Entra nella Battaglia Finale su Roblox!';
+  $('rbxSub').textContent=rbxSi?'Tocca per cambiare':'Il tuo avatar sul maxischermo (facoltativo)';
+  if(era!==b.hidden&&current==='lobby')adattaPresto();
+  rbxTocca();}
+async function rbxManda(forza,via){
+  if(!rbxOn||ANTEPRIMA||(!team&&!via))return;
+  if(!rbxSi&&!via)return;                                              // partecipa solo chi lo ha scelto
+  const u=(rbxSi&&rbxOk)?rbxPulisci(rbxUser):'';
+  const nm=rbxSi?rbxTaglia(nome,18):'';
+  if(rbxSi&&!nm&&!u)return;
+  const s=JSON.stringify({k:'rbx',id:myId,nome:nm,team,u});           // nome e u vuoti = «non partecipo più»
+  if(!forza&&s===rbxMandato&&Date.now()-rbxQuando<170000)return;      // ripete ogni ~3 minuti: se la regia si riavvia ritrova l'elenco
+  let x;try{x=await perRegia(s);}catch(e){return;}                      // parte solo cifrato
+  if(pubblica('/selfie',x)){rbxMandato=s;rbxQuando=Date.now();}}
+function rbxTocca(){if(!rbxOn||!rbxSi)return;clearTimeout(rbxDeb);rbxDeb=setTimeout(()=>rbxManda(false),1200+Math.random()*2500);}
+setInterval(()=>{if(rbxOn&&rbxSi)rbxManda(false);},30000+Math.random()*15000);
+setInterval(()=>{if(rbxOn&&!ANTEPRIMA&&Date.now()-rbxVisto>30*60e3){rbxOn=false;aggiornaRbx();}},60000);   // regia sparita da mezz'ora: il bottone se ne va
+$('rbxBtn').addEventListener('click',()=>{controllaNome(true);$('rbxIn').value=rbxUser;$('rbxOk').checked=rbxOk;$('rbxNo').hidden=!rbxSi;rbxTesto();$('rbxM').hidden=false;sfx('voto');});
+$('rbxIn').addEventListener('input',rbxTesto);
+$('rbxOk').addEventListener('change',rbxTesto);
+$('rbxX').addEventListener('click',()=>{$('rbxM').hidden=true;});      // ✕ = chiudo senza cambiare niente
+$('rbxFatto').addEventListener('click',()=>{
+  const v=$('rbxIn').value.slice(0,60),u=rbxPulisci(v);
+  if(!team||(v.trim()&&!u)||(u&&!$('rbxOk').checked)||(!u&&!nome)){rbxTesto();shake($('rbxMsg'));return;}
+  rbxUser=u?v:'';rbxOk=!!u&&$('rbxOk').checked;rbxSi=true;
+  store.set('mt_rbx_u',rbxUser);store.set('mt_rbx_ok',rbxOk?'1':'');store.set('mt_rbx_si','1');
+  $('rbxM').hidden=true;aggiornaRbx();rbxManda(true);setTimeout(()=>rbxManda(true),35000+Math.random()*10000);   // la regia accetta i telefoni collegati da almeno 30 s: ripeto una volta
+  sfx('festa');vibra([60,40,60]);});
+$('rbxNo').addEventListener('click',()=>{rbxSi=false;rbxUser='';rbxOk=false;
+  store.set('mt_rbx_si','');store.set('mt_rbx_u','');store.set('mt_rbx_ok','');
+  $('rbxM').hidden=true;rbxManda(true,'esco');setTimeout(()=>{if(!rbxSi)rbxManda(true,'esco');},35000+Math.random()*10000);aggiornaRbx();});
 
 /* ---------- videochiamata ---------- */
 $('chSi').addEventListener('click',()=>{$('chMsg').textContent='📺 Collegati! Guardate lo schermo grande!';vibra(0);sfx('voto');});
@@ -1458,7 +1543,7 @@ async function onMsg(topic,buf){
     let ok=false;try{ok=await crypto.subtle.verify({name:'ECDSA',hash:'SHA-256'},pubKey,b64d(m.g),enc.encode(`${m.c}|${m.d}|${m.s}|${m.t}|/stato`));}catch(e){}
     if(!ok)return;let d={};try{d=JSON.parse(m.d)||{};}catch(e){}
     if(m.s<=statoS&&d.w!=='lwt')return;   // vecchio (ma il «regia spenta» vale sempre: è firmato quando la regia si collega)
-    statoS=Math.max(statoS,m.s);postaAperta=d.p!==0;aggiornaPosta();return;}
+    statoS=Math.max(statoS,m.s);postaAperta=d.p!==0;aggiornaPosta();if(d.w!=='lwt'){rbxOn=d.r===1&&Math.abs(Date.now()-m.s)<15*60e3;if(rbxOn)rbxVisto=Date.now();aggiornaRbx();}return;}
   if(topic.endsWith('/tot')){const n=parseInt(dec.decode(buf),10);if(current==='scena8'&&n>0)$('s8tot').textContent=`💥 Colpi di tutto il teatro: ${n.toLocaleString('it-IT')}`;return;}
   let m;try{m=JSON.parse(dec.decode(buf));}catch(e){return;}
   if(!m||typeof m.c!=='string'||typeof m.s!=='number'||typeof m.g!=='string')return;
@@ -1508,6 +1593,7 @@ if(ANTEPRIMA){
   document.documentElement.classList.add('anteprima');
   lobby();
   window.addEventListener('message',e=>{if(e.origin!==location.origin||!e.data||!e.data.mt)return;try{applica(e.data.m);}catch(err){}});
+  window.addEventListener('message',e=>{if(e.origin===location.origin&&e.data&&e.data.mtRbx!==undefined){rbxOn=!!e.data.mtRbx;rbxVisto=Date.now();aggiornaRbx();}});
   parent.postMessage({mtPronta:1},location.origin);
 }else (async()=>{
   try{pubKey=await crypto.subtle.importKey('jwk',CFG.pub,{name:'ECDSA',namedCurve:'P-256'},false,['verify']);}

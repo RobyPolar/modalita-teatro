@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-XTq3EfMwqKQ21tmmgz19eIMeQM4C24GGrFmFL1KTUxI=' 'sha256-RHI8UB3iPXB3wFM7PbA6+0nr7z/CV+L6lBj99BpWBV8='; style-src 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; font-src data:; worker-src blob:; connect-src 'self' wss://r21a1286.ala.eu-central-1.emqxsl.com:8084; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-XTq3EfMwqKQ21tmmgz19eIMeQM4C24GGrFmFL1KTUxI=' 'sha256-9nEBROdgDsT29c1hlemRqaoWL9BJ+E1fFMzqLSZpciw='; style-src 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; font-src data:; worker-src blob:; connect-src 'self' wss://r21a1286.ala.eu-central-1.emqxsl.com:8084; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
@@ -487,7 +487,8 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 #giraTel b{font-size:70px;animation:gira 1.6s ease-in-out infinite}
 @keyframes gira{0%,30%{transform:rotate(90deg)}60%,100%{transform:rotate(0)}}
 #giraTel small{font-family:var(--testo);font-size:15px;font-weight:800;opacity:.8}
-@media (orientation:landscape) and (max-height:500px){#giraTel{display:flex}}
+/* «gira il telefono»: deciso in JS guardando l'orientamento VERO dello schermo (con la tastiera aperta la pagina si accorcia e sembrava orizzontale) */
+body.gira #giraTel{display:flex}
 .anteprima #giraTel{display:none!important}
 /* telefoni bassi: suggerimenti del selfie più compatti */
 @media (max-height:700px){.sf-chips{gap:6px}.sf-chips button{padding:6px 10px;font-size:13px}#s-selfie h2{font-size:26px}}
@@ -1857,6 +1858,21 @@ addEventListener('resize',adattaPresto);addEventListener('orientationchange',ada
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(adattaPresto);
 adattaPresto();
 
+
+/* ---------- avviso «gira il telefono»: solo se il telefono è davvero in orizzontale, mai mentre si scrive ---------- */
+(function(){
+  function orizz(){
+    if(typeof window.orientation==='number')return Math.abs(window.orientation)===90;   // iPhone e Android: orientamento del telefono, non della pagina
+    try{if(screen.orientation&&screen.orientation.type)return screen.orientation.type.indexOf('landscape')===0;}catch(e){}
+    return screen.width>screen.height;}
+  let ultimoScrivi=0;
+  function scrive(){const a=document.activeElement;const si=!!a&&(a.tagName==='INPUT'||a.tagName==='TEXTAREA'||a.isContentEditable);if(si)ultimoScrivi=Date.now();return si||Date.now()-ultimoScrivi<2000;}
+  function controlla(){const piccolo=Math.min(screen.width,screen.height)<500;document.body.classList.toggle('gira',orizz()&&piccolo&&!scrive());}
+  addEventListener('resize',()=>setTimeout(controlla,150));addEventListener('orientationchange',()=>setTimeout(controlla,300));
+  try{screen.orientation&&screen.orientation.addEventListener('change',()=>setTimeout(controlla,150));}catch(e){}
+  document.addEventListener('focusin',controlla);document.addEventListener('focusout',()=>{ultimoScrivi=Date.now();setTimeout(controlla,2200);});
+  controlla();
+})();
 </script>
 </body>
 </html>

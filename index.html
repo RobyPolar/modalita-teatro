@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-XTq3EfMwqKQ21tmmgz19eIMeQM4C24GGrFmFL1KTUxI=' 'sha256-lYhzzHU7SS8GZGF4yGHKMRnMXuzfMADWCT1tAPwWPKM='; style-src 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; font-src data:; worker-src blob:; connect-src 'self' wss://r21a1286.ala.eu-central-1.emqxsl.com:8084; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-XTq3EfMwqKQ21tmmgz19eIMeQM4C24GGrFmFL1KTUxI=' 'sha256-0OVhFaUX18aMGarisk2kYoF9Pb0WfTFU6diTBuwEdXc='; style-src 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; font-src data:; worker-src blob:; connect-src 'self' wss://r21a1286.ala.eu-central-1.emqxsl.com:8084; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
@@ -1543,7 +1543,7 @@ async function onMsg(topic,buf){
     let ok=false;try{ok=await crypto.subtle.verify({name:'ECDSA',hash:'SHA-256'},pubKey,b64d(m.g),enc.encode(`${m.c}|${m.d}|${m.s}|${m.t}|/stato`));}catch(e){}
     if(!ok)return;let d={};try{d=JSON.parse(m.d)||{};}catch(e){}
     if(m.s<=statoS&&d.w!=='lwt')return;   // vecchio (ma il «regia spenta» vale sempre: è firmato quando la regia si collega)
-    statoS=Math.max(statoS,m.s);postaAperta=d.p!==0;aggiornaPosta();if(d.w!=='lwt'){rbxOn=d.r===1&&Math.abs(Date.now()-m.s)<15*60e3;if(rbxOn)rbxVisto=Date.now();aggiornaRbx();}return;}
+    statoS=Math.max(statoS,m.s);postaAperta=d.p!==0;aggiornaPosta();if(d.w!=='lwt'&&(d.r===0||d.r===1)){rbxOn=d.r===1&&Math.abs(Date.now()-m.s)<15*60e3;if(rbxOn)rbxVisto=Date.now();aggiornaRbx();}return;}   /* una regia vecchia (senza «r») non spegne il bottone Roblox */
   if(topic.endsWith('/tot')){const n=parseInt(dec.decode(buf),10);if(current==='scena8'&&n>0)$('s8tot').textContent=`💥 Colpi di tutto il teatro: ${n.toLocaleString('it-IT')}`;return;}
   let m;try{m=JSON.parse(dec.decode(buf));}catch(e){return;}
   if(!m||typeof m.c!=='string'||typeof m.s!=='number'||typeof m.g!=='string')return;

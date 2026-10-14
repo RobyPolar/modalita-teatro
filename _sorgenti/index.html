@@ -643,6 +643,21 @@ body.gira #giraTel{display:flex}
 #rbxM .pv-box,#privacy .pv-box{max-height:calc(100vh - 28px);max-height:calc(100dvh - 28px)}
 .pv-x{width:44px!important;height:44px!important;font-size:20px!important;top:6px!important;right:6px!important;z-index:5}
 .rbx-in{font-size:18px!important}
+
+/* consenso privacy nella pagina della squadra */
+.pv-acc{display:flex;gap:10px;align-items:center;margin:14px auto 4px;max-width:340px;background:rgba(0,0,0,.35);border:2px solid var(--oro);border-radius:14px;padding:10px 12px;text-align:left;font:800 14px/1.3 var(--testo);color:#fff8ec}
+.pv-acc input{width:24px;height:24px;flex:none;accent-color:#ffc83a}
+.pv-acc .pv-link.in{color:#ffd84a;font-size:14px}
+.pv-acc.manca{animation:pvAccPulse .5s ease 3;border-color:#ff5a5a;background:rgba(179,18,31,.55)}
+@keyframes pvAccPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+.pv-acc.ok{border-color:#3dff8a}
+/* lettera: freccia che fa capire di scendere */
+.sf-giu{margin:10px auto 2px;font:900 16px var(--testo);color:#5d0a12;display:flex;flex-direction:column;align-items:center;gap:2px}
+.sf-giu b{font-size:34px;line-height:1;animation:sfGiu 1s ease-in-out infinite}
+@keyframes sfGiu{0%,100%{transform:translateY(-4px)}50%{transform:translateY(8px)}}
+.sf-prev{max-width:min(62vw,240px);margin:0 auto}
+.sf-stop{margin:14px auto 0;max-width:360px;background:#b3121f;color:#fff;border:3px solid #ffd84a;border-radius:16px;padding:12px 14px;text-align:center;font:800 15px/1.35 var(--testo);box-shadow:0 8px 20px rgba(0,0,0,.3)}
+.sf-stop b.t{display:block;font:400 22px var(--titolo);color:#ffd84a;margin-bottom:4px;letter-spacing:.5px}
 </style>
 </head>
 <body>
@@ -743,6 +758,7 @@ body.gira #giraTel{display:flex}
 <section class="screen sipario" id="s-lobby">
   <div class="lobbyT">SCEGLI LA TUA<br>SQUADRA!</div>
   <div class="lobbyS">Per chi fai il tifo stasera?</div>
+  <label class="pv-acc" id="pvAcc"><input type="checkbox" id="pvAccOk"><span>Per partecipare devi accettare la <button type="button" class="pv-link in" data-privacy>Privacy</button> (chiedi a mamma o papà di leggerla)</span></label>
   <div class="teams">
     <button class="team-b" data-team="roby"><img data-img="roby" alt=""><span>ROBY</span></button>
     <button class="team-b" data-team="jenny"><img data-img="jenny" alt=""><span>JENNY</span></button>
@@ -931,7 +947,8 @@ body.gira #giraTel{display:flex}
   <div class="sf-pass" id="sfP2" hidden>
     <div class="sf-prev" id="sfPrev"></div>
     <button class="sf-link" id="sfRifai" hidden>↺ Rifai la foto</button>
-    <p class="sf-dom">2. Scrivi il tuo messaggio</p>
+    <div class="sf-giu" id="sfGiu" hidden>Ora scrivi il messaggio qui sotto<b>⬇️</b></div>
+    <p class="sf-dom" id="sfDom2">2. Scrivi il tuo messaggio</p>
     <div class="sf-chips" id="sfChips"></div>
     <div class="nomeErr" id="sfMsgErr"></div>
     <textarea id="sfMsg" maxlength="140" placeholder="Scrivi qui… (senza cognome, indirizzo o numero di telefono)"></textarea>
@@ -955,6 +972,7 @@ body.gira #giraTel{display:flex}
     <p class="sf-attesa">Roby, Jenny e Lorenzist potrebbero metterci un po' a risponderti, perché <b>leggono e rispondono DAVVERO LORO!</b> 💌<br><br>
       <b>Non chiudere questa pagina</b> (oppure salva il link) e controlla se <b>tra oggi e domani</b> ti hanno risposto.<br>Faranno il prima possibile… il Dottor Caos li ha stancati! 😅<br><small>(si può spedire una sola lettera a testa)</small></p>
     <p class="sf-attento">⚠️ La risposta arriva <b>solo su questo telefono e in questo browser</b>. Non usare la navigazione in incognito e non cancellare i dati del sito, altrimenti non potrai leggerla.</p>
+    <div class="sf-stop"><b class="t">⚠️ ATTENZIONE!</b>Non ricaricare e non chiudere questa pagina, altrimenti <b>non riceverai la risposta con la foto</b>.<br><small>La posta si azzera a mezzanotte.</small></div>
     <button class="sf-link" id="sfAncora" hidden>💌 Rileggi la risposta</button>
   </div>
   <button class="sf-link" id="sfIndietro">← Torna all'attestato</button>
@@ -1036,7 +1054,7 @@ body.gira #giraTel{display:flex}
 <p><small>ai sensi degli artt. 13 e 14 del Regolamento (UE) 2016/679 («GDPR»)</small></p>
 
 <h4>1. Chi è il titolare</h4>
-<p>Titolare del trattamento: <b>Opera Live S.r.l.</b>. Per qualsiasi richiesta sulla privacy: <b><a href="mailto:"></a></b>.</p>
+<p>Titolare del trattamento: <b>Opera Live S.r.l.</b>. Per qualsiasi richiesta sulla privacy: <b><a href="mailto:robypropostecommerciali@gmail.com">robypropostecommerciali@gmail.com</a></b>.</p>
 
 <h4>2. Quali dati usiamo</h4>
 <ul>
@@ -1462,7 +1480,7 @@ function aggiornaBtnSelfie(){const fatta=!/anteprima/.test(location.search)&&sto
 $('btnSelfie').dataset.orig=$('btnSelfie').innerHTML;
 $('sfIndietro').addEventListener('click',()=>SCENES.fine());
 $('sfAncora').addEventListener('click',()=>{if(ultimaRisposta)mostraGrazie();});
-$('sfNoFoto').addEventListener('click',()=>{sfImg=null;$('sfPrev').innerHTML='';$('sfRifai').hidden=true;passo(2);});
+$('sfNoFoto').addEventListener('click',()=>{sfImg=null;$('sfPrev').innerHTML='';$('sfRifai').hidden=true;$('sfGiu').hidden=true;passo(2);});
 $('sfRifai').addEventListener('click',()=>passo(1));
 $('sfChips').innerHTML=CHIPS.map(t=>`<button>${t}</button>`).join('');
 $('sfChips').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const m=$('sfMsg');m.value=(m.value?m.value+' ':'')+b.textContent;m.value=m.value.slice(0,140);sfx('voto');});
@@ -1475,7 +1493,8 @@ function caricaFoto(e){
     g.fillText('HO SCONFITTO IL DOTTOR CAOS!',W/2,H-42);g.fillStyle='#fff';g.font='700 18px Nunito,sans-serif';g.fillText('Modalità Teatro – La Sfida'+(nome?' · '+nome:''),W/2,H-16);
     const fine=()=>{sfImg=c.toDataURL('image/jpeg',.72);};
     const caos=new Image();caos.onload=()=>{g.save();g.translate(W-120,18);g.rotate(.18);g.drawImage(caos,0,0,104,86);g.restore();fine();};caos.src=IMG.caos;fine();
-    $('sfPrev').innerHTML='';$('sfPrev').appendChild(c);$('sfRifai').hidden=false;URL.revokeObjectURL(img.src);sfx('festa');passo(2);
+    $('sfPrev').innerHTML='';$('sfPrev').appendChild(c);$('sfRifai').hidden=false;$('sfGiu').hidden=false;URL.revokeObjectURL(img.src);sfx('festa');passo(2);
+    setTimeout(()=>{try{$('sfDom2').scrollIntoView({behavior:'smooth',block:'start'});}catch(e){$('sfDom2').scrollIntoView();}},700);
   };img.src=URL.createObjectURL(f);
 }
 $('sfOk').addEventListener('change',()=>$('sfStato').textContent='');
@@ -1571,9 +1590,16 @@ function lobby(){
   if(team){$('badge').classList.add('on');$('badgeT').textContent='AGENTE TEAM '+({roby:'ROBY',jenny:'JENNY',lore:'LORENZIST'})[team];}
   aggiornaRbx();
 }
-document.querySelectorAll('.team-b').forEach(b=>b.addEventListener('click',()=>{controllaNome(true);team=b.dataset.team;store.set('mt_team',team);sfx('voto');vibra(40);lobby();ping();
+/* ---------- consenso privacy: senza spunta non si sceglie la squadra e non si scrive il nome ---------- */
+const privacyOk=()=>/anteprima/.test(location.search)||store.get('mt_privacy_ok')==='1';
+function chiediPrivacy(){const a=$('pvAcc');a.classList.remove('manca');void a.offsetWidth;a.classList.add('manca');vibra([60,40,60]);
+  $('nomeErr').textContent='☝️ Prima spunta la casella: per partecipare devi accettare la Privacy.';}
+$('pvAccOk').checked=privacyOk();$('pvAcc').classList.toggle('ok',privacyOk());
+$('pvAccOk').addEventListener('change',()=>{const v=$('pvAccOk').checked;store.set('mt_privacy_ok',v?'1':'');$('pvAcc').classList.toggle('ok',v);$('pvAcc').classList.remove('manca');if(v){$('nomeErr').textContent='';sfx('voto');}});
+$('nomeIn').addEventListener('focus',()=>{if(!privacyOk()){$('nomeIn').blur();chiediPrivacy();}});
+document.querySelectorAll('.team-b').forEach(b=>b.addEventListener('click',()=>{if(!privacyOk()){chiediPrivacy();return;}controllaNome(true);team=b.dataset.team;store.set('mt_team',team);sfx('voto');vibra(40);lobby();ping();
   if(lobbyPrima&&!inCorso)lobbyPrima=false; aggiornaEntra();}));
-$('btnEntra').addEventListener('click',()=>{controllaNome(true);if(!team)return;lobbyPrima=false;const m=inCorso;inCorso=null;aggiornaEntra();if(m)applica(m);});
+$('btnEntra').addEventListener('click',()=>{if(!privacyOk()){chiediPrivacy();return;}controllaNome(true);if(!team)return;lobbyPrima=false;const m=inCorso;inCorso=null;aggiornaEntra();if(m)applica(m);});
 function controllaNome(cancella){const el=$('nomeIn');const v=el.value.trim().slice(0,18);
   if(FILTRO.bruttoNome(v)){nome='';store.set('mt_nome','');el.classList.add('nome-bad');
     $('nomeErr').textContent='😅 Questo nome non si può usare: scegline un altro!';

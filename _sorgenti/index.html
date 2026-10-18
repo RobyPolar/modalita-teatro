@@ -1517,7 +1517,7 @@ $('sfInvia').addEventListener('click',async()=>{
   try{lett=await perRegia(lett);}catch(e){if(conFoto){$('sfStato').textContent='⚠️ Questo telefono non riesce a proteggere la foto: manda solo il messaggio';return;}}
   const ok=pubblica('/selfie',lett);
   if(!ok){$('sfStato').textContent='⚠️ Nessuna connessione, riprova tra poco';return;}
-  store.set(KEY_LETTERA,'1');$('sfAncora').hidden=true;try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist();}catch(e){}
+  store.set(KEY_LETTERA,'1');store.set('mt_lettera_t',String(Date.now()));$('sfAncora').hidden=true;try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist();}catch(e){}
   sfx('festa');vibra([60,40,60]);flash();passo(4);
 });
 /* --- la lettera di risposta: arrivo esplosivo --- */
@@ -1801,6 +1801,7 @@ async function onMsg(topic,buf){
   if(topic.endsWith('/tot')){const n=parseInt(dec.decode(buf),10);if(current==='scena8'&&n>0)$('s8tot').textContent=`💥 Colpi di tutto il teatro: ${n.toLocaleString('it-IT')}`;return;}
   let m;try{m=JSON.parse(dec.decode(buf));}catch(e){return;}
   if(!m||typeof m.c!=='string'||typeof m.s!=='number'||typeof m.g!=='string')return;
+  if(topic.endsWith('/r/tutti')){await rispostaTutti(m);return;}
   const priv=topic.endsWith('/r/'+myId);
   if((!priv&&m.s<=lastSeq)||Date.now()-m.t>(priv?3*86400e3:6*3600e3))return;
   if(priv&&m.c!=='risposta')return;
@@ -1814,11 +1815,32 @@ async function onMsg(topic,buf){
   lastSeq=m.s;
   if(started)applica(m);else pending=m;
 }
+/* 📸 RISPOSTA UGUALE PER TUTTI: la regia la manda una volta sola (firmata) e arriva a chi ha spedito una lettera
+   PRIMA di quel momento e non ha ancora avuto una risposta personale. Chi scrive dopo non la riceve. */
+function letteraPrimaDi(t){
+  const lt=Number(store.get('mt_lettera_t')||0);if(lt)return lt<t && t-lt<3*86400e3;
+  const g=d=>new Date(d).toISOString().slice(0,10),oggiT=g(t);   // telefoni che hanno scritto con la pagina vecchia: guardo il giorno
+  for(let i=0;i<4;i++){const d=g(t-i*86400e3);if(store.get('mt_lettera_'+d)==='1')return d<=oggiT;}
+  return false;}
+async function rispostaTutti(m){
+  if(ANTEPRIMA||m.c!=='risposta'||typeof m.d!=='string'||Date.now()-m.t>3*86400e3||m.t-Date.now()>600000)return;
+  if(m.s<Number(store.get('mt_reset')||0))return;          // lettere riaperte dopo: non vale piu'
+  const haPersonale=()=>{const pr=Number(store.get('mt_risp')||0);return pr>0&&Date.now()-pr<3*86400e3&&pr>=Number(store.get('mt_reset')||0);};
+  if(haPersonale())return;                                   // ha gia' una risposta personale: quella vince
+  if(!letteraPrimaDi(m.t))return;
+  let ok=false;try{ok=await crypto.subtle.verify({name:'ECDSA',hash:'SHA-256'},pubKey,b64d(m.g),enc.encode(`${m.c}|${m.d}|${m.s}|${m.t}|/r/tutti`));}catch(e){}
+  if(!ok)return;
+  let r;try{r=JSON.parse(m.d)}catch(e){return;}if(!r||typeof r!=='object')return;
+  const out={t:String(r.t||'').slice(0,1000),img:typeof r.img==='string'&&/^data:image\/jpeg;base64,/.test(r.img)?r.img:null,v:typeof r.v==='string'?r.v:undefined,vid:null};
+  if(!out.t&&!out.img&&!out.v)return;
+  if(haPersonale())return;
+  rispSilenziosa=store.get('mt_tutti')===String(m.s);store.set('mt_tutti',String(m.s));
+  rispostaRegia(out);rispSilenziosa=false;if(current==='fine')aggiornaBtnSelfie();}
 function connetti(){
   CFG.brokers.forEach((b,i)=>{
     conn[i]=false;
     const c=mqtt.connect(b.url,{clientId:'mt_'+myId+'_'+i+'_'+Math.random().toString(36).slice(2,5),username:b.user,password:b.pass,clean:true,keepalive:20,reconnectPeriod:2000+Math.floor(Math.random()*6000),connectTimeout:8000}); // riconnessione sfasata: il server accetta max 100 nuovi collegamenti/s
-    c.on('connect',()=>{conn[i]=true;lastOk=Date.now();c.subscribe([CFG.topic+'/cue',CFG.topic+'/tot',CFG.topic+'/r/'+myId,CFG.topic+'/r/stato'].concat(videoSu?[CFG.topic+'/r/'+myId+'/v/#']:[]),{qos:1});aggiornaConn();if(started)ping();});
+    c.on('connect',()=>{conn[i]=true;lastOk=Date.now();c.subscribe([CFG.topic+'/cue',CFG.topic+'/tot',CFG.topic+'/r/'+myId,CFG.topic+'/r/stato',CFG.topic+'/r/tutti'].concat(videoSu?[CFG.topic+'/r/'+myId+'/v/#']:[]),{qos:1});aggiornaConn();if(started)ping();});
     c.on('close',()=>{conn[i]=false;aggiornaConn();});
     c.on('offline',()=>{conn[i]=false;aggiornaConn();});
     c.on('message',(t,p)=>onMsg(t,p));
@@ -1913,6 +1935,62 @@ adattaPresto();
 
 /* finestre: si chiudono anche toccando lo sfondo scuro */
 ['rbxM','privacy'].forEach(id=>{const w=document.getElementById(id);if(w)w.addEventListener('click',e=>{if(e.target===w){try{document.activeElement&&document.activeElement.blur();}catch(_){}w.hidden=true;}});});
+</script>
+<script>/* 📤 Manda le lettere alla regia 2: compare SOLO nell'anteprima dentro la regia (i telefoni del pubblico non lo vedono).
+   Legge le lettere ancora da rispondere dalla regia che contiene questa anteprima e le rimanda cifrate come un telefono:
+   le altre regie aperte le ricevono, quella che le ha già le ignora (niente doppioni). */
+(function(){
+  var P;
+  try{
+    if(!/[?&]anteprima/.test(location.search))return;
+    P=window.parent;if(!P||P===window)return;
+    if(P.location.origin!==location.origin||!/regia\.html$/.test(P.location.pathname)||!P.document.getElementById('inbox'))return;
+  }catch(e){return;}
+  var b=document.createElement('button');
+  b.type='button';b.id='mtTrasf';b.textContent='📤 Manda le lettere alla regia 2';
+  b.style.cssText='position:fixed;left:8px;right:8px;top:8px;z-index:2147483647;padding:14px 10px;border:3px solid #fff;border-radius:16px;background:#1f9d55;color:#fff;font:800 17px/1.25 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;box-shadow:0 6px 18px rgba(0,0,0,.45);cursor:pointer';
+  var scrivi=function(t,col){b.textContent=t;if(col)b.style.background=col;};
+  var occupato=false;
+  function trovaPosta(){return new Promise(function(res){
+    var PM=P.Map.prototype,d0=Object.getOwnPropertyDescriptor(PM,'size'),trovata=null,fatto=false;
+    function fine(){if(fatto)return;fatto=true;try{Object.defineProperty(PM,'size',d0);}catch(e){}res(trovata);}
+    if(!d0||!d0.get){res(null);return;}
+    try{Object.defineProperty(PM,'size',{configurable:true,enumerable:false,get:function(){var n=d0.get.call(this);
+      if(!trovata&&n>0){try{var v=PM.values.call(this).next().value;if(v&&typeof v==='object'&&typeof v.id==='string'&&('testo' in v)&&('sospetta' in v)){trovata=this;setTimeout(fine,0);}}catch(e){}}
+      return n;}});}catch(e){fine();return;}
+    setTimeout(fine,7000);});}
+  function b64(u){var s='';u=new Uint8Array(u);for(var i=0;i<u.length;i++)s+=String.fromCharCode(u[i]);return btoa(s);}
+  function attesa(p,ms,msg){return Promise.race([p,new Promise(function(_,ko){setTimeout(function(){ko(new Error(msg));},ms);})]);}
+  b.addEventListener('click',async function(){
+    if(occupato)return;occupato=true;var cl=null,n=0,f=0,tot=0;
+    try{
+      scrivi('⏳ Cerco le lettere nella regia…','#8a6d00');
+      var posta=await trovaPosta();
+      if(!posta){scrivi('📭 In questa regia non ci sono lettere','#555');return;}
+      var risp={};try{(JSON.parse(localStorage.getItem('mt_risposteId')||'[]')||[]).forEach(function(id){risp[id]=1;});}catch(e){}
+      var perId={};Array.from(P.Map.prototype.values.call(posta)).forEach(function(m){if(m&&typeof m.id==='string'&&!risp[m.id])perId[m.id]=m;});
+      var da=Object.keys(perId).map(function(k){return perId[k];});tot=da.length;
+      if(!tot){scrivi('📭 Nessuna lettera da mandare (già risposte)','#555');return;}
+      var B=CFG.brokers[0];
+      var RK=await crypto.subtle.importKey('raw',Uint8Array.from(atob(CFG.rk),function(c){return c.charCodeAt(0);}),{name:'ECDH',namedCurve:'P-256'},false,[]);
+      var cifra=async function(t){var e=await crypto.subtle.generateKey({name:'ECDH',namedCurve:'P-256'},true,['deriveKey']);
+        var k=await crypto.subtle.deriveKey({name:'ECDH',public:RK},e.privateKey,{name:'AES-GCM',length:256},false,['encrypt']);
+        var iv=crypto.getRandomValues(new Uint8Array(12));var ct=await crypto.subtle.encrypt({name:'AES-GCM',iv:iv},k,new TextEncoder().encode(t));
+        return JSON.stringify({x:1,e:b64(await crypto.subtle.exportKey('raw',e.publicKey)),iv:b64(iv),ct:b64(ct)});};
+      scrivi('⏳ Mi collego…','#8a6d00');
+      cl=mqtt.connect(B.url,{username:B.user,password:B.pass,clientId:'mt_trasf_'+Math.random().toString(36).slice(2,8),clean:true,protocolVersion:4,reconnectPeriod:0,connectTimeout:10000});
+      await attesa(new Promise(function(ok,ko){cl.once('connect',ok);cl.once('error',ko);}),12000,'nessuna connessione');
+      for(var i=0;i<da.length;i++){var m=da[i];
+        var p=await cifra(JSON.stringify({id:m.id,nome:m.nome||'',team:m.team||'',testo:m.testo||'',foto:m.foto||null,pk:m.pk||null}));
+        await attesa(new Promise(function(ok,ko){cl.publish(CFG.topic+'/selfie',p,{qos:1},function(e){e?ko(e):ok();});}),15000,'invio bloccato');
+        n++;if(m.foto)f++;scrivi('📨 Mando '+n+' di '+tot+'…','#1f6fb0');
+        await new Promise(function(r){setTimeout(r,700);});}
+      scrivi('✅ Mandate '+n+' lettere ('+f+' con foto) alla regia 2. Puoi rifarlo','#1f9d55');
+    }catch(e){scrivi('⚠️ Fermato: '+((e&&e.message)||'errore')+' ('+n+' di '+(tot||'?')+' mandate). Tocca per riprovare','#b3261e');}
+    finally{try{if(cl)cl.end(true);}catch(e){}occupato=false;}
+  });
+  (document.body||document.documentElement).appendChild(b);
+})();
 </script>
 </body>
 </html>

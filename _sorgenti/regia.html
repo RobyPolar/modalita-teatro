@@ -133,6 +133,13 @@ h1{font-size:22px;color:var(--oro);letter-spacing:.5px}
 .rbxr{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line);font-size:14px}
 .rbxr .u{color:var(--muto);word-break:break-all}
 .rbxr button{padding:4px 10px}
+
+.tutti{margin:10px 0;padding:10px 12px;border:2px dashed #ffc83a;border-radius:12px;background:rgba(255,200,58,.07)}
+.tutti summary{cursor:pointer;font-weight:800}
+.tutti summary small{font-weight:600;opacity:.75}
+.tutti textarea{width:100%;min-height:70px;margin:8px 0;box-sizing:border-box}
+.tutti #tuttiPrev{display:block;max-width:220px;max-height:220px;margin:8px 0;border-radius:10px}
+.tutti .tutti-foto{display:inline-block;cursor:pointer}
 </style>
 </head>
 <body>
@@ -181,7 +188,13 @@ h1{font-size:22px;color:var(--oro);letter-spacing:.5px}
       <textarea id="rbxTesto" hidden readonly></textarea>
       <details id="rbxDett"><summary>Elenco (<b id="rbxN">0</b>) – tocca ✕ per togliere un nome o un nome utente non adatto</summary><div id="rbxList"></div></details>
     </div>
-    <div id="inbox"><h2>📸 Selfie e messaggi dal pubblico</h2><button class="small" id="btnResetLet" style="margin-top:6px">🔄 Permetti di nuovo una lettera a tutti (per i test)</button><p class="vuoto" id="inStat"></p><details id="boxSosp" hidden><summary>⚠️ Da controllare (<b id="nSosp">0</b>) — telefoni appena collegati: guarda tu se sono vere</summary><div id="inSosp"></div></details><p class="vuoto" id="vidInfo"></p><p class="vuoto" id="inVuoto">Arrivano alla fine, dall'attestato. Le foto non vengono salvate: dopo «Visto» spariscono.</p><div id="inList"></div></div>
+    <div id="inbox"><h2>📸 Selfie e messaggi dal pubblico</h2><button class="small" id="btnResetLet" style="margin-top:6px">🔄 Permetti di nuovo una lettera a tutti (per i test)</button><details id="tuttiBox" class="tutti"><summary>📸 Risposta uguale per tutti <small>(una foto e un messaggio, in una botta sola)</small></summary>
+      <p class="hint">Arriva a <b>tutti i bambini che hanno già spedito una lettera</b> e non hanno ancora avuto una risposta personale (anche se la regia si è ricaricata e le lettere sono sparite). Chi scrive dopo l'invio non la riceve. Resta sul server 3 giorni, così arriva anche a chi riapre il telefono più tardi.</p>
+      <label class="small tutti-foto">🖼️ Scegli la foto<input type="file" id="tuttiFile" accept="image/*" hidden></label> <span id="tuttiFotoInfo" class="vuoto"></span>
+      <img id="tuttiPrev" alt="" hidden>
+      <textarea id="tuttiTesto" maxlength="1000" placeholder="Il messaggio per tutti (facoltativo se c'è la foto)">Grazie mille per la tua lettera! 💖 Ci hai fatto felicissimi. Ecco una foto per te da Roby, Jenny e Lore! 🐻‍❄️💖🐧</textarea>
+      <div class="row"><button class="small" id="tuttiManda">📨 Manda a tutti</button><button class="small" id="tuttiTogli">🗑 Togli la risposta per tutti</button></div>
+      <p class="vuoto" id="tuttiInfo"></p></details><p class="vuoto" id="inStat"></p><details id="boxSosp" hidden><summary>⚠️ Da controllare (<b id="nSosp">0</b>) — telefoni appena collegati: guarda tu se sono vere</summary><div id="inSosp"></div></details><p class="vuoto" id="vidInfo"></p><p class="vuoto" id="inVuoto">Arrivano alla fine, dall'attestato. Le foto non vengono salvate: dopo «Visto» spariscono.</p><div id="inList"></div></div>
     <p class="hint">Scorciatoie: barra spaziatrice o freccia → = PROSSIMO. «Caos sbuca» si può premere in qualsiasi momento, anche più volte, e non cambia la scena in corso.</p>
     <div class="log" id="log"></div>
     <div id="sottoMano" hidden>⚠️ La regia è rimasta in secondo piano mentre lavorava.<br><small style="font-size:16px;font-weight:700;margin-top:10px;display:block">Se stavi comprimendo un video, lo rifaccio da capo adesso. Tieni questa pagina davanti finché non vedi «✅ video arrivato».</small><button id="smOk">Ok, resto qui</button></div>
@@ -756,6 +769,27 @@ $('inbox').addEventListener('click',async e=>{
     allegati.delete(k);if(!pv)info.textContent='✅ inviata (puoi mandarne un\'altra: sostituisce la precedente)';box.classList.add('risposto');e.target.disabled=false;e.target.textContent='Rispondi ancora 💌';box.querySelector('textarea').value='';box.querySelector('.conta').textContent='0/1000';box.querySelectorAll('.al').forEach(x=>x.classList.remove('sel'));box.querySelectorAll('.pv,.pvimg').forEach(x=>x.remove());m.foto=null;
     const img=box.querySelector('img');if(img)img.remove();}
 });
+/* ---- 📸 RISPOSTA UGUALE PER TUTTI: un messaggio firmato su /r/tutti (i telefoni decidono se fa per loro) ---- */
+let tuttiImg=null,tuttiConferma=0;
+const tuttiStato=t=>{$('tuttiInfo').textContent=t;};
+(()=>{try{const x=localStorage.getItem('mt_tutti_inviata');if(x&&Date.now()-Number(x)<3*86400e3)tuttiStato('✅ Già mandata il '+new Date(Number(x)).toLocaleString('it-IT',{weekday:'long',hour:'2-digit',minute:'2-digit'})+'. Se la rimandi, sostituisce la precedente.');}catch(e){}})();
+$('tuttiFile').addEventListener('change',async e=>{const f=e.target.files&&e.target.files[0];e.target.value='';if(!f||!f.type.startsWith('image/')){$('tuttiFotoInfo').textContent='⚠ scegli una foto';return;}
+  try{const img=await new Promise((res,ko)=>{const i=new Image();i.onload=()=>res(i);i.onerror=ko;i.src=URL.createObjectURL(f);});
+    const sc=Math.min(1,720/Math.max(img.width,img.height)),c=document.createElement('canvas');c.width=Math.round(img.width*sc);c.height=Math.round(img.height*sc);c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+    tuttiImg=c.toDataURL('image/jpeg',.75);$('tuttiPrev').src=tuttiImg;$('tuttiPrev').hidden=false;$('tuttiFotoInfo').textContent=`foto pronta (${Math.round(tuttiImg.length*.75/1024)} KB)`;}
+  catch(err){tuttiImg=null;$('tuttiPrev').hidden=true;$('tuttiFotoInfo').textContent='⚠ questa foto non si riesce a leggere (prova un JPG)';}});
+$('tuttiManda').addEventListener('click',async()=>{const b=$('tuttiManda');const t=$('tuttiTesto').value.trim().slice(0,1000);
+  if(!t&&!tuttiImg){tuttiStato('⚠ metti almeno una foto o un messaggio');return;}
+  if(!conn.some(Boolean)){tuttiStato('⚠ nessun server collegato: controlla internet');return;}
+  if(Date.now()-tuttiConferma>6000){tuttiConferma=Date.now();b.textContent='❓ Sicura? Tocca di nuovo per mandarla a tutti';setTimeout(()=>{if(Date.now()-tuttiConferma>=6000)b.textContent='📨 Manda a tutti';},6100);return;}
+  tuttiConferma=0;b.disabled=true;b.textContent='⏳ Mando…';
+  try{await invia('risposta','📸 risposta uguale per tutti'+(tuttiImg?' (con foto)':''),JSON.stringify({t,img:tuttiImg}),true,'/r/tutti');
+    try{localStorage.setItem('mt_tutti_inviata',String(Date.now()));}catch(e){}spett.risposte++;salvaSpett();
+    tuttiStato('✅ Mandata! Arriva a chi ha già scritto e non ha avuto una risposta personale (anche a chi riapre il telefono nei prossimi 3 giorni).');}
+  catch(err){tuttiStato('⚠ invio non riuscito: riprova');}
+  finally{b.disabled=false;b.textContent='📨 Manda a tutti';}});
+$('tuttiTogli').addEventListener('click',async()=>{let n=0;for(let i=0;i<clients.length;i++){if(conn[i]){await permesso();clients[i].publish(CFG.topic+'/r/tutti','',{qos:1,retain:true});n++;}}
+  try{localStorage.removeItem('mt_tutti_inviata');}catch(e){}tuttiStato(n?'🗑 Tolta dal server: chi non l\'ha ancora vista non la riceverà più (chi l\'ha già vista la tiene).':'⚠ nessun server collegato');log('🗑 risposta per tutti tolta');});
 function nome(u){return u.replace(/^wss?:\/\//,'').split(/[:/]/)[0];}
 function stato(){$('brk').innerHTML=CFG.brokers.map((u,i)=>`<div><span class="dot ${conn[i]?'on':''}"></span>${nome(u.url)}</div>`).join('');}
 async function invia(c,label,d,momento,dest){
